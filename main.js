@@ -99,13 +99,28 @@ const connectionOptions = {
     keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' }))
   },
 
-  browser: ['Zeref', 'Safari', '1.0.0'],
+  browser: ['Ubuntu', 'Chrome', '20.0.04'],
   version
 };
 
 // ====== CONNECT ======
 global.conn = makeWASocket(connectionOptions);
 conn.isInit = false;
+
+// Pairing Code Logic
+if (!conn.authState.creds.registered) {
+    const phoneNumber = process.env.PHONE_NUMBER || global.owner?.[0]?.[0];
+    if (phoneNumber) {
+        console.log(chalk.cyan(`[PAIRING] Generating pairing code for: ${phoneNumber}`));
+        setTimeout(async () => {
+            let code = await conn.requestPairingCode(phoneNumber);
+            code = code?.match(/.{1,4}/g)?.join("-") || code;
+            console.log(chalk.yellow.bold(`\n\nYOUR PAIRING CODE: ${code}\n\n`));
+        }, 3000);
+    } else {
+        console.log(chalk.red('[PAIRING] No phone number found in config or env. Please scan QR instead.'));
+    }
+}
 
 let stopped = false;
 
@@ -116,8 +131,8 @@ async function connectionUpdate(update) {
   const { connection, lastDisconnect, qr } = update;
   stopped = connection;
 
-  if (qr) {
-    console.log('📲 امسح هذا الكود بالواتساب:', qr);
+  if (qr && !conn.authState.creds.registered) {
+    console.log(chalk.yellow('📲 Scan this QR code or use the pairing code above:'), qr);
   }
 
   let reason = new Boom(lastDisconnect?.error)?.output?.statusCode;
