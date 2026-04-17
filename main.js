@@ -101,8 +101,20 @@ const connectionOptions = {
     keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' }))
   },
 
-  browser: ['Ubuntu', 'Chrome', '121.0.6167.160'],
-  version
+  browser: ['Ubuntu', 'Chrome', '20.0.04'],
+  version,
+  syncFullHistory: false,
+  markOnlineOnConnect: true,
+  generateHighQualityLinkPreview: true,
+  getMessage: async (key) => {
+    if (store) {
+        const msg = await store.loadMessage(key.remoteJid, key.id)
+        return msg?.message || undefined
+    }
+    return {
+        conversation: 'Zeref-Bot is here!'
+    }
+  }
 };
 
 // ====== CONNECT ======
