@@ -156,7 +156,7 @@ if (!conn.authState.creds.registered) {
   setTimeout(async () => {
     try {
       console.log(chalk.cyan('[PAIRING] Contacting WhatsApp servers...'));
-      let code = await conn.requestPairingCode(phoneNumber);
+      let code = await conn.requestPairingCode(phoneNumber.trim());
       code = code?.match(/.{1,4}/g)?.join('-') || code;
       console.log(chalk.green.bold('\n╔══════════════════════════════════════════════════╗'));
       console.log(chalk.green.bold(`║         📱  YOUR PAIRING CODE: ${code.padEnd(16)}║`));
@@ -344,15 +344,17 @@ const pluginFilter = (filename) => /\.js$/.test(filename);
 global.plugins = {};
 
 async function filesInit() {
-  for (const filename of readdirSync(pluginFolder).filter(pluginFilter)) {
+  const files = readdirSync(pluginFolder).filter(pluginFilter);
+  await Promise.all(files.map(async (filename) => {
     try {
       const file = global.__filename(join(pluginFolder, filename));
       const module = await import(file);
       global.plugins[filename] = module.default || module;
     } catch (e) {
-      console.error(e);
+      console.error('[PLUGIN ERROR]', filename, e.message);
     }
-  }
+  }));
+  console.log(chalk.green(`[PLUGINS] Loaded ${Object.keys(global.plugins).length} plugins`));
 }
 
 await filesInit();
@@ -360,8 +362,13 @@ await filesInit();
 // ====== AUTO CLEAN TMP ======
 setInterval(() => {
   if (stopped === 'close') return;
-  console.log('Auto clean running...');
-}, 1800000);
+  if (global.menuPolls) {
+    const now = Date.now();
+    for (const [id, meta] of global.menuPolls) {
+      if (now > meta.expires) global.menuPolls.delete(id);
+    }
+  }
+}, 300000);
 
 // ====== QUICK TEST ======
 async function _quickTest() {

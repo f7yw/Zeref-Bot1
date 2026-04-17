@@ -9,16 +9,15 @@ import moment from 'moment-timezone'
 
 // معلومات المالكين
 global.owner = [
-	  ['967778088098', '彡ℤ𝕖𝕣𝕖𝕗', true],
-	  ['967782114485', 'Fares', true],
-	]
+          ['967778088098', '彡ℤ𝕖𝕣𝕖𝕗', true],
+        ]
 
 global.suittag = ['967778088098']
-global.prems = ['967782114485','201102471574']
+global.prems = ['967778088098']
 global.reportes_solicitudes = ['967778088098']
 
 // معلومات البوت والعلامة
-global.packname = '𝐒𝐇𝐀𝐃𝐎𝐖-ASTA'
+global.packname = '𝐒𝐇𝐀𝐃𝐎𝐖-Bot'
 global.author = '967778088098+'
 global.wm = '𝐒𝐇𝐀𝐃𝐎𝐖 - Bot'
 global.igfg = '𝐒𝐇𝐀𝐃𝐎𝐖 - Bot'
@@ -45,11 +44,12 @@ global.tiempo = d.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', 
 // توقيعات وخصائص إضافية
 global.wm2 = `▸ ${dia} ${fecha}\n▸ aima - 𝙱𝚘𝚝`
 global.gt = '★𝐒𝐇𝐀𝐃𝐎𝐖 - 𝙱𝚘𝚝★'
-global.md = 'https://github.com/Farisatif/Zeref'
+global.md = 'https://github.com/farisatif'
 global.waitt = '*[❗] Ƈᴀʀɢᴀɴᴅᴏ, ᴀɢᴜᴀʀᴅᴇ ᴜɴ ᴍᴏᴍᴇɴᴛᴏ...*'
 global.waittt = global.waitt
 global.waitttt = global.waitt
 global.nomorown = '967778088098'
+global.ownerLink = 'https://wa.me/967778088098'
 global.pdoc = [
   'application/vnd.openxmlformats-officedocument.presentationml.presentation',
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

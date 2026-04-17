@@ -30,11 +30,9 @@ export async function handler(chatUpdate) {
     let m = chatUpdate.messages[chatUpdate.messages.length - 1]
     if (!m || !m.message) return
 
-    if (m.key.remoteJid === 'status@broadcast') return 
-    if (m.isGroup) return
-// باقي كود الرد هنا 👇
+    if (m.key.remoteJid === 'status@broadcast') return
 
-	
+        
 this.msgqueque = this.msgqueque || []
 this.pushMessage(chatUpdate.messages).catch(console.error)
 
@@ -58,7 +56,7 @@ try {
         let chatgptUser = global.chatgpt.data.users[m.sender];
         if (typeof chatgptUser !== "object")
             global.chatgpt.data.users[m.sender] = [];
-		
+                
 /*------------------------------------------------*/
             if (typeof user !== 'object')
                 global.db.data.users[m.sender] = {}
@@ -67,7 +65,7 @@ try {
                 if (!('premium' in user)) user.premium = false
                 if (!isNumber(user.joincount)) user.joincount = 2   
                 if (!isNumber(user.limit)) user.limit = 20
-                if (!isNumber(user.money)) user.money = 15    	       
+                if (!isNumber(user.money)) user.money = 15             
                 if (!('registered' in user)) user.registered = false
             if (!user.registered) {
                 if (!('name' in user)) user.name = m.name
@@ -91,8 +89,8 @@ try {
                 if (!isNumber(user.stroberi)) user.stroberi = 0
                 }
                 if (!isNumber(user.afk)) user.afk = -1
-	        if (!('autolevelup' in user))  user.autolevelup = true
-	        if (!('role' in user)) user.role = 'Novato'
+                if (!('autolevelup' in user))  user.autolevelup = true
+                if (!('role' in user)) user.role = 'Novato'
                 if (!isNumber(user.agility)) user.agility = 0
                 if (!isNumber(user.anakanjing)) user.anakanjing = 0
                 if (!isNumber(user.anakcentaur)) user.anakcentaur = 0
@@ -180,10 +178,10 @@ try {
                 if (!isNumber(user.exp)) user.exp = 0
                 if (!isNumber(user.expg)) user.expg = 0
                 if (!isNumber(user.exphero)) user.exphero = 0
-	        if (!isNumber(user.eleksirb)) user.eleksirb = 0
-	        if (!isNumber(user.emasbatang)) user.emasbatang = 0
-	        if (!isNumber(user.emasbiasa)) user.emasbiasa = 0
-	        if (!isNumber(user.fideos)) user.fideos = 0    
+                if (!isNumber(user.eleksirb)) user.eleksirb = 0
+                if (!isNumber(user.emasbatang)) user.emasbatang = 0
+                if (!isNumber(user.emasbiasa)) user.emasbiasa = 0
+                if (!isNumber(user.fideos)) user.fideos = 0    
                 if (!isNumber(user.fishingrod)) user.fishingrod = 0
                 if (!isNumber(user.fishingroddurability)) user.fishingroddurability = 0
                 if (!isNumber(user.fortress)) user.fortress = 0
@@ -289,14 +287,14 @@ try {
                 if (!isNumber(user.lastberkebon)) user.lastberkebon = 0
                 if (!isNumber(user.lastbunga)) user.lastbunga = 0
                 if (!isNumber(user.lastbunuhi)) user.lastbunuhi = 0
-	        if (!isNumber(user.lastcoins)) user.lastcoins = 0    
+                if (!isNumber(user.lastcoins)) user.lastcoins = 0    
                 if (!isNumber(user.lastclaim)) user.lastclaim = 0
                 if (!isNumber(user.lastcode)) user.lastcode = 0
-	        if (!isNumber(user.lastcofre)) user.lastcofre = 0
+                if (!isNumber(user.lastcofre)) user.lastcofre = 0
                 if (!isNumber(user.lastcodereg)) user.lastcodereg = 0
                 if (!isNumber(user.lastcrusade)) user.lastcrusade = 0
                 if (!isNumber(user.lastdagang)) user.lastdagang = 0
-	        if (!isNumber(user.lastdiamantes)) user.lastdiamantes = 0    
+                if (!isNumber(user.lastdiamantes)) user.lastdiamantes = 0    
                 if (!isNumber(user.lastduel)) user.lastduel = 0
                 if (!isNumber(user.lastdungeon)) user.lastdungeon = 0
                 if (!isNumber(user.lasteasy)) user.lasteasy = 0
@@ -326,7 +324,7 @@ try {
                 if (!isNumber(user.lastngojek)) user.lastngojek = 0
                 if (!isNumber(user.lastopen)) user.lastopen = 0
                 if (!isNumber(user.lastpekerjaan)) user.lastpekerjaan = 0
-	        if (!isNumber(user.lastpago)) user.lastpago = 0 
+                if (!isNumber(user.lastpago)) user.lastpago = 0 
                 if (!isNumber(user.lastpotionclaim)) user.lastpotionclaim = 0
                 if (!isNumber(user.lastrampok)) user.lastrampok = 0
                 if (!isNumber(user.lastramuanclaim)) user.lastramuanclaim = 0
@@ -335,7 +333,7 @@ try {
                 if (!isNumber(user.lastsda)) user.lastsda = 0
                 if (!isNumber(user.lastseen)) user.lastseen = 0
                 if (!isNumber(user.lastSetStatus)) user.lastSetStatus = 0
-	        if (!isNumber(user.lastspam)) user.lastspam = 0
+                if (!isNumber(user.lastspam)) user.lastspam = 0
                 if (!isNumber(user.lastsironclaim)) user.lastsironclaim = 0
                 if (!isNumber(user.lastsmancingclaim)) user.lastsmancingclaim = 0
                 if (!isNumber(user.laststringclaim)) user.laststringclaim = 0
@@ -491,12 +489,12 @@ try {
                 if (!user.job) user.job = 'Desempleo'
                 if (!user.premium) user.premium = false
                 if (!user.premium) user.premiumTime = 0
-		if (!user.wait) user.wait = 0    
+                if (!user.wait) user.wait = 0    
                 if (!user.rtrofi) user.rtrofi = 'Bronce'
             } else
                 global.db.data.users[m.sender] = {
-		    afk: -1,
-		    wait: 0,
+                    afk: -1,
+                    wait: 0,
                     afkReason: '',
                     age: -1,
                     agility: 16,
@@ -590,10 +588,10 @@ try {
                     expg: 0,
                     exphero: 0,
                     expired: 0,
-		    eleksirb: 0,
-		    emasbatang: 0,
-		    emasbiasa: 0,
-		    fideos: 0,
+                    eleksirb: 0,
+                    emasbatang: 0,
+                    emasbiasa: 0,
+                    fideos: 0,
                     fishingrod: 0,
                     fishingroddurability: 0,
                     fortress: 0,
@@ -634,7 +632,7 @@ try {
                     jagungbakar: 0,
                     jeruk: 0,
                     job: 'Pengangguran',
-		            joincount: 2,
+                            joincount: 2,
                     joinlimit: 1,
                     judilast: 0,
                     kaleng: 0,
@@ -696,14 +694,14 @@ try {
                     lastberkebon: 0,
                     lastbunga: 0,
                     lastbunuhi: 0,
-		    lastcoins: 0,
+                    lastcoins: 0,
                     lastclaim: 0,
                     lastcode: 0,
-		    lastcofre: 0,
+                    lastcofre: 0,
                     lastcrusade: 0,
                     lastdaang: 0,
                     lastdagang: 0,
-		    lastdiamantes: 0,
+                    lastdiamantes: 0,
                     lastduel: 0,
                     lastdungeon: 0,
                     lasteasy: 0,
@@ -731,10 +729,10 @@ try {
                     lastngojek: 0,
                     lastopen: 0,
                     lastpekerjaan: 0,
-		    lastpago: 0,
+                    lastpago: 0,
                     lastpotionclaim: 0,
                     lastramuanclaim: 0,
-	            lastspam: 0,
+                    lastspam: 0,
                     lastrob: 0,
                     lastroket: 0,
                     lastseen: 0,
@@ -895,33 +893,33 @@ try {
                     wolfexp: 0,
                     wolflastfeed: 0,
                     wood: 0,
-                    wortel: 0,	
+                    wortel: 0,  
                 }
                 let akinator = global.db.data.users[m.sender].akinator
-		    if (typeof akinator !== 'object')
-			global.db.data.users[m.sender].akinator = {}
-		    if (akinator) {
-				if (!('sesi' in akinator)) akinator.sesi = false
-				if (!('server' in akinator)) akinator.server = null
-				if (!('frontaddr' in akinator)) akinator.frontaddr = null
-				if (!('session' in akinator)) akinator.session = null
-				if (!('signature' in akinator)) akinator.signature = null
-				if (!('question' in akinator)) akinator.question = null
-				if (!('progression' in akinator)) akinator.progression = null
-				if (!('step' in akinator)) akinator.step = null
-				if (!('soal' in akinator)) akinator.soal = null
-	            } else
-		        global.db.data.users[m.sender].akinator = {
-				sesi: false,
-				server: null,
-				frontaddr: null,
-				session: null,
-				signature: null,
-				question: null,
-				progression: null,
-				step: null, 
-				soal: null
-				}   		
+                    if (typeof akinator !== 'object')
+                        global.db.data.users[m.sender].akinator = {}
+                    if (akinator) {
+                                if (!('sesi' in akinator)) akinator.sesi = false
+                                if (!('server' in akinator)) akinator.server = null
+                                if (!('frontaddr' in akinator)) akinator.frontaddr = null
+                                if (!('session' in akinator)) akinator.session = null
+                                if (!('signature' in akinator)) akinator.signature = null
+                                if (!('question' in akinator)) akinator.question = null
+                                if (!('progression' in akinator)) akinator.progression = null
+                                if (!('step' in akinator)) akinator.step = null
+                                if (!('soal' in akinator)) akinator.soal = null
+                    } else
+                        global.db.data.users[m.sender].akinator = {
+                                sesi: false,
+                                server: null,
+                                frontaddr: null,
+                                session: null,
+                                signature: null,
+                                question: null,
+                                progression: null,
+                                step: null, 
+                                soal: null
+                                }               
             let chat = global.db.data.chats[m.chat]
             if (typeof chat !== 'object')
                 global.db.data.chats[m.chat] = {}
@@ -929,7 +927,7 @@ try {
                 if (!('isBanned' in chat)) chat.isBanned = false
                 if (!('welcome' in chat)) chat.welcome = true
                 if (!('detect' in chat)) chat.detect = true
-		if (!('detect2' in chat)) chat.detect2 = false    
+                if (!('detect2' in chat)) chat.detect2 = false    
                 if (!('sWelcome' in chat)) chat.sWelcome = ''
                 if (!('sBye' in chat)) chat.sBye = ''
                 if (!('sPromote' in chat)) chat.sPromote = ''
@@ -944,17 +942,17 @@ try {
                 if (!('antiToxic' in chat)) chat.antiToxic = false
                 if (!('antiTraba' in chat)) chat.antiTraba = false
                 if (!('antiArab' in chat)) chat.antiArab = false
-		if (!('antiArab2' in chat)) chat.antiArab2 = false    
-		if (!('antiporno' in chat)) chat.antiporno = false
-		if (!('modoadmin' in chat)) chat.modoadmin = false
-		if (!('simi' in chat)) chat.simi = false 
+                if (!('antiArab2' in chat)) chat.antiArab2 = false    
+                if (!('antiporno' in chat)) chat.antiporno = false
+                if (!('modoadmin' in chat)) chat.modoadmin = false
+                if (!('simi' in chat)) chat.simi = false 
                 if (!isNumber(chat.expired)) chat.expired = 0
             } else
                 global.db.data.chats[m.chat] = {
                     isBanned: false,
                     welcome: true,
                     detect: true,
-		    detect2: false,	
+                    detect2: false,     
                     sWelcome: '',
                     sBye: '',
                     sPromote: '',
@@ -969,10 +967,10 @@ try {
                     antiToxic: false,
                     antiTraba: false,
                     antiArab: false,
-		    antiArab2: false,
-	            antiporno: false,
-	            modoadmin: false,
-	            simi: false,
+                    antiArab2: false,
+                    antiporno: false,
+                    modoadmin: false,
+                    simi: false,
                     expired: 0,
                 }
             let settings = global.db.data.settings[this.user.jid]
@@ -980,21 +978,21 @@ try {
             if (settings) {
                 if (!('self' in settings)) settings.self = false
                 if (!('autoread' in settings)) settings.autoread = false
-		if (!('autoread2' in settings)) settings.autoread2 = false
+                if (!('autoread2' in settings)) settings.autoread2 = false
                 if (!('restrict' in settings)) settings.restrict = false
                 if (!('antiCall' in settings)) settings.antiCall = false
                 if (!('antiPrivate' in settings)) settings.antiPrivate = false
-	        if (!('modejadibot' in settings)) settings.modejadibot = true   
-		if (!('antispam' in settings)) settings.antispam = false    
+                if (!('modejadibot' in settings)) settings.modejadibot = true   
+                if (!('antispam' in settings)) settings.antispam = false    
             } else global.db.data.settings[this.user.jid] = {
                 self: false,
                 autoread: false,
-		autoread2: false,
+                autoread2: false,
                 restrict: false,
                 antiCall: false,
                 antiPrivate: false,
-	        modejadibot: true,
-		antispam: false    
+                modejadibot: true,
+                antispam: false    
             }
         } catch (e) {
             console.error(e)
@@ -1181,11 +1179,11 @@ if (botSpam.antispam && m.text && user && user.lastCommandTime && (Date.now() - 
   user.commandCount = 1
  }
 }
-	        let hl = _prefix 
+                let hl = _prefix 
                 let adminMode = global.db.data.chats[m.chat].modoadmin
                 let mystica = `${plugin.botAdmin || plugin.admin || plugin.group || plugin || noPrefix || hl ||  m.text.slice(0, 1) == hl || plugin.command}`
                 if (adminMode && !isOwner && !isROwner && m.isGroup && !isAdmin && mystica) return   
-		    
+                    
                 if (plugin.rowner && plugin.owner && !(isROwner || isOwner)) { // Both Owner
                     fail('owner', m, this)
                     continue
@@ -1399,7 +1397,7 @@ export async function participantsUpdate({ id, participants, action }) {
                     const isBotAdminNn = botTt2?.admin === "admin" || false
                         text = (action === 'add' ? (chat.sWelcome || this.welcome || conn.welcome || 'Welcome, @user!').replace('@subject', await this.getName(id)).replace('@desc', groupMetadata.desc?.toString() || '*𝚂𝙸𝙽 𝙳𝙴𝚂𝙲𝚁𝙸𝙿𝙲𝙸𝙾𝙽*') :
                               (chat.sBye || this.bye || conn.bye || 'Bye, @user!')).replace('@user', '@' + user.split('@')[0])
-			    
+                            
 if (userPrefix && chat.antiArab && botTt.restrict && isBotAdminNn && action === 'add') {
  let responseb = await this.groupParticipantsUpdate(id, [user], 'remove')
      if (responseb[0].status === "404") return 
@@ -1407,7 +1405,7 @@ let fkontak2 = { "key": { "participants":"0@s.whatsapp.net", "remoteJid": "statu
 this.sendMessage(id, { text: `*[❗] @${user.split('@')[0]} ᴇɴ ᴇsᴛᴇ ɢʀᴜᴘᴏ ɴᴏ sᴇ ᴘᴇʀᴍɪᴛᴇɴ ɴᴜᴍᴇʀᴏs ᴀʀᴀʙᴇs ᴏ ʀᴀʀᴏs, ᴘᴏʀ ʟᴏ ϙᴜᴇ sᴇ ᴛᴇ sᴀᴄᴀʀᴀ ᴅᴇʟ ɢʀᴜᴘᴏ*`, mentions: [user] }, { quoted: fkontak2 });          
 return    
 }    
-			    
+                            
 this.sendFile(id, apii.data, 'pp.jpg', text, null, false, { mentions: [user] }) 
                    }
                 }
@@ -1459,8 +1457,8 @@ export async function callUpdate(callUpdate) {
     let callmsg = await this.reply(nk.from, `مرحبا *@${nk.from.split('@')[0]}*, ال ${nk.isVideo ? 'مكالمات فيديو' : 'المكالمات'} غير مسموح به ، سيتم حظرك.\n-\nإذا اتصلت بالخطأ ، فاتصل بمنشئ المحتوى الخاص بي لإلغاء حظرك!`, false, { mentions: [nk.from] })
     //let data = global.owner.filter(([id, isCreator]) => id && isCreator)
     //await this.sendContact(nk.from, data.map(([id, name]) => [id, name]), false, { quoted: callmsg })
-     let vcard = `BEGIN:VCARD\nVERSION:3.0\nN:;آس؁تــا;;;\nFN:آس؁تــا\nORG:آس؁تــا \nTITLE:\nitem1.TEL;waid=967778088098:+967778088098 \nitem1.X-ABLabel:آس؁تــا\nX-WA-BIZ-◤Shadow - Bot ◢:[❗] كلم الرقم ده - المطور.\nX-WA-BIZ-NAME:آس؁تــا \nEND:VCARD`
-    await this.sendMessage(nk.from, { contacts: { displayName: ' آس؁تــا ', contacts: [{ vcard }] }}, {quoted: callmsg})
+     let vcard = `BEGIN:VCARD\nVERSION:3.0\nN:;彡SHADOW Bot;;;\nFN:彡SHADOW Bot\nORG:SHADOW Bot\nTITLE:Owner\nitem1.TEL;waid=${global.nomorown}:+${global.nomorown}\nitem1.X-ABLabel:المطور\nX-WA-BIZ-NAME:彡SHADOW Bot\nEND:VCARD`
+    await this.sendMessage(nk.from, { contacts: { displayName: '彡SHADOW Bot', contacts: [{ vcard }] }}, {quoted: callmsg})
     await this.updateBlockStatus(nk.from, 'block')
     }
     }

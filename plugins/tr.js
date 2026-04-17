@@ -27,6 +27,6 @@ let handler = async (m, { args, usedPrefix, command }) => {
 }
 handler.help = ['trad <leng> <text>']
 handler.tags = ['tools']
-handler.command = [/^ترجمه|مترجم$/i]
+handler.command = [/^(ترجم|ترجمه|مترجم)$/i]
 
 export default handler
