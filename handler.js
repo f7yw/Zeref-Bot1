@@ -8,6 +8,7 @@ import fs from 'fs'
 import chalk from 'chalk'
 import { findLevel } from './lib/levelling.js'
 import { getRole, logTransaction, MAX_ENERGY } from './lib/economy.js'
+import { handleConfirmReply } from './lib/confirm.js'
 
 /**
  * @type {import('@whiskeysockets/baileys')}
@@ -1104,9 +1105,17 @@ try {
             }
         }
 
+        // ── Confirmation reply intercept ──
+        if (!m.fromMe && m.text && !global.prefix.test(m.text || '')) {
+            try {
+                const handled = handleConfirmReply(this, m)
+                if (handled) return
+            } catch (_) {}
+        }
+
         // ── Realistic response delay ──
         if (!m.fromMe && m.text && global.prefix.test(m.text || '')) {
-            await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 600) + 400))
+            await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 700) + 500))
         }
 
         if (opts['queque'] && m.text && !(isMods || isPrems)) {

@@ -1,11 +1,12 @@
 import { xpRange } from '../lib/levelling.js'
 import { syncEnergy, initEconomy, getRole } from '../lib/economy.js'
+import { typingDelay } from '../lib/presence.js'
 
 function clockString(ms) {
-  let h = isNaN(ms) ? '--' : Math.floor(ms / 3600000)
-  let m = isNaN(ms) ? '--' : Math.floor(ms / 60000) % 60
-  let s = isNaN(ms) ? '--' : Math.floor(ms / 1000) % 60
-  return [h, m, s].map(v => v.toString().padStart(2, 0)).join(':')
+  const h = isNaN(ms) ? '--' : Math.floor(ms / 3600000)
+  const m = isNaN(ms) ? '--' : Math.floor(ms / 60000) % 60
+  const s = isNaN(ms) ? '--' : Math.floor(ms / 1000) % 60
+  return [h, m, s].map(v => String(v).padStart(2, '0')).join(':')
 }
 
 function normalizeChoice(text = '') {
@@ -14,103 +15,210 @@ function normalizeChoice(text = '') {
 }
 
 export const sections = {
+  free: {
+    title: '🎁 المجاني — خدمات مجانية',
+    text: (p) => `
+*🎁 ─── الخدمات المجانية (لا تكلف طاقة) ───*
+
+${p}نصيحه        ⟵ نصيحة عشوائية مجانية
+${p}ترجم en النص ⟵ ترجمة لأي لغة (مجاني)
+${p}بروفايل      ⟵ ملفك الشخصي الكامل
+${p}اذكار الصباح ⟵ أذكار الصباح (بدون أمر — فقط كتابة ".")
+${p}اذكار المساء ⟵ أذكار المساء (بدون أمر — فقط ".")
+${p}ايه           ⟵ آية الكرسي
+${p}قران          ⟵ آية عشوائية
+${p}الله 1        ⟵ أسماء الله الحسنى
+${p}فزوره         ⟵ فزورة عشوائية
+${p}نرد           ⟵ رمي النرد
+${p}عملة          ⟵ ملك أو كتابة
+${p}اختار         ⟵ يختار لك من خيارات
+${p}لو            ⟵ لعبة لو خيروك
+${p}حجر           ⟵ حجر ورقة مقص
+${p}الضعوم        ⟵ حالة البوت والذاكرة
+${p}التوقيت       ⟵ الوقت الحالي
+${p}بلاغ          ⟵ إرسال بلاغ للمالك
+${p}تسجيل         ⟵ إنشاء حسابك (مجاني + مكافأة)`.trim()
+  },
+
+  earnings: {
+    title: '💰 الكسب — اربح العملات',
+    text: (p) => `
+*💰 ─── كيف تكسب العملات والطاقة؟ ───*
+
+*🏆 الأساليب الرئيسية:*
+${p}عمل       ⟵ اعمل واكسب عملات (-10 طاقة)
+${p}يومي      ⟵ مكافأة يومية مجانية (مرة كل 24 ساعة)
+${p}سوال      ⟵ أجب على سؤال واكسب 150-400 🪙 + XP
+${p}تحدي      ⟵ تحدي رياضيات للفوز بالعملات 🧮
+${p}رهان      ⟵ راهن عضو آخر في القروب 🎰
+
+*📈 تراكم المستوى:*
+│ كل مستوى جديد: +200×المستوى عملة + 30 طاقة
+│ كل 5 مستويات: +1 💎 ماسة نادرة
+
+*💼 إدارة الثروة:*
+${p}البنك          ⟵ عرض رصيدك
+${p}ايداع 500      ⟵ إيداع في البنك (آمن)
+${p}سحب 500        ⟵ سحب من البنك
+${p}تحويل @ش 500   ⟵ تحويل لعضو (-5٪ رسوم)
+${p}طاقة           ⟵ عرض حالة الطاقة
+${p}معاملاتي       ⟵ آخر 20 معاملة
+
+*💡 ملاحظات:*
+│ ⚡ الطاقة تُشحن 1 كل 3 دقائق (حد 100)
+│ 💎 Premium: طاقة غير محدودة ∞
+│ 🛒 شراء عملات/ماس من المتجر`.trim()
+  },
+
+  paid: {
+    title: '💎 المدفوعات — خدمات مميزة',
+    text: (p) => `
+*💎 ─── الخدمات التي تحتاج طاقة أو رصيد ───*
+
+*⚡ تكلف طاقة (غير مجانية):*
+${p}عمل          ⟵ عمل مقابل عملات (-10 طاقة)
+${p}اكس           ⟵ إكس أو (-5 طاقة لبدء اللعبة)
+${p}شطرنج         ⟵ شطرنج (-5 طاقة)
+${p}وصله          ⟵ لعبة الوصلة (-5 طاقة)
+
+*💰 تكلف عملات:*
+${p}رهان @ش 500  ⟵ مراهنة بالعملات مع عضو
+${p}تحويل @ش 500 ⟵ تحويل (5٪ رسوم)
+${p}شراء_الماس   ⟵ شراء ماسة من المتجر
+${p}شراء_عملات   ⟵ شراء عملات إضافية
+
+*👑 الاشتراك المميز (Premium):*
+│ • طاقة غير محدودة ∞
+│ • موارد غير محدودة
+│ • أولوية في الأوامر
+│ • انضمام فوري للمجموعات
+│
+│ للحصول على Premium:
+│ تواصل مع مالك البوت
+
+*🆓 تريد المجاني؟*
+│ اكتب رقم القسم 🎁 المجاني`.trim()
+  },
+
   study: {
     title: '🎓 التعلم والدراسة',
     text: (p) => `
 *🎓 ─── التعلم والدراسة ───*
 
 ${p}تعلم              ⟵ شرح سريع لقسم الدراسة
-${p}خطة رياضيات 7     ⟵ خطة دراسة حسب المادة والأيام
-${p}تلخيص النص        ⟵ تلخيص أي فقرة ترسلها
+${p}خطة رياضيات 7     ⟵ خطة دراسة بالمادة والأيام
+${p}تلخيص النص        ⟵ تلخيص أي فقرة
 ${p}بطاقات النص       ⟵ تحويل النص لبطاقات مراجعة
-${p}اختبرني فيزياء    ⟵ سؤال تدريبي سريع (IT/تقنية)
+${p}اختبرني فيزياء    ⟵ سؤال تدريبي سريع
 ${p}معدلي 90 85 77    ⟵ حساب معدل تقريبي
 ${p}قاعدة             ⟵ قاعدة مذاكرة مفيدة
 ${p}بومودورو          ⟵ طريقة تركيز مختصرة
 ${p}مصادر             ⟵ مصادر دراسة مرتبة
 ${p}جدول              ⟵ جدول يومي مختصر`.trim()
   },
-  quran: {
-    title: '📖 القرآن الكريم',
-    text: (p) => `
-*📖 ─── القرآن الكريم ───*
 
-${p}اذكار الصباح  ⟵ أذكار الصباح اليومية
-${p}اذكار المساء  ⟵ أذكار المساء اليومية
+  quran: {
+    title: '📖 القرآن والأذكار',
+    text: (p) => `
+*📖 ─── القرآن الكريم والأذكار ───*
+
+${p}اذكار الصباح  ⟵ أذكار الصباح (أو اكتب "." في الصباح)
+${p}اذكار المساء  ⟵ أذكار المساء (أو اكتب "." مساءً)
 ${p}ايه           ⟵ آية الكرسي
 ${p}الله 1        ⟵ اسماء الله الحسنى
 ${p}قران          ⟵ آية عشوائية من القرآن`.trim()
   },
+
   ai: {
     title: '🤖 الذكاء الاصطناعي',
     text: (p) => `
 *🤖 ─── الذكاء الاصطناعي ───*
 
-${p}ai / ${p}بوت  ⟵ التحدث مع ChatGPT (مجاني)
+${p}ai / ${p}بوت  ⟵ التحدث مع ChatGPT
 ${p}جوده           ⟵ رفع جودة الصورة بالـ AI
 ${p}شخصية          ⟵ تحليل شخصية أنيمي`.trim()
   },
+
   games: {
     title: '🎮 الألعاب',
     text: (p) => `
 *🎮 ─── الألعاب ───*
 
 *👥 ألعاب جماعية (جروب):*
-${p}شطرنج      ⟵ شطرنج مصوّر بين لاعبين 🖼️
+${p}شطرنج      ⟵ شطرنج مصوّر بين لاعبين
 ${p}اكس        ⟵ إكس أو (Tic Tac Toe)
-${p}شنقه       ⟵ لعبة المشنقة (تخمين الكلمة)
-${p}وصله       ⟵ لعبة الوصلة (سلسلة كلمات)
-${p}تحدي       ⟵ تحدي رياضيات (جائزة 💰)
+${p}شنقه       ⟵ لعبة المشنقة
+${p}وصله       ⟵ لعبة الوصلة
+${p}تحدي       ⟵ تحدي رياضيات 🧮 (جائزة 💰)
 ${p}رهان       ⟵ راهن أعضاء القروب 🎰
 
-*🎯 ألعاب فردية:*
-${p}سوال       ⟵ سؤال تقني عشوائي (جائزة 💰) — أجب مباشرة
+*🎯 ألعاب بجوائز عملات:*
+${p}سوال       ⟵ سؤال عشوائي (جائزة 150-400 🪙)
+│           ⟵ *أجب مباشرة أو ارد على الرسالة*
 ${p}خمن_رقم   ⟵ تخمين رقم من 1 إلى 100
 ${p}ايموجي     ⟵ لغز الإيموجي
 ${p}تخمين      ⟵ تخمين الشخصية
+
+*🎲 ألعاب سريعة (مجانية):*
 ${p}فزوره      ⟵ فزورة عشوائية
 ${p}علم        ⟵ خمّن علم الدولة
-
-*🎲 ألعاب سريعة:*
 ${p}نرد        ⟵ رمي النرد
 ${p}عملة       ⟵ ملك أو كتابة
 ${p}اختار      ⟵ يختار لك من خيارات
-${p}حجر        ⟵ حجر ورقة مقص ضد البوت
+${p}حجر        ⟵ حجر ورقة مقص
 ${p}لو         ⟵ لعبة لو خيروك`.trim()
   },
+
   tools: {
     title: '🛠️ أدوات نافعة',
     text: (p) => `
 *🛠️ ─── أدوات نافعة ───*
 
-${p}ترجم en النص    ⟵ ترجمة النص لأي لغة (مجاني)
-${p}ترجم ar hello   ⟵ ترجمة للعربي
-${p}مترجم تشغيل ar  ⟵ تشغيل الترجمة التلقائية
-${p}مترجم ايقاف     ⟵ إيقاف الترجمة التلقائية
-${p}نصيحه           ⟵ نصيحة عشوائية (مجاني)
-${p}ذكرني           ⟵ ضبط تذكير بمهمة
-${p}منبه            ⟵ ضبط منبّه بوقت محدد
-${p}رمزي            ⟵ عرض رمز QR الخاص بك
-${p}بحث_يوتيوب     ⟵ البحث في يوتيوب`.trim()
-  },
-  economy: {
-    title: '💰 الاقتصاد',
-    text: (p) => `
-*💰 ─── الاقتصاد ───*
+*🖼️ الصور والملصقات:*
+${p}ملصق        ⟵ تحويل صورة/فيديو (≤3ث) لملصق
+${p}صوره        ⟵ تحويل ملصق لصورة
+${p}جوده        ⟵ رفع جودة الصورة
 
+*🌍 اللغة والترجمة:*
+${p}ترجم en النص ⟵ ترجمة النص لأي لغة (مجاني)
+${p}ترجم ar hello ⟵ ترجمة للعربي
+${p}مترجم تشغيل ar ⟵ تشغيل الترجمة التلقائية
+${p}مترجم ايقاف  ⟵ إيقاف الترجمة التلقائية
+
+*⏰ التذكيرات:*
+${p}ذكرني        ⟵ ضبط تذكير بمهمة
+${p}منبه         ⟵ ضبط منبّه بوقت محدد
+
+*🔍 بحث وغيره:*
+${p}رمزي         ⟵ عرض رمز QR الخاص بك
+${p}بحث_يوتيوب  ⟵ البحث في يوتيوب`.trim()
+  },
+
+  economy: {
+    title: '💼 الاقتصاد والمحفظة',
+    text: (p) => `
+*💼 ─── الاقتصاد والمحفظة ───*
+
+*📊 عرض الرصيد:*
 ${p}البنك        ⟵ رصيدك ومحفظتك وطاقتك
+${p}طاقة         ⟵ حالة الطاقة ومعدل الشحن
+${p}معاملاتي     ⟵ آخر 20 معاملة
+
+*💸 العمليات:*
 ${p}ايداع 500    ⟵ إيداع عملات في البنك
 ${p}سحب 500      ⟵ سحب عملات من البنك
-${p}تحويل @ش 500 ⟵ تحويل لشخص آخر (5٪ رسوم)
-${p}عمل          ⟵ اعمل واكسب عملات (-10 طاقة)
-${p}يومي         ⟵ مكافأة يومية مجانية
-${p}طاقة         ⟵ حالة طاقتك ومعدل الشحن
-${p}لفل          ⟵ ارفع مستواك
+${p}تحويل @ش 500 ⟵ تحويل (-5٪ رسوم)
 
-*💡 ملاحظة:*
-• المميزون (Premium): طاقة غير محدودة ✨
-• غير المميزين: الطاقة تُشحن من العمل والألعاب`.trim()
+*🏆 الكسب:*
+${p}عمل          ⟵ عمل واكسب (-10 طاقة)
+${p}يومي         ⟵ مكافأة يومية مجانية
+${p}سوال         ⟵ سؤال بجائزة عملات
+
+*📈 المستويات:*
+${p}لفل          ⟵ ارفع مستواك وتفاصيل XP
+${p}ترتيب        ⟵ أعلى الأعضاء XP`.trim()
   },
+
   info: {
     title: '👤 الحساب والمعلومات',
     text: (p) => `
@@ -122,7 +230,7 @@ ${p}تسجيل      ⟵ إنشاء حسابك واستلام مكافأة الت
 *👤 الملف الشخصي:*
 ${p}بروفايل    ⟵ ملفك الكامل (مستوى، أموال، تحذيرات، طاقة)
 ${p}رسائلي     ⟵ عدد رسائلك ونشاطك
-${p}رسائل @شخص ⟵ عدد رسائل عضو آخر
+${p}رسائل @شخص ⟵ عدد رسائل عضو
 ${p}ترتيب_الرسائل ⟵ أكثر الأعضاء تفاعلاً
 ${p}مغادرة     ⟵ إلغاء تسجيلك وحذف بياناتك
 
@@ -131,6 +239,7 @@ ${p}الضعوم     ⟵ حالة البوت التفصيلية
 ${p}التوقيت    ⟵ التوقيت الحالي
 ${p}بلاغ       ⟵ إرسال بلاغ للمالك`.trim()
   },
+
   media: {
     title: '🎧 الوسائط',
     text: (p) => `
@@ -139,11 +248,14 @@ ${p}بلاغ       ⟵ إرسال بلاغ للمالك`.trim()
 ${p}بحث_يوتيوب كلمة  ⟵ البحث في يوتيوب
 ${p}بنترست كلمة      ⟵ صور بنترست
 ${p}جوده             ⟵ رفع جودة الصورة
+${p}ملصق             ⟵ تحويل صورة/فيديو لملصق
+${p}صوره             ⟵ تحويل ملصق لصورة
 
 *ملاحظة:* تحميل الفيديو والأغاني معطّل مؤقتاً.`.trim()
   },
+
   productivity: {
-    title: '📌 الإنتاجية والتنظيم',
+    title: '📌 الإنتاجية',
     text: (p) => `
 *📌 ─── الإنتاجية والتنظيم ───*
 
@@ -154,128 +266,94 @@ ${p}حذف_مهمة 1          ⟵ حذف مهمة
 ${p}ملاحظة نص           ⟵ حفظ ملاحظة
 ${p}ملاحظاتي            ⟵ عرض ملاحظاتك`.trim()
   },
-  analytics: {
-    title: '📊 التحليل والإحصاءات',
-    text: (p) => `
-*📊 ─── التحليل والإحصاءات ───*
 
-${p}احصائياتي        ⟵ ملخص استخدامك
-${p}ترتيب            ⟵ أعلى الأعضاء XP
-${p}نشاط_القروب      ⟵ تقرير سريع عن القروب
-${p}حالة_الاقسام     ⟵ إحصاء أقسام البوت
-${p}قاعدة_البيانات   ⟵ معلومات قاعدة البيانات`.trim()
-  },
-  safety: {
-    title: '🛡️ السلامة والخصوصية',
-    text: (p) => `
-*🛡️ ─── السلامة والخصوصية ───*
-
-${p}فحص_رابط الرابط   ⟵ فحص رابط مشبوه
-${p}خصوصيتي          ⟵ نصائح حماية الحساب
-${p}قواعد_امان       ⟵ قواعد أمان للقروب`.trim()
-  },
-  developer: {
-    title: '💻 البرمجة والمطور',
-    text: (p) => `
-*💻 ─── البرمجة والمطور ───*
-
-${p}كود js console.log(1)   ⟵ تنسيق كود
-${p}json {"a":1}            ⟵ تنسيق JSON
-${p}regex ^[0-9]+$ 123      ⟵ اختبار Regex
-${p}مطور                  ⟵ أدوات ومعلومات للمطور`.trim()
-  },
-  wellness: {
-    title: '🌱 الصحة والعادات',
-    text: (p) => `
-*🌱 ─── الصحة والعادات ───*
-
-${p}ماء              ⟵ تذكير شرب الماء
-${p}تنفس             ⟵ تمرين تنفس قصير
-${p}استراحة          ⟵ اقتراح استراحة ذكية`.trim()
-  },
   group: {
     title: '👥 إدارة القروب',
     text: (p) => `
 *👥 ─── إدارة القروب ───*
 
-${p}اسم_القروب الاسم      ⟵ تغيير اسم القروب
-${p}وصف_القروب النص      ⟵ تغيير وصف القروب
+*📋 معلومات:*
 ${p}صورة_القروب          ⟵ عرض صورة المجموعة
 ${p}تغيير_صورة_القروب    ⟵ تغيير صورة المجموعة (رد على صورة)
+
+*⚙️ إعدادات (يحتاج مشرف):*
+${p}اسم_القروب الاسم      ⟵ تغيير اسم القروب
+${p}وصف_القروب النص      ⟵ تغيير وصف القروب
 ${p}طرد @شخص            ⟵ طرد عضو
 ${p}اضف 967xxxxxxxx     ⟵ إضافة عضو
 ${p}رفع @شخص            ⟵ رفع مشرف
 ${p}خفض @شخص            ⟵ خفض مشرف
 ${p}قفل_القروب          ⟵ المشرفون فقط
 ${p}فتح_القروب          ⟵ السماح للجميع
+
+*📣 المنشنات:*
 ${p}منشن_ظاهر النص      ⟵ منشن واضح للجميع
-${p}منشن_مخفي النص      ⟵ منشن مخفي (نص فقط بدون إشعار منشن)
+${p}منشن_مخفي النص      ⟵ منشن مخفي (بدون إشعار)
+
+*🛡️ الحماية:*
 ${p}الحماية تشغيل       ⟵ تفعيل حماية الروابط
 ${p}الحماية ايقاف       ⟵ إيقاف حماية الروابط
 ${p}حماية_الكلام تشغيل  ⟵ فلتر الكلام المسيء
+
+*📥 طلبات الانضمام:*
 ${p}طلب رابط_المجموعة   ⟵ طلب إضافة البوت لمجموعة
 ${p}قبول ID             ⟵ قبول طلب دخول (مالك)
 ${p}رفض ID              ⟵ رفض طلب دخول (مالك)
 ${p}طلبات              ⟵ الطلبات المعلقة (مالك)`.trim()
   },
+
   owner: {
     title: '👑 أوامر المالك',
     text: (p) => `
 *👑 ─── أوامر المالك ───*
 
-${p}addprem       ⟵ إضافة مستخدم مميز
-${p}المميزين      ⟵ قائمة المميزين
-${p}بان           ⟵ حظر مستخدم
-${p}فك-الحظر      ⟵ رفع الحظر عن مستخدم
-${p}البلوكات      ⟵ قائمة المحظورين
-${p}الضعوم        ⟵ حالة البوت التفصيلية
-${p}حالة_البوت    ⟵ إعدادات البوت
-${p}تشغيل         ⟵ تشغيل البوت في المحادثة
-${p}ايقاف         ⟵ إيقاف البوت في المحادثة
-${p}عام           ⟵ استقبال أوامر الجميع
-${p}خاص           ⟵ أوامر المالك فقط
-${p}قراءة تشغيل  ⟵ تفعيل قراءة الرسائل
-${p}إعادة         ⟵ إعادة تشغيل البوت
-${p}حذف_عضو @شخص ⟵ حذف عضو من قاعدة البيانات
-${p}مميز_حذف @شخص ⟵ إلغاء تميز عضو
-${p}قاعدة_البيانات ⟵ إحصاء قاعدة البيانات
+*👤 إدارة المستخدمين:*
+${p}addprem         ⟵ إضافة مستخدم مميز
+${p}المميزين        ⟵ قائمة المميزين
+${p}بان             ⟵ حظر مستخدم
+${p}فك-الحظر        ⟵ رفع الحظر
+${p}البلوكات        ⟵ قائمة المحظورين
+${p}تحذيرات_عضو @شخص ⟵ تقرير تحذيرات عضو
+${p}رفع_حظر_مؤقت @شخص ⟵ رفع الحظر المؤقت (كلام مسيء)
+
+*🤖 إعدادات البوت:*
+${p}الضعوم          ⟵ حالة البوت التفصيلية
+${p}تشغيل           ⟵ تشغيل البوت في المحادثة
+${p}ايقاف           ⟵ إيقاف البوت في المحادثة
+${p}عام             ⟵ استقبال أوامر الجميع
+${p}خاص             ⟵ أوامر المالك فقط
+${p}قراءة تشغيل    ⟵ تفعيل قراءة الرسائل
+${p}إعادة           ⟵ إعادة تشغيل البوت
+
+*🗃️ قاعدة البيانات:*
 ${p}مسح_المستخدمين تأكيد ⟵ مسح المستخدمين (عدا المميزين)
 ${p}مسح_المحادثات تأكيد ⟵ مسح المحادثات
-${p}مسح_الكل تأكيد      ⟵ مسح شامل (احتياط!)
-${p}تحذيرات_عضو @شخص    ⟵ تقرير تحذيرات عضو
-${p}رفع_حظر_مؤقت @شخص  ⟵ رفع الحظر المؤقت`.trim()
+${p}مسح_الكل تأكيد      ⟵ مسح شامل (احتياط!)`.trim()
   },
+
   all: {
-    title: '📜 كل الأقسام',
-    text: (p) => Object.values(sections)
-      .filter(section => section.title !== '📜 كل الأقسام')
-      .map(section => section.text(p))
-      .join('\n\n')
+    title: '📜 عرض كل الأقسام',
+    text: (p) => Object.entries(sections)
+      .filter(([k]) => k !== 'all')
+      .map(([, s]) => s.text(p))
+      .join('\n\n─────────────────────\n\n')
   }
 }
 
 export const menuSections = Object.fromEntries(
-  Object.entries(sections).map(([key, section], index) => [
-    String(index + 1),
-    { key, title: section.title, text: section.text }
-  ])
-)
-
-export const menuPollSections = Object.fromEntries(
-  Object.entries(sections).map(([, section]) => [section.title, section.text])
+  Object.keys(sections).map((key, i) => [String(i + 1), { key, ...sections[key] }])
 )
 
 function buildStats(m, user, level, role, max, uptime) {
-  const name = m.pushName || 'مستخدم'
+  const name  = m.pushName || 'مستخدم'
   const money = user.money || 0
-  const bank = user.bank || 0
+  const bank  = user.bank  || 0
   const energy = typeof user.energy === 'number' ? user.energy : 100
-  const epct = Math.max(0, Math.min(10, Math.floor((energy / 100) * 10)))
-  const ebar = '█'.repeat(epct) + '░'.repeat(10 - epct)
-  const vip = user.premium || (user.premiumTime > Date.now())
+  const epct  = Math.max(0, Math.min(10, Math.floor((energy / 100) * 10)))
+  const ebar  = '█'.repeat(epct) + '░'.repeat(10 - epct)
+  const vip   = user.premium || (user.premiumTime > Date.now())
 
-  return `
-╔══〘 🌟 *SHADOW - Bot* 🌟 〙══╗
+  return `╔══〘 🌟 *SHADOW - Bot* 🌟 〙══╗
 ║
 ║  👤 *${name}*
 ║  🏆 المستوى: *${level}* │ ${role}
@@ -285,34 +363,20 @@ function buildStats(m, user, level, role, max, uptime) {
 ║  💰 محفظة: *${money.toLocaleString('en')} 🪙*
 ║  🏦 بنك:   *${bank.toLocaleString('en')} 🪙*
 ║  💎 ماس:   *${user.diamond || 0}*
-║  👑 العضوية: *${vip ? '💎 مميز (طاقة ∞)' : '⚡ عادي'}*
+║  👑 عضوية: *${vip ? '💎 مميز (طاقة ∞)' : '⚡ عادي'}*
 ║
 ║  ─── الطاقة ───
 ║  ${ebar} ${vip ? '∞' : energy}/100 ⚡
 ║
 ║  ⏱️ وقت التشغيل: *${uptime}*
-║  🔗 *github.com/Farisatif*
 ║
 ╚══〘 👇 اختر رقم القسم 〙══╝`.trim()
 }
 
 function buildPageText(prefix) {
   return Object.entries(menuSections)
-    .map(([num, section]) => `*${num}.* ${section.title}`)
+    .map(([num, s]) => `*${num}.* ${s.title}`)
     .join('\n')
-}
-
-async function sendPage(conn, m, prefix, stats) {
-  const text = `${stats}\n\n${buildPageText(prefix)}\n\nأرسل رقم القسم فقط مثل: *1*\nلجميع الأقسام اختر رقم قسم *📜 كل الأقسام*.`
-  await conn.sendMessage(m.chat, { image: global.imagen4, caption: text }, { quoted: m })
-}
-
-async function sendSection(conn, m, sectionKey, prefix, stats) {
-  const section = sections[sectionKey]
-  if (!section) return
-
-  const text = `${stats}\n\n${section.text(prefix)}`
-  await conn.sendMessage(m.chat, { text }, { quoted: m })
 }
 
 let handler = async (m, { conn, usedPrefix }) => {
@@ -320,45 +384,53 @@ let handler = async (m, { conn, usedPrefix }) => {
   initEconomy(user)
   syncEnergy(user, m.sender)
 
-  const level = user.level || 0
-  const role = getRole(level)
+  const level  = user.level || 0
+  const role   = getRole(level)
   const { max } = xpRange(level, global.multiplier)
   const uptime = clockString(process.uptime() * 1000)
-  const stats = buildStats(m, user, level, role, max, uptime)
+  const stats  = buildStats(m, user, level, role, max, uptime)
+
+  // Human-like typing delay before sending menu
+  await typingDelay(conn, m.chat, 2200)
 
   if (!global.menuSessions) global.menuSessions = {}
-  global.menuSessions[m.sender] = {
-    prefix: usedPrefix,
-    page: 0,
-    ts: Date.now()
-  }
+  global.menuSessions[m.sender] = { prefix: usedPrefix, ts: Date.now() }
 
-  await sendPage(conn, m, usedPrefix, stats)
+  const pageText = buildPageText(usedPrefix)
+  const fullText = `${stats}\n\n${pageText}\n\n💡 أرسل رقم القسم للتفاصيل — مثال: *1*`
+
+  await conn.sendMessage(m.chat, { image: global.imagen4, caption: fullText }, { quoted: m })
 }
 
 handler.command = /^(اوامر|أوامر|الاوامر|الأوامر|كل_الاوامر|كل-الاوامر|المهام|مهام|menu|help|قائمة|القائمة|قائمه|القائمه)$/i
-handler.exp = 0
+handler.exp  = 0
 handler.fail = null
 
 handler.before = async (m, { conn }) => {
   const choice = normalizeChoice(m.text || '')
-  if (menuSections[choice]) {
-    const session = global.menuSessions?.[m.sender] || {}
-    const prefix = session?.prefix || '.'
-    const user = global.db.data.users[m.sender] || {}
-    initEconomy(user)
-    syncEnergy(user, m.sender)
-    const level = user.level || 0
-    const role = getRole(level)
-    const { max } = xpRange(level, global.multiplier)
-    const uptime = clockString(process.uptime() * 1000)
-    const stats = buildStats(m, user, level, role, max, uptime)
-    await sendSection(conn, m, menuSections[choice].key, prefix, stats)
-    if (global.menuSessions?.[m.sender]) delete global.menuSessions[m.sender]
-    return true
-  }
+  const section = menuSections[choice]
+  if (!section) return false
 
-  return false
+  const session = global.menuSessions?.[m.sender] || {}
+  const prefix  = session?.prefix || '.'
+
+  const user = global.db.data.users[m.sender] || {}
+  initEconomy(user)
+  syncEnergy(user, m.sender)
+  const level  = user.level || 0
+  const role   = getRole(level)
+  const { max } = xpRange(level, global.multiplier)
+  const uptime = clockString(process.uptime() * 1000)
+  const stats  = buildStats(m, user, level, role, max, uptime)
+
+  // Typing delay for section content too
+  await typingDelay(conn, m.chat, 1500)
+
+  const text = `${stats}\n\n${section.text(prefix)}`
+  await conn.sendMessage(m.chat, { text }, { quoted: m })
+
+  if (global.menuSessions?.[m.sender]) delete global.menuSessions[m.sender]
+  return true
 }
 
 export default handler

@@ -87,7 +87,16 @@ async function answerMath(conn, m, entry, answerText) {
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   const quiz = conn.quiz?.[m.chat]
   const math = conn.math?.[m.chat]
-  if (!quiz && !math) return m.reply(`لا يوجد سؤال أو تحدي نشط الآن.\nابدأ بسؤال: ${usedPrefix}سوال\nأو تحدي: ${usedPrefix}تحدي`)
+
+  // Allow answering by replying to the question message
+  const isQuizReply = m.quoted && quiz?.msg && (
+    m.quoted.id === quiz.msg?.key?.id || m.quoted.id === quiz.msg?.id
+  )
+  const isMathReply = m.quoted && math?.msg && (
+    m.quoted.id === math.msg?.key?.id || m.quoted.id === math.msg?.id
+  )
+
+  if (!quiz && !math && !isQuizReply && !isMathReply) return m.reply(`لا يوجد سؤال أو تحدي نشط الآن.\nابدأ بسؤال: ${usedPrefix}سوال\nأو تحدي: ${usedPrefix}تحدي`)
 
   if (/^(الجواب|اظهر_الجواب|اظهر-الجواب)$/i.test(command)) {
     const active = quiz || math

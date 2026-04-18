@@ -65,17 +65,34 @@ handler.all = async function (m) {
   if (!this.quiz || !(chatId in this.quiz)) return
   if (m.isBaileys) return
 
-  const entry  = this.quiz[chatId]
-  const answer = (entry.question.response || '').trim().toLowerCase()
-  const text   = (m.text || '').trim().toLowerCase()
+  const entry = this.quiz[chatId]
 
-  if (!text || text === answer.slice(0, 1)) return  // too short / noise
+  // Accept: direct text in chat OR a reply to the question message
+  const isReplyToQuestion = m.quoted &&
+    entry.msg &&
+    (m.quoted.id === entry.msg?.key?.id || m.quoted.id === entry.msg?.id)
 
-  // Similarity check — accept if starts the same or exact
-  const normalize = s => s.replace(/\s+/g, '').replace(/[أإآا]/g, 'ا').replace(/ة/g, 'ه')
-  const correct = normalize(text) === normalize(answer) ||
-                  normalize(text).includes(normalize(answer)) ||
-                  normalize(answer).includes(normalize(text)) && text.length >= 3
+  const rawText = (m.text || '').trim()
+
+  // If it's not a reply to the question, require minimum length to avoid noise
+  if (!isReplyToQuestion && (!rawText || rawText.length < 2)) return
+  if (m.isBaileys) return
+
+  const normalize = s => String(s || '').trim().toLowerCase()
+    .replace(/[ًٌٍَُِّْـ]/g, '')
+    .replace(/\s+/g, '')
+    .replace(/[أإآا]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/[^\p{L}\p{N}]/gu, '')
+
+  const answer = normalize(entry.question.response)
+  const text   = normalize(rawText)
+
+  if (!text) return
+
+  const correct = text === answer ||
+    text.includes(answer) ||
+    (answer.includes(text) && text.length >= 3)
 
   if (!correct) return
 
