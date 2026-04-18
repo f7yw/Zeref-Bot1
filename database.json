@@ -1811,7 +1811,7 @@
       "crystal": 0,
       "cumi": 0,
       "cupon": 0,
-      "diamond": 3,
+      "diamond": 4,
       "dog": 0,
       "dogexp": 0,
       "doglastfeed": 0,
@@ -1822,7 +1822,7 @@
       "emas": 0,
       "emerald": 0,
       "esteh": 0,
-      "exp": 5794,
+      "exp": 6847,
       "expg": 0,
       "exphero": 0,
       "expired": 0,
@@ -1990,7 +1990,7 @@
       "leleb": 0,
       "lelebakar": 0,
       "leleg": 0,
-      "level": 4,
+      "level": 5,
       "limit": 20,
       "limitjoinfree": 1,
       "lion": 0,
@@ -2011,7 +2011,7 @@
       "mana": 20,
       "mangga": 0,
       "misi": "",
-      "money": 0,
+      "money": 1000,
       "monyet": 0,
       "mythic": 0,
       "naga": 0,
@@ -2143,8 +2143,8 @@
         "step": null,
         "soal": null
       },
-      "energy": 66,
-      "lastEnergyRegen": 1776485469387,
+      "energy": 100,
+      "lastEnergyRegen": 1776490329387,
       "lastDaily": 0,
       "lastWork": 1776481197104,
       "totalEarned": 119,
@@ -2172,19 +2172,33 @@
       "psepick": 0,
       "robo": 0,
       "roboxp": 0,
-      "lastCommandTime": 1776485614467,
+      "lastCommandTime": 1776491174120,
       "commandCount": 1,
-      "tasks": [],
+      "tasks": [
+        {
+          "text": "ههاااي",
+          "done": true,
+          "createdAt": 1776490836389
+        }
+      ],
       "notes": [],
       "messages": {
-        "total": 249,
+        "total": 341,
         "groups": {
-          "120363427285079878@g.us": 180,
+          "120363427285079878@g.us": 226,
           "120363422912330057@g.us": 4
         },
-        "last": 1776485614461
+        "last": 1776491494671
       },
-      "bannedReason": ""
+      "bannedReason": "",
+      "transactions": [
+        {
+          "type": "earn",
+          "amount": 1000,
+          "reason": "🆙 مكافأة المستوى 5",
+          "time": 1776489947849
+        }
+      ]
     },
     "204990769553546@lid": {
       "afk": -1,
@@ -2278,7 +2292,7 @@
       "emas": 0,
       "emerald": 0,
       "esteh": 0,
-      "exp": 2004,
+      "exp": 2025,
       "expg": 0,
       "exphero": 0,
       "expired": 0,
@@ -2631,11 +2645,11 @@
       "lastCommandTime": 1776477132053,
       "commandCount": 1,
       "messages": {
-        "total": 90,
+        "total": 93,
         "groups": {
-          "120363427285079878@g.us": 90
+          "120363427285079878@g.us": 93
         },
-        "last": 1776487143864
+        "last": 1776487281426
       },
       "tasks": [],
       "notes": []
@@ -2721,7 +2735,7 @@
       "crystal": 0,
       "cumi": 0,
       "cupon": 0,
-      "diamond": 3,
+      "diamond": 24,
       "dog": 0,
       "dogexp": 0,
       "doglastfeed": 0,
@@ -3054,12 +3068,12 @@
         "soal": null
       },
       "messages": {
-        "total": 105,
+        "total": 127,
         "groups": {
-          "120363427285079878@g.us": 76,
+          "120363427285079878@g.us": 87,
           "120363422912330057@g.us": 4
         },
-        "last": 1776485227489
+        "last": 1776491186945
       },
       "energy": 100,
       "lastEnergyRegen": 1776474223945,
@@ -3090,8 +3104,136 @@
       "psepick": 0,
       "robo": 0,
       "roboxp": 0,
-      "lastCommandTime": 1776484020973,
-      "commandCount": 1
+      "lastCommandTime": 1776490680781,
+      "commandCount": 1,
+      "transactions": [
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776491186947
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776491147037
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776490958105
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776490681111
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776490673011
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776490396018
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776490362659
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776490214305
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776490194687
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776490179807
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776489940928
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776488737528
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776487836907
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776487769029
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776487713915
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776487707338
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776487700012
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776487683647
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776487361345
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776487291747
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776487170326
+        }
+      ]
     },
     "137465276969165@lid": {
       "warn": 2,
@@ -3281,9 +3423,9 @@
         "to": "en"
       },
       "messageStats": {
-        "28648019066900@lid": 180,
-        "967782114485@s.whatsapp.net": 87,
-        "204990769553546@lid": 90
+        "28648019066900@lid": 226,
+        "967782114485@s.whatsapp.net": 98,
+        "204990769553546@lid": 93
       }
     },
     "28648019066900@lid": {
@@ -3397,9 +3539,9 @@
       "lastSuccess": 1749098357756
     },
     "tr.js": {
-      "total": 7,
+      "total": 11,
       "success": 7,
-      "last": 1749099862051,
+      "last": 1776490376252,
       "lastSuccess": 1749099862051
     },
     "فارس.js": {
@@ -3571,10 +3713,10 @@
       "lastSuccess": 1749101430394
     },
     "علم.js": {
-      "total": 4,
-      "success": 4,
-      "last": 1749101554893,
-      "lastSuccess": 1749101554893
+      "total": 6,
+      "success": 5,
+      "last": 1776488922537,
+      "lastSuccess": 1776488909468
     },
     "علم2.js": {
       "total": 2,
@@ -3613,10 +3755,10 @@
       "lastSuccess": 1749101924697
     },
     "hd.js": {
-      "total": 14,
-      "success": 13,
-      "last": 1776485619576,
-      "lastSuccess": 1776485619576
+      "total": 15,
+      "success": 14,
+      "last": 1776487805228,
+      "lastSuccess": 1776487805228
     },
     "كلب.js": {
       "total": 2,
@@ -3625,10 +3767,10 @@
       "lastSuccess": 1749101997443
     },
     "كود.js": {
-      "total": 2,
-      "success": 2,
-      "last": 1749102041228,
-      "lastSuccess": 1749102041228
+      "total": 3,
+      "success": 3,
+      "last": 1776490903968,
+      "lastSuccess": 1776490903968
     },
     "كودد.js": {
       "total": 4,
@@ -3661,10 +3803,10 @@
       "lastSuccess": 1749102560535
     },
     "اذكار الصباح.js": {
-      "total": 16,
-      "success": 16,
-      "last": 1776477945299,
-      "lastSuccess": 1776477945299
+      "total": 19,
+      "success": 19,
+      "last": 1776490424993,
+      "lastSuccess": 1776490424993
     },
     "أعادة.js": {
       "total": 8,
@@ -3889,22 +4031,22 @@
       "lastSuccess": 1749114197262
     },
     "لو.js": {
-      "total": 2,
-      "success": 2,
-      "last": 1749115617736,
-      "lastSuccess": 1749115617736
+      "total": 3,
+      "success": 3,
+      "last": 1776490957994,
+      "lastSuccess": 1776490957994
     },
     "menu.js": {
-      "total": 35,
-      "success": 35,
-      "last": 1776485415559,
-      "lastSuccess": 1776485415559
+      "total": 40,
+      "success": 40,
+      "last": 1776490390113,
+      "lastSuccess": 1776490390113
     },
     "menu-response.js": {
-      "total": 41,
-      "success": 41,
-      "last": 1776485227386,
-      "lastSuccess": 1776485227386
+      "total": 46,
+      "success": 46,
+      "last": 1776490395913,
+      "lastSuccess": 1776490395913
     },
     "security.js": {
       "total": 3,
@@ -3919,16 +4061,16 @@
       "lastSuccess": 0
     },
     "group-admin.js": {
-      "total": 33,
-      "success": 33,
-      "last": 1776477132792,
-      "lastSuccess": 1776477132792
+      "total": 36,
+      "success": 36,
+      "last": 1776490681111,
+      "lastSuccess": 1776490681111
     },
     "البنك.js": {
-      "total": 12,
-      "success": 12,
-      "last": 1776485547668,
-      "lastSuccess": 1776485547668
+      "total": 14,
+      "success": 14,
+      "last": 1776487330897,
+      "lastSuccess": 1776487330897
     },
     "global-translator.js": {
       "total": 5,
@@ -3937,16 +4079,16 @@
       "lastSuccess": 1776465766503
     },
     "profile.js": {
-      "total": 11,
-      "success": 8,
-      "last": 1776485573927,
-      "lastSuccess": 1776485573927
+      "total": 12,
+      "success": 9,
+      "last": 1776487317879,
+      "lastSuccess": 1776487317879
     },
     "جواب.js": {
-      "total": 3,
-      "success": 3,
-      "last": 1776476173041,
-      "lastSuccess": 1776476173041
+      "total": 4,
+      "success": 4,
+      "last": 1776490632293,
+      "lastSuccess": 1776490632293
     },
     "study.js": {
       "total": 19,
@@ -3979,10 +4121,10 @@
       "lastSuccess": 1776479023820
     },
     "general-sections.js": {
-      "total": 22,
-      "success": 17,
-      "last": 1776480476117,
-      "lastSuccess": 1776480476117
+      "total": 27,
+      "success": 22,
+      "last": 1776490889864,
+      "lastSuccess": 1776490889864
     },
     "تحذير.js": {
       "total": 12,
@@ -4009,34 +4151,46 @@
       "lastSuccess": 1776483845389
     },
     "شغل.js": {
-      "total": 11,
-      "success": 1,
-      "last": 1776485154244,
-      "lastSuccess": 1776485154244
+      "total": 14,
+      "success": 3,
+      "last": 1776491188620,
+      "lastSuccess": 1776491188620
     },
     "شطرنج.js": {
-      "total": 12,
-      "success": 12,
-      "last": 1776485430343,
-      "lastSuccess": 1776485430343
+      "total": 13,
+      "success": 13,
+      "last": 1776487199329,
+      "lastSuccess": 1776487199329
     },
     "بنترست.js": {
-      "total": 3,
-      "success": 3,
-      "last": 1776484298524,
-      "lastSuccess": 1776484298524
+      "total": 5,
+      "success": 4,
+      "last": 1776487793093,
+      "lastSuccess": 1776487793093
     },
     "العاب3.js": {
-      "total": 9,
-      "success": 9,
-      "last": 1776485335444,
-      "lastSuccess": 1776485335444
+      "total": 11,
+      "success": 11,
+      "last": 1776490640667,
+      "lastSuccess": 1776490640667
     },
     "تسجيل.js": {
       "total": 2,
       "success": 2,
       "last": 1776485533480,
       "lastSuccess": 1776485533480
+    },
+    "معاملاتي.js": {
+      "total": 3,
+      "success": 3,
+      "last": 1776490184785,
+      "lastSuccess": 1776490184785
+    },
+    "تحميل.js": {
+      "total": 2,
+      "success": 0,
+      "last": 1776491147246,
+      "lastSuccess": 0
     }
   },
   "msgs": {},
