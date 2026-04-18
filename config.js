@@ -10,11 +10,12 @@ import moment from 'moment-timezone'
 // معلومات المالكين
 global.owner = [
           ['967778088098', '彡ℤ𝕖𝕣𝕖𝕗', true],
+          ['28648019066900', '彡ℤ𝕖𝕣𝕖𝕗', true],
         ]
 
-global.suittag = ['967778088098']
-global.prems = ['967778088098']
-global.reportes_solicitudes = ['967778088098']
+global.suittag = ['967778088098', '28648019066900']
+global.prems = ['967778088098', '28648019066900']
+global.reportes_solicitudes = ['967778088098', '28648019066900']
 
 // معلومات البوت والعلامة
 global.packname = '𝐒𝐇𝐀𝐃𝐎𝐖-Bot'
@@ -30,7 +31,7 @@ global.imagen3 = fs.readFileSync('./src/Pre Bot Publi.png')
 global.imagen4 = fs.readFileSync('./Menu.png')
 
 // مشرفين البوت
-global.mods = ['967778088098']
+global.mods = ['967778088098', '28648019066900']
 
 // إعدادات الوقت والتاريخ
 global.d = new Date(Date.now() + 3600000)

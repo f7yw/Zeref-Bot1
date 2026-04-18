@@ -1822,7 +1822,7 @@
       "emas": 0,
       "emerald": 0,
       "esteh": 0,
-      "exp": 4047,
+      "exp": 4098,
       "expg": 0,
       "exphero": 0,
       "expired": 0,
@@ -2172,17 +2172,17 @@
       "psepick": 0,
       "robo": 0,
       "roboxp": 0,
-      "lastCommandTime": 1776480381798,
+      "lastCommandTime": 1776480484745,
       "commandCount": 1,
       "tasks": [],
       "notes": [],
       "messages": {
-        "total": 139,
+        "total": 143,
         "groups": {
           "120363427285079878@g.us": 112,
           "120363422912330057@g.us": 1
         },
-        "last": 1776480381794
+        "last": 1776480484745
       }
     },
     "204990769553546@lid": {
@@ -2731,7 +2731,7 @@
       "emas": 0,
       "emerald": 0,
       "esteh": 0,
-      "exp": null,
+      "exp": 1,
       "expg": 0,
       "exphero": 0,
       "expired": 0,
@@ -2900,7 +2900,7 @@
       "lelebakar": 0,
       "leleg": 0,
       "level": 0,
-      "limit": null,
+      "limit": 20,
       "limitjoinfree": 1,
       "lion": 0,
       "lionexp": 0,
@@ -3053,12 +3053,12 @@
         "soal": null
       },
       "messages": {
-        "total": 68,
+        "total": 69,
         "groups": {
           "120363427285079878@g.us": 56,
           "120363422912330057@g.us": 1
         },
-        "last": 1776479527040
+        "last": 1776480484856
       },
       "energy": 100,
       "lastEnergyRegen": 1776474223945,
@@ -3834,10 +3834,10 @@
       "lastSuccess": 1749110316706
     },
     "owner-addprem.js": {
-      "total": 14,
-      "success": 7,
-      "last": 1776479526833,
-      "lastSuccess": 1776479526833
+      "total": 15,
+      "success": 8,
+      "last": 1776480484751,
+      "lastSuccess": 1776480484751
     },
     "n9.js": {
       "total": 5,
@@ -3978,10 +3978,10 @@
       "lastSuccess": 1776479023820
     },
     "general-sections.js": {
-      "total": 20,
-      "success": 16,
-      "last": 1776480382908,
-      "lastSuccess": 1776476762048
+      "total": 22,
+      "success": 17,
+      "last": 1776480476117,
+      "lastSuccess": 1776480476117
     },
     "تحذير.js": {
       "total": 11,
