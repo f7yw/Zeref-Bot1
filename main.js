@@ -86,6 +86,11 @@ global.loadDatabase = async function () {
 };
 await loadDatabase();
 
+global.saveDatabase = async function () {
+  if (global.db?.data) await global.db.write().catch(console.error);
+  if (global.chatgpt?.data) await global.chatgpt.write().catch(console.error);
+};
+
 // ====== CHATGPT DATABASE ======
 global.chatgpt = new Low(new JSONFile(`chatgpt.json`));
 
@@ -201,6 +206,7 @@ async function connectionUpdate(update) {
   }
 
   if (connection === 'close') {
+    await global.saveDatabase().catch(console.error);
     console.log(chalk.red.bold('\n⚠️  Connection closed. Diagnosing reason...'));
 
     if (errorData) {
@@ -396,19 +402,16 @@ async function filesInit() {
 await filesInit();
 
 setInterval(async () => {
-  if (global.db?.data) await global.db.write().catch(console.error);
-  if (global.chatgpt?.data) await global.chatgpt.write().catch(console.error);
+  await global.saveDatabase().catch(console.error);
 }, 30000);
 
 process.on('SIGTERM', async () => {
-  if (global.db?.data) await global.db.write().catch(console.error);
-  if (global.chatgpt?.data) await global.chatgpt.write().catch(console.error);
+  await global.saveDatabase().catch(console.error);
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
-  if (global.db?.data) await global.db.write().catch(console.error);
-  if (global.chatgpt?.data) await global.chatgpt.write().catch(console.error);
+  await global.saveDatabase().catch(console.error);
   process.exit(0);
 });
 

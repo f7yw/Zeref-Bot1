@@ -15,17 +15,26 @@ let handler = async (m, { conn }) => {
   const registered = user.registered ? 'نعم' : 'لا'
   const premium = user.premium || user.premiumTime > 0 ? 'نعم' : 'لا'
   const banned = user.banned ? 'نعم' : 'لا'
+  const pp = await conn.profilePictureUrl(who, 'image').catch(() => './src/avatar_contact.png')
+  const regTime = user.regTime && user.regTime > 0 ? new Date(user.regTime).toLocaleString('ar') : 'غير متوفر'
+  const lastSeen = user.lastseen && user.lastseen > 0 ? new Date(user.lastseen).toLocaleString('ar') : 'غير متوفر'
   const text = `
 ╭────『 👤 البروفايل 』────
 │ الاسم: *${name}*
 │ الرقم: @${who.split('@')[0]}
+│ المعرف: ${who}
 │ مسجل: *${registered}*
+│ تاريخ التسجيل: *${regTime}*
 │ مميز: *${premium}*
 │ محظور: *${banned}*
+│ سبب الحظر: *${user.bannedReason || 'لا يوجد'}*
+│ التحذيرات: *${user.warn || 0}*
 │
 │ المستوى: *${level}*
 │ الرتبة: *${getRole(level)}*
 │ XP: *${user.exp || 0} / ${max}*
+│ الحد اليومي: *${user.limit || 0}*
+│ مرات الدخول: *${user.joincount || 0}*
 │
 │ المحفظة: *${fmt(user.money)}*
 │ البنك: *${fmt(user.bank)}*
@@ -34,8 +43,9 @@ let handler = async (m, { conn }) => {
 │
 │ المكتسبات: *${fmt(user.totalEarned)}*
 │ المصروفات: *${fmt(user.totalSpent)}*
+│ آخر ظهور محفوظ: *${lastSeen}*
 ╰──────────────────`.trim()
-  await conn.reply(m.chat, text, m, { mentions: [who] })
+  await conn.sendMessage(m.chat, { image: { url: pp }, caption: text, mentions: [who] }, { quoted: m })
 }
 
 handler.help = ['بروفايل', 'profile']

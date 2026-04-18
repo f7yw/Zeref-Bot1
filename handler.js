@@ -24,6 +24,28 @@ const jidOf = x => {
     }
     return x?.phoneNumber || x?.id || x?.jid || x?.lid || x?.participant || ''
 }
+const jidNumber = jid => String(jidOf(jid) || '').split('@')[0].replace(/[^0-9]/g, '')
+const sameJidLoose = (a, b, conn) => {
+    const rawA = jidOf(a)
+    const rawB = jidOf(b)
+    const decA = conn?.decodeJid ? conn.decodeJid(rawA || '') : rawA
+    const decB = conn?.decodeJid ? conn.decodeJid(rawB || '') : rawB
+    const numA = jidNumber(decA || rawA)
+    const numB = jidNumber(decB || rawB)
+    return Boolean(rawA && rawB && (rawA === rawB || decA === decB || (numA && numB && numA === numB)))
+}
+const botJidsOf = conn => [
+    conn?.user?.jid,
+    conn?.user?.id,
+    conn?.user?.lid,
+    conn?.decodeJid?.(conn?.user?.jid || ''),
+    conn?.decodeJid?.(conn?.user?.id || '')
+].filter(Boolean)
+const isBotOwnMessage = (m, conn) => Boolean(
+    m?.key?.fromMe ||
+    m?.fromMe ||
+    botJidsOf(conn).some(jid => sameJidLoose(m?.sender, jid, conn))
+)
 const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function () {
     clearTimeout(this)
     resolve()
@@ -43,19 +65,16 @@ export async function handler(chatUpdate) {
     if (!m || !m.message) return
 
     if (m.key.remoteJid === 'status@broadcast') return
-
-        
-this.msgqueque = this.msgqueque || []
-this.pushMessage(chatUpdate.messages).catch(console.error)
+    if (m.key?.fromMe) return
 
 if (global.db.data == null) await global.loadDatabase()
 let chat = global.db.data.chats[m.chat] || {};
-chat.delete = false; // ← هذا السطر يشغل الحذف التلقائي دائمًا
 /* Creditos a Otosaka (https://wa.me/51993966345) */
 if (global.chatgpt.data === null) await global.loadChatgptDB()
 try {
     m = smsg(this, m) || m
     if (!m) return
+    if (isBotOwnMessage(m, this)) return
     m.exp = 0
     m.money = false
     m.limit = false
@@ -1036,9 +1055,13 @@ try {
         if (typeof m.text !== 'string')
             m.text = ''
 
-        const isROwner = [conn.decodeJid(global.conn.user.id), ...global.owner.map(([number]) => number)].map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(m.sender)
+        const ownerJids = [
+            ...botJidsOf(conn),
+            ...(global.owner || []).map(([number]) => `${String(number).replace(/[^0-9]/g, '')}@s.whatsapp.net`)
+        ].filter(Boolean)
+        const isROwner = ownerJids.some(jid => sameJidLoose(m.sender, jid, conn))
         const isOwner = isROwner || m.fromMe
-        const isMods = isOwner || global.mods.map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(m.sender)
+        const isMods = isOwner || (global.mods || []).map(v => `${String(v).replace(/[^0-9]/g, '')}@s.whatsapp.net`).some(jid => sameJidLoose(m.sender, jid, conn))
         const isPrems = isROwner || isOwner || isMods || global.db.data.users[m.sender].premiumTime > 0 //|| global.db.data.users[m.sender].premium = 'true'
         if (global.db.data.chats[m.chat]?.botOff && m.text && global.prefix.test(m.text) && !(isROwner || isOwner)) return
 
@@ -1061,18 +1084,8 @@ try {
 
         const groupMetadata = (m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {}) || {}
         const participants = (m.isGroup ? groupMetadata.participants : []) || []
-        const botJids = [
-            this.user?.jid,
-            this.user?.id,
-            this.user?.lid,
-            conn.decodeJid(this.user?.jid || ''),
-            conn.decodeJid(this.user?.id || '')
-        ].filter(Boolean)
-        const sameJid = (a, b) => {
-            const x = conn.decodeJid(jidOf(a))
-            const y = conn.decodeJid(jidOf(b))
-            return x === y || jidOf(a) === jidOf(b) || x.split('@')[0] === y.split('@')[0]
-        }
+        const botJids = botJidsOf(this)
+        const sameJid = (a, b) => sameJidLoose(a, b, conn)
         const user = (m.isGroup ? participants.find(u => sameJid(u, m.sender)) : {}) || {} // User Data
         const bot = (m.isGroup ? participants.find(u => botJids.some(j => sameJid(u, j))) : {}) || {} // Your Data
         const isRAdmin = user?.admin == 'superadmin' || false
@@ -1379,6 +1392,8 @@ if (botSpam.antispam && m.text && user && user.lastCommandTime && (Date.now() - 
         }
 
         try {
+            if (global.db?.data) await global.db.write().catch(console.error)
+            if (global.chatgpt?.data) await global.chatgpt.write().catch(console.error)
             if (!opts['noprint']) await (await import(`./lib/print.js`)).default(m, this)
         } catch (e) {
             console.log(m, m.quoted, e)
@@ -1387,18 +1402,18 @@ if (botSpam.antispam && m.text && user && user.lastCommandTime && (Date.now() - 
             await this.readMessages([m.key])
 
 
-if (!m.fromMem && m.text.match(/(سلام عليكم|السلام عليكم|شكرا|سلام|سيو|الله معك)/gi)) {
+if (!m.fromMe && m.text.match(/(سلام عليكم|السلام عليكم|شكرا|سلام|سيو|الله معك)/gi)) {
         let emot = pickRandom(["🤍"])
         this.sendMessage(m.chat, { react: { text: emot, key: m.key }})}
 
 
-    if (!m.fromMem && m.text.match(/(استا|آستا)/gi)) {
+    if (!m.fromMe && m.text.match(/(استا|آستا)/gi)) {
         let emot = pickRandom(["✔️"])
         this.sendMessage(m.chat, { react: { text: emot, key: m.key }})}
 
 
 
-if (!m.fromMem && m.text.match(/(بدوامك| بدوامك|ودوامك)/gi)) {
+if (!m.fromMe && m.text.match(/(بدوامك| بدوامك|ودوامك)/gi)) {
         let emot = pickRandom(["❤️"])
         this.sendMessage(m.chat, { react: { text: emot, key: m.key }})}
 
