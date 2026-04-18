@@ -1408,7 +1408,7 @@
       "emas": 0,
       "emerald": 0,
       "esteh": 0,
-      "exp": 992,
+      "exp": 2478,
       "expg": 0,
       "exphero": 0,
       "expired": 0,
@@ -1729,7 +1729,7 @@
         "step": null,
         "soal": null
       },
-      "lastCommandTime": 1776465021688,
+      "lastCommandTime": 1776470555975,
       "commandCount": 1,
       "premiumDate": -1,
       "catexp": 0,
@@ -1755,7 +1755,7 @@
       "robo": 0,
       "roboxp": 0,
       "energy": 100,
-      "lastEnergyRegen": 1776463634522,
+      "lastEnergyRegen": 1776467234522,
       "lastDaily": 0,
       "lastWork": 0,
       "totalEarned": 0,
@@ -2681,7 +2681,7 @@
       "emas": 0,
       "emerald": 0,
       "esteh": 0,
-      "exp": 630,
+      "exp": 1732,
       "expg": 0,
       "exphero": 0,
       "expired": 0,
@@ -2849,7 +2849,7 @@
       "leleb": 0,
       "lelebakar": 0,
       "leleg": 0,
-      "level": 0,
+      "level": 2,
       "limit": 20,
       "limitjoinfree": 1,
       "lion": 0,
@@ -3002,8 +3002,8 @@
         "step": null,
         "soal": null
       },
-      "energy": 100,
-      "lastEnergyRegen": 1776464949387,
+      "energy": 74,
+      "lastEnergyRegen": 1776470529387,
       "lastDaily": 0,
       "lastWork": 0,
       "totalEarned": 0,
@@ -3031,7 +3031,7 @@
       "psepick": 0,
       "robo": 0,
       "roboxp": 0,
-      "lastCommandTime": 1776465096030,
+      "lastCommandTime": 1776470575182,
       "commandCount": 1
     },
     "204990769553546@lid": {
@@ -3126,7 +3126,7 @@
       "emas": 0,
       "emerald": 0,
       "esteh": 0,
-      "exp": 569,
+      "exp": 766,
       "expg": 0,
       "exphero": 0,
       "expired": 0,
@@ -3660,6 +3660,31 @@
         "enabled": false,
         "to": "en"
       }
+    },
+    "28648019066900@lid": {
+      "isBanned": false,
+      "welcome": true,
+      "detect": true,
+      "detect2": false,
+      "sWelcome": "",
+      "sBye": "",
+      "sPromote": "",
+      "sDemote": "",
+      "delete": true,
+      "modohorny": true,
+      "autosticker": false,
+      "audios": true,
+      "antiLink": false,
+      "antiLink2": false,
+      "antiviewonce": false,
+      "antiToxic": false,
+      "antiTraba": false,
+      "antiArab": false,
+      "antiArab2": false,
+      "antiporno": false,
+      "modoadmin": false,
+      "simi": false,
+      "expired": 0
     }
   },
   "stats": {
@@ -3676,10 +3701,10 @@
       "lastSuccess": 1776465096325
     },
     "قائمه.js": {
-      "total": 7,
-      "success": 7,
-      "last": 1749092628988,
-      "lastSuccess": 1749092628988
+      "total": 8,
+      "success": 8,
+      "last": 1776465189840,
+      "lastSuccess": 1776465189840
     },
     "حذف_جميع_التذكيرات.js": {
       "total": 3,
@@ -3934,10 +3959,10 @@
       "lastSuccess": 1749101924697
     },
     "hd.js": {
-      "total": 2,
-      "success": 2,
-      "last": 1749101990891,
-      "lastSuccess": 1749101990891
+      "total": 7,
+      "success": 7,
+      "last": 1776467309334,
+      "lastSuccess": 1776467309334
     },
     "كلب.js": {
       "total": 2,
@@ -3982,16 +4007,16 @@
       "lastSuccess": 1749102560535
     },
     "اذكار الصباح.js": {
-      "total": 8,
-      "success": 8,
-      "last": 1776465021689,
-      "lastSuccess": 1776465021689
+      "total": 14,
+      "success": 14,
+      "last": 1776470555975,
+      "lastSuccess": 1776470555975
     },
     "أعادة.js": {
-      "total": 3,
-      "success": 3,
-      "last": 1749102812892,
-      "lastSuccess": 1749102812892
+      "total": 4,
+      "success": 4,
+      "last": 1776465926399,
+      "lastSuccess": 1776465926399
     },
     "الضعوم.js": {
       "total": 21,
@@ -4090,10 +4115,10 @@
       "lastSuccess": 1749109025053
     },
     "لفل.js": {
-      "total": 6,
-      "success": 2,
-      "last": 1749114829392,
-      "lastSuccess": 1749109064424
+      "total": 7,
+      "success": 3,
+      "last": 1776466777562,
+      "lastSuccess": 1776466777562
     },
     "شراء عملات.js": {
       "total": 2,
@@ -4216,16 +4241,16 @@
       "lastSuccess": 1749115617736
     },
     "menu.js": {
-      "total": 8,
-      "success": 8,
-      "last": 1776465013898,
-      "lastSuccess": 1776465013898
+      "total": 15,
+      "success": 15,
+      "last": 1776470072128,
+      "lastSuccess": 1776470072128
     },
     "menu-response.js": {
-      "total": 10,
-      "success": 10,
-      "last": 1776465021583,
-      "lastSuccess": 1776465021583
+      "total": 18,
+      "success": 18,
+      "last": 1776470575521,
+      "lastSuccess": 1776470575521
     },
     "security.js": {
       "total": 2,
@@ -4240,34 +4265,64 @@
       "lastSuccess": 0
     },
     "group-admin.js": {
-      "total": 4,
-      "success": 4,
-      "last": 1776464655557,
-      "lastSuccess": 1776464655557
+      "total": 13,
+      "success": 13,
+      "last": 1776470089766,
+      "lastSuccess": 1776470089766
     },
     "البنك.js": {
-      "total": 2,
-      "success": 2,
-      "last": 1776463941638,
-      "lastSuccess": 1776463941638
+      "total": 4,
+      "success": 4,
+      "last": 1776466090047,
+      "lastSuccess": 1776466090047
     },
     "global-translator.js": {
-      "total": 3,
-      "success": 3,
-      "last": 1776464036472,
-      "lastSuccess": 1776464036472
+      "total": 5,
+      "success": 5,
+      "last": 1776465766503,
+      "lastSuccess": 1776465766503
     },
     "profile.js": {
-      "total": 3,
-      "success": 0,
-      "last": 1776464174870,
-      "lastSuccess": 0
+      "total": 5,
+      "success": 2,
+      "last": 1776466783336,
+      "lastSuccess": 1776466783336
     },
     "جواب.js": {
       "total": 2,
       "success": 2,
       "last": 1776464254964,
       "lastSuccess": 1776464254964
+    },
+    "study.js": {
+      "total": 9,
+      "success": 9,
+      "last": 1776466907184,
+      "lastSuccess": 1776466907184
+    },
+    "bot-status.js": {
+      "total": 9,
+      "success": 9,
+      "last": 1776466175528,
+      "lastSuccess": 1776466175528
+    },
+    "احذف.js": {
+      "total": 4,
+      "success": 4,
+      "last": 1776467176387,
+      "lastSuccess": 1776467176387
+    },
+    "تحذيرات.js": {
+      "total": 3,
+      "success": 3,
+      "last": 1776467475543,
+      "lastSuccess": 1776467475543
+    },
+    "اغنيه.js": {
+      "total": 8,
+      "success": 0,
+      "last": 1776470036537,
+      "lastSuccess": 0
     }
   },
   "msgs": {},
