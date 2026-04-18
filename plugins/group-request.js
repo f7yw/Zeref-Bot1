@@ -161,21 +161,23 @@ function extractInvite(text = '') {
 }
 
 function isOwner(m) {
-  const owners = getOwnerJids()
-  return owners.includes(m.sender)
+  const senderNum = m.sender.split('@')[0].replace(/\D/g, '')
+  const owners = global.owner || global.owners || []
+  return owners.some(item => {
+    const num = Array.isArray(item) ? item[0] : item
+    return String(num).replace(/\D/g, '') === senderNum
+  })
 }
 
 function getOwnerJids() {
   const owners = global.owner || global.owners || []
   const out = []
-
   for (const item of owners) {
     const num = Array.isArray(item) ? item[0] : item
     if (!num) continue
-    const jid = String(num).replace(/\D/g, '') + '@s.whatsapp.net'
-    out.push(jid)
+    out.push(String(num).replace(/\D/g, '') + '@s.whatsapp.net')
+    out.push(String(num).replace(/\D/g, '') + '@lid')
   }
-
   return [...new Set(out)]
 }
 

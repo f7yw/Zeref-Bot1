@@ -1822,7 +1822,7 @@
       "emas": 0,
       "emerald": 0,
       "esteh": 0,
-      "exp": 4578,
+      "exp": 4590,
       "expg": 0,
       "exphero": 0,
       "expired": 0,
@@ -2172,17 +2172,17 @@
       "psepick": 0,
       "robo": 0,
       "roboxp": 0,
-      "lastCommandTime": 1776482229045,
+      "lastCommandTime": 1776482289440,
       "commandCount": 1,
       "tasks": [],
       "notes": [],
       "messages": {
-        "total": 179,
+        "total": 181,
         "groups": {
           "120363427285079878@g.us": 128,
           "120363422912330057@g.us": 1
         },
-        "last": 1776482229045
+        "last": 1776482289437
       }
     },
     "204990769553546@lid": {
@@ -3053,12 +3053,12 @@
         "soal": null
       },
       "messages": {
-        "total": 73,
+        "total": 76,
         "groups": {
           "120363427285079878@g.us": 58,
           "120363422912330057@g.us": 1
         },
-        "last": 1776481737657
+        "last": 1776482294267
       },
       "energy": 100,
       "lastEnergyRegen": 1776474223945,
@@ -4008,9 +4008,9 @@
       "lastSuccess": 1776481094568
     },
     "شغل.js": {
-      "total": 3,
+      "total": 5,
       "success": 0,
-      "last": 1776481738107,
+      "last": 1776482294387,
       "lastSuccess": 0
     }
   },

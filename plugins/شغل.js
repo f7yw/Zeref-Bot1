@@ -1,4 +1,4 @@
-import ytdl from '@distube/ytdl-core';
+import playdl from 'play-dl';
 import yts from 'yt-search';
 import fs from 'fs';
 import { pipeline } from 'stream';
@@ -32,16 +32,13 @@ var handler = async (m, { conn, command, text, usedPrefix }) => {
 
   conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: captvid }, { quoted: m });
 
+  const stream = await playdl.stream(url, { quality: 2 });
+
   const tmpDir = os.tmpdir();
   const safeTitle = title.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, '_').slice(0, 50);
   const filePath = `${tmpDir}/${safeTitle}_${Date.now()}.mp3`;
 
-  const audioStream = ytdl(url, {
-    filter: 'audioonly',
-    quality: 'highestaudio',
-  });
-
-  await streamPipeline(audioStream, fs.createWriteStream(filePath));
+  await streamPipeline(stream.stream, fs.createWriteStream(filePath));
 
   let doc = {
     audio: { url: filePath },
