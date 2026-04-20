@@ -9,12 +9,18 @@ function renderBoard(game) {
   }[v]))
 }
 
-function buildBoardStr(room, statusLine) {
+async function buildBoardStr(conn, room, statusLine) {
   const arr = renderBoard(room.game)
+  const getName = async (jid) => {
+    try { return await conn.getName(jid) } catch { return jid.split('@')[0] }
+  }
+  const nameX = await getName(room.game.playerX)
+  const nameO = await getName(room.game.playerO)
+
   return `╭────『 🎮 لعبة XO 』────
 │
-│ ❎ = @${room.game.playerX.split('@')[0]}
-│ ⭕ = @${room.game.playerO.split('@')[0]}
+│ ❎ = @${room.game.playerX.split('@')[0]} (${nameX})
+│ ⭕ = @${room.game.playerO.split('@')[0]} (${nameO})
 │
 │   ${arr.slice(0, 3).join('')}
 │   ${arr.slice(3, 6).join('')}
@@ -82,7 +88,8 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
     waitingRoom.game.playerO = m.sender
     waitingRoom.state       = 'PLAYING'
 
-    const str = buildBoardStr(
+    const str = await buildBoardStr(
+      conn,
       waitingRoom,
       `⌛ دورك @${waitingRoom.game.currentTurn.split('@')[0]}`
     )

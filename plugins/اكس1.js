@@ -1,5 +1,5 @@
 const arabicToNum = { '١':'1','٢':'2','٣':'3','٤':'4','٥':'5','٦':'6','٧':'7','٨':'8','٩':'9',
-                      '۱':'1','۲':'2','۳':'3','۴':'4','۵':'5','۶':'6','۷':'7','۸':'8','۹':'9' }
+                      '۱':'1','۲':'2','۳':'3','۴':'4','۵':'5','۶':'6','۷':'7','٨':'8','۹':'9' }
 
 function normalizeText(raw) {
   if (!raw) return ''
@@ -21,12 +21,18 @@ function renderBoard(game) {
   }[v]))
 }
 
-function buildBoardStr(room, statusLine) {
+async function buildBoardStr(conn, room, statusLine) {
   const arr = renderBoard(room.game)
+  const getName = async (jid) => {
+    try { return await conn.getName(jid) } catch { return jid.split('@')[0] }
+  }
+  const nameX = await getName(room.game.playerX)
+  const nameO = await getName(room.game.playerO)
+
   return `╭────『 🎮 لعبة XO 』────
 │
-│ ❎ = @${room.game.playerX.split('@')[0]}
-│ ⭕ = @${room.game.playerO.split('@')[0]}
+│ ❎ = @${room.game.playerX.split('@')[0]} (${nameX})
+│ ⭕ = @${room.game.playerO.split('@')[0]} (${nameO})
 │
 │   ${arr.slice(0, 3).join('')}
 │   ${arr.slice(3, 6).join('')}
@@ -107,7 +113,7 @@ export async function before(m) {
     statusLine = `⌛ دورك @${room.game.currentTurn.split('@')[0]}`
   }
 
-  const str = buildBoardStr(room, statusLine)
+  const str = await buildBoardStr(this, room, statusLine)
 
   // Update XP
   if (isTie || isWin) {
