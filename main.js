@@ -343,24 +343,28 @@ async function connectionUpdate(update) {
   }
 
   if (connection === 'close') {
-    if (reason === DisconnectReason.loggedOut) {
+    if (reason === DisconnectReason.loggedOut || reason === DisconnectReason.forbidden) {
       await clearSessionAndRestart('❌ Session logged out. Clearing data...')
+    } else if (reason === DisconnectReason.badSession) {
+      await clearSessionAndRestart('⚠️ Bad session detected. Clearing and restarting...')
     } else if (reason === DisconnectReason.restartRequired) {
       console.log(chalk.cyan('🔄 Restart required. Reconnecting...'))
       restartBot(2000)
-    } else if (reason === DisconnectReason.timedOut) {
-      console.log(chalk.red('⏰ Connection timed out. Retrying...'))
-      restartBot(3000)
-    } else if (reason === DisconnectReason.connectionLost) {
-      console.log(chalk.red('📡 Connection lost. Reconnecting...'))
+    } else if (reason === DisconnectReason.timedOut || reason === DisconnectReason.connectionLost) {
+      console.log(chalk.red('⏰ Connection timed out / lost. Retrying...'))
       restartBot(3000)
     } else if (reason === DisconnectReason.connectionClosed) {
       console.log(chalk.red('🔌 Connection closed. Reconnecting...'))
       restartBot(3000)
     } else if (reason === DisconnectReason.connectionReplaced) {
-      console.log(chalk.yellow('🔄 Connection replaced. Please check if another instance is running.'))
+      console.log(chalk.yellow('🔄 Connection replaced by another device. Stopping.'))
+    } else if (reason === DisconnectReason.unavailableService) {
+      console.log(chalk.yellow('🌐 WhatsApp server unavailable (503). Retrying in 10s...'))
+      restartBot(10000)
+    } else if (reason === DisconnectReason.multideviceMismatch) {
+      await clearSessionAndRestart('⚠️ Multi-device mismatch. Clearing session...')
     } else {
-      console.log(chalk.red(`❓ Connection closed with unknown reason: ${reason}`))
+      console.log(chalk.red(`❓ Connection closed, reason: ${reason}. Retrying...`))
       restartBot(5000)
     }
   }

@@ -1,5 +1,5 @@
 import FormData from 'form-data'
-import { Jimp, JimpMime } from 'jimp'
+import sharp from 'sharp'
 import { deductEnergy, syncEnergy, initEconomy, FEES, MAX_ENERGY } from '../lib/economy.js'
 
 let handler = async (m, { conn, usedPrefix }) => {
@@ -106,18 +106,18 @@ async function downloadMedia(msg) {
 }
 
 async function localEnhance(buffer) {
-  const image = await Jimp.read(buffer)
+  const img = sharp(buffer)
+  const meta = await img.metadata()
 
-  const w = image.bitmap.width
-  const h = image.bitmap.height
+  const w = meta.width || 800
+  const h = meta.height || 600
 
-  image.resize({ w: Math.max(1, w * 2), h: Math.max(1, h * 2) })
-  image.normalize()
-  image.contrast(0.15)
-  image.brightness(0.05)
-  image.quality(92)
-
-  return await image.getBuffer(JimpMime.jpeg)
+  return await sharp(buffer)
+    .resize(Math.min(w * 2, 4096), Math.min(h * 2, 4096), { fit: 'inside' })
+    .modulate({ brightness: 1.05, saturation: 1.1 })
+    .sharpen({ sigma: 1.2 })
+    .jpeg({ quality: 92 })
+    .toBuffer()
 }
 
 async function processing(urlPath, method) {
