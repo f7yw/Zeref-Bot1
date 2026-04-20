@@ -227,27 +227,11 @@ async function connectionUpdate(update) {
 
     global.__reconnectTimer = setTimeout(async () => {
       global.__reconnectTimer = null
-
       try {
-        if (typeof connectToWhatsApp === 'function') {
-          await connectToWhatsApp()
-          return
-        }
-
-        if (typeof global.connectToWhatsApp === 'function') {
-          await global.connectToWhatsApp()
-          return
-        }
-
-        if (typeof global.startBot === 'function') {
-          await global.startBot()
-          return
-        }
-
-        console.log(chalk.red('  ➤ No reconnect function found.'))
-      } catch (e) {
-        console.error(chalk.red('[RECONNECT ERROR]'), e)
-      }
+        await global.saveDatabase?.().catch(() => {})
+      } catch {}
+      console.log(chalk.cyan('  ➤ Exiting process for cluster restart...'))
+      process.exit(0)
     }, delay)
   }
 
