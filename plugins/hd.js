@@ -1,189 +1,87 @@
-import FormData from 'form-data'
-import * as Jimp from 'jimp'
+import FormData from "form-data";
+import * as Jimp from "jimp";
 import { deductEnergy, syncEnergy, initEconomy, FEES, MAX_ENERGY } from '../lib/economy.js'
 
 let handler = async (m, { conn, usedPrefix }) => {
   const user = global.db.data.users[m.sender]
-
   if (user) {
     initEconomy(user)
     syncEnergy(user)
-
     if (user.energy < FEES.hd) {
-      throw `╭────『 ⚡ طاقة ناضبة 』────
-│
-│ ❌ تحسين الصورة يحتاج *${FEES.hd} ⚡*
-│ طاقتك: *${user.energy}/${MAX_ENERGY}*
-│
-│ 💡 استخدم *${usedPrefix}يومي* أو انتظر الشحن التلقائي
-│
-╰──────────────────`.trim()
+      throw `╭────『 ⚡ طاقة ناضبة 』────\n│\n│ ❌ تحسين الصورة يحتاج *${FEES.hd} ⚡*\n│ طاقتك: *${user.energy}/${MAX_ENERGY}*\n│\n│ 💡 استخدم *${usedPrefix}يومي* أو انتظر الشحن التلقائي\n│\n╰──────────────────`.trim()
     }
   }
 
   conn.hdr = conn.hdr || {}
-  if (m.sender in conn.hdr) throw '⏳ لا تزال عملية جارية، انتظر حتى تنتهي.'
+  if (m.sender in conn.hdr)
+    throw "⏳ لا تزال عملية جارية، انتظر حتى تنتهي."
 
-  const q = m.quoted ? m.quoted : m
-  const mime = (q.msg || q).mimetype || q.mediaType || ''
+  let q    = m.quoted ? m.quoted : m
+  let mime = (q.msg || q).mimetype || q.mediaType || ""
 
   if (!mime) throw '❌ أرسل أو اقتبس صورة مع الأمر.'
-  if (!/image\/(jpe?g|png)/i.test(mime)) throw '❌ الصيغة المدعومة: JPG أو PNG فقط.'
+  if (!/image\/(jpe?g|png)/.test(mime)) throw '❌ الصيغة المدعومة: JPG أو PNG فقط.'
 
   conn.hdr[m.sender] = true
-
   if (user) deductEnergy(user, FEES.hd)
 
   await m.reply(`⚙️ جاري رفع جودة الصورة... ⚡ -${FEES.hd} طاقة`)
 
+  let error
   try {
-    const img = await downloadMedia(q)
-    if (!img || !Buffer.isBuffer(img) || img.length < 100) {
-      throw new Error('تعذر تحميل الصورة بشكل صحيح')
-    }
-
-    let out
-    try {
-      out = await processing(img, 'enhance')
-      if (!isImageBuffer(out)) throw new Error('API returned non-image buffer')
-    } catch (apiError) {
-      console.error('[HD API ERROR]', apiError)
-      out = await localEnhance(img)
-      if (!isImageBuffer(out)) throw new Error('Local enhancement failed')
-    }
-
-    await conn.sendMessage(
-      m.chat,
-      {
-        image: out,
-        caption: '✅ تم رفع الجودة!'
-      },
-      { quoted: m }
-    )
+    const img  = await q.download?.()
+    const This = await processing(img, "enhance")
+    await conn.sendFile(m.chat, This, "hd.jpg", "✅ تم رفع الجودة!", m)
   } catch (er) {
-    console.error('[HD ERROR]', er)
-    m.reply('❌ فشل تحسين الجودة، حاول مجدداً.')
+    error = true
   } finally {
+    if (error) m.reply("❌ فشل تحسين الصورة، حاول مجدداً.")
     delete conn.hdr[m.sender]
   }
 }
 
-handler.help = ['جوده', 'HD']
-handler.tags = ['tools', 'ai']
+handler.help    = ['جوده', 'HD']
+handler.tags    = ['tools', 'ai']
 handler.command = /^(جوده|دقه|hd|HD)$/i
 handler.register = false
-handler.limit = false
-
+handler.limit    = false
 export default handler
-
-function isImageBuffer(buf) {
-  if (!buf || !Buffer.isBuffer(buf) || buf.length < 4) return false
-  const b0 = buf[0], b1 = buf[1], b2 = buf[2], b3 = buf[3]
-
-  const isJpeg = b0 === 0xff && b1 === 0xd8
-  const isPng = b0 === 0x89 && b1 === 0x50 && b2 === 0x4e && b3 === 0x47
-
-  return isJpeg || isPng
-}
-
-async function downloadMedia(msg) {
-  if (typeof msg.download === 'function') {
-    const data = await msg.download()
-    if (data) return Buffer.isBuffer(data) ? data : Buffer.from(data)
-  }
-
-  if (msg.msg && typeof msg.msg.download === 'function') {
-    const data = await msg.msg.download()
-    if (data) return Buffer.isBuffer(data) ? data : Buffer.from(data)
-  }
-
-  if (msg.downloadMediaMessage) {
-    const data = await msg.downloadMediaMessage()
-    if (data) return Buffer.isBuffer(data) ? data : Buffer.from(data)
-  }
-
-  throw new Error('No download method available for media')
-}
-
-async function localEnhance(buffer) {
-  const image = await Jimp.read(buffer)
-
-  const w = image.bitmap.width
-  const h = image.bitmap.height
-
-  image.resize(Math.max(1, w * 2), Math.max(1, h * 2))
-  image.normalize()
-  image.contrast(0.15)
-  image.brightness(0.05)
-  image.quality(92)
-
-  return await image.getBufferAsync(Jimp.MIME_JPEG)
-}
 
 async function processing(urlPath, method) {
   return new Promise((resolve, reject) => {
-    const methods = ['enhance', 'recolor', 'dehaze']
-    if (!methods.includes(method)) method = methods[0]
+    const Methods = ["enhance", "recolor", "dehaze"]
+    if (!Methods.includes(method)) method = Methods[0]
 
-    const form = new FormData()
-    const scheme = `https://inferenceengine.vyro.ai/${method}`
+    const Form   = new FormData()
+    const scheme = "https://inferenceengine.vyro.ai/" + method
 
-    form.append('model_version', 1, {
-      'Content-Transfer-Encoding': 'binary',
-      contentType: 'multipart/form-data; charset=utf-8'
+    Form.append("model_version", 1, {
+      "Content-Transfer-Encoding": "binary",
+      contentType: "multipart/form-data; charset=utf-8",
+    })
+    Form.append("image", Buffer.from(urlPath), {
+      filename: "enhance_image_body.jpg",
+      contentType: "image/jpeg",
     })
 
-    form.append('image', Buffer.from(urlPath), {
-      filename: 'enhance_image_body.jpg',
-      contentType: 'image/jpeg'
-    })
-
-    form.submit(
+    Form.submit(
       {
         url: scheme,
-        host: 'inferenceengine.vyro.ai',
-        path: `/${method}`,
-        protocol: 'https:',
+        host: "inferenceengine.vyro.ai",
+        path: "/" + method,
+        protocol: "https:",
         headers: {
-          'User-Agent': 'okhttp/4.9.3',
-          Connection: 'Keep-Alive',
-          'Accept-Encoding': 'gzip'
-        }
+          "User-Agent": "okhttp/4.9.3",
+          Connection: "Keep-Alive",
+          "Accept-Encoding": "gzip",
+        },
       },
       (err, res) => {
         if (err) return reject(err)
-
         const data = []
-
-        res.on('data', chunk => data.push(chunk))
-
-        res.on('end', () => {
-          const buffer = Buffer.concat(data)
-
-          if (!buffer || buffer.length < 100) {
-            return reject(new Error('Empty response from API'))
-          }
-
-          if (buffer.length >= 2) {
-            const asText = buffer.toString('utf8').trim()
-
-            if (
-              asText.startsWith('{') ||
-              asText.startsWith('[') ||
-              asText.toLowerCase().includes('error') ||
-              asText.toLowerCase().includes('blocked') ||
-              asText.toLowerCase().includes('rate') ||
-              asText.toLowerCase().includes('forbidden') ||
-              asText.toLowerCase().includes('unauthorized')
-            ) {
-              return reject(new Error(asText.slice(0, 300)))
-            }
-          }
-
-          resolve(buffer)
-        })
-
-        res.on('error', reject)
+        res.on("data", chunk => data.push(chunk))
+           .on("end",  () => resolve(Buffer.concat(data)))
+           .on("error", reject)
       }
     )
   })
