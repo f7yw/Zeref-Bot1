@@ -595,7 +595,7 @@
       "crystal": 0,
       "cumi": 0,
       "cupon": 0,
-      "diamond": 54,
+      "diamond": 0,
       "dog": 0,
       "dogexp": 0,
       "doglastfeed": 0,
@@ -606,7 +606,7 @@
       "emas": 0,
       "emerald": 0,
       "esteh": 0,
-      "exp": 261,
+      "exp": 390,
       "expg": 0,
       "exphero": 0,
       "expired": 0,
@@ -795,7 +795,7 @@
       "mana": 20,
       "mangga": 0,
       "misi": "",
-      "money": 50215,
+      "money": 93415,
       "monyet": 0,
       "mythic": 0,
       "naga": 0,
@@ -928,7 +928,7 @@
         "soal": null
       },
       "energy": 100,
-      "lastEnergyRegen": 1776688650448,
+      "lastEnergyRegen": 1776688945123,
       "lastDaily": 0,
       "lastWork": 0,
       "totalEarned": 0,
@@ -957,13 +957,25 @@
       "robo": 0,
       "roboxp": 0,
       "messages": {
-        "total": 17,
+        "total": 25,
         "groups": {
-          "120363422912330057@g.us": 17
+          "120363422912330057@g.us": 25
         },
-        "last": 1776688878921
+        "last": 1776689022113
       },
       "transactions": [
+        {
+          "type": "earn",
+          "amount": 42400,
+          "reason": "💎 بيع 53 ماسة",
+          "time": 1776688998026
+        },
+        {
+          "type": "earn",
+          "amount": 800,
+          "reason": "💎 بيع 1 ماسة",
+          "time": 1776688979752
+        },
         {
           "type": "earn",
           "amount": 200,
@@ -983,7 +995,7 @@
           "time": 1776579136024
         }
       ],
-      "lastCommandTime": 1776688873551,
+      "lastCommandTime": 1776689022113,
       "commandCount": 1,
       "infiniteResources": true
     },
@@ -1717,7 +1729,7 @@
       "emas": 0,
       "emerald": 0,
       "esteh": 0,
-      "exp": 24810,
+      "exp": 24813,
       "expg": 0,
       "exphero": 0,
       "expired": 0,
@@ -2039,12 +2051,12 @@
         "soal": null
       },
       "messages": {
-        "total": 283,
+        "total": 284,
         "groups": {
           "120363427285079878@g.us": 281,
-          "120363408934664388@g.us": 2
+          "120363408934664388@g.us": 3
         },
-        "last": 1776685155592
+        "last": 1776688957728
       },
       "energy": 90,
       "transactions": [
@@ -2127,7 +2139,7 @@
       "expired": 0,
       "messageStats": {
         "28648019066900@lid": 26,
-        "158884446605486@lid": 17,
+        "158884446605486@lid": 25,
         "967782114485@s.whatsapp.net": 9
       },
       "botOff": false
@@ -2213,7 +2225,7 @@
       "simi": false,
       "expired": 0,
       "messageStats": {
-        "204990769553546@lid": 2,
+        "204990769553546@lid": 3,
         "967782114485@s.whatsapp.net": 1
       }
     },
@@ -2285,10 +2297,10 @@
       "lastSuccess": 1776579456005
     },
     "menu.js": {
-      "total": 19,
-      "success": 19,
-      "last": 1776688681080,
-      "lastSuccess": 1776688681080
+      "total": 20,
+      "success": 20,
+      "last": 1776688938237,
+      "lastSuccess": 1776688938237
     },
     "اكس.js": {
       "total": 43,
@@ -2315,10 +2327,10 @@
       "lastSuccess": 1776688857613
     },
     "جواب.js": {
-      "total": 2,
-      "success": 2,
-      "last": 1776640191907,
-      "lastSuccess": 1776640191907
+      "total": 3,
+      "success": 3,
+      "last": 1776688920065,
+      "lastSuccess": 1776688920065
     },
     "ai.js": {
       "total": 15,
@@ -2435,10 +2447,22 @@
       "lastSuccess": 1776688650758
     },
     "علم.js": {
+      "total": 3,
+      "success": 2,
+      "last": 1776688893988,
+      "lastSuccess": 1776688873826
+    },
+    "شراء عملات.js": {
+      "total": 3,
+      "success": 3,
+      "last": 1776688998284,
+      "lastSuccess": 1776688998284
+    },
+    "advanced-stats.js": {
       "total": 2,
       "success": 2,
-      "last": 1776688873826,
-      "lastSuccess": 1776688873826
+      "last": 1776689022385,
+      "lastSuccess": 1776689022385
     }
   },
   "msgs": {},
