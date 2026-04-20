@@ -1,4 +1,5 @@
 import yts from 'yt-search'
+import { fmt, initEconomy } from '../lib/economy.js'
 
 const ensureUser = jid => {
   const user = global.db.data.users[jid] || (global.db.data.users[jid] = {})
@@ -60,7 +61,17 @@ let handler = async (m, { conn, text, command, usedPrefix, participants }) => {
   }
 
   if (/^(احصائياتي)$/i.test(command)) {
-    return m.reply(`📊 *إحصائياتك*\nالرسائل/XP: ${user.exp || 0}\nالمستوى: ${user.level || 0}\nالمهام: ${user.tasks.length}\nالمكتملة: ${user.tasks.filter(t => t.done).length}\nالملاحظات: ${user.notes.length}\nالمال: ${user.money || 0}\nالبنك: ${user.bank || 0}`)
+    initEconomy(user)
+    return m.reply(
+      `📊 *إحصائياتك*\n` +
+      `الرسائل/XP: ${user.exp || 0}\n` +
+      `المستوى: ${user.level || 0}\n` +
+      `المهام: ${user.tasks.length}\n` +
+      `المكتملة: ${user.tasks.filter(t => t.done).length}\n` +
+      `الملاحظات: ${user.notes.length}\n` +
+      `المال: ${fmt(user.money)}\n` +
+      `البنك: ${fmt(user.bank)}`
+    )
   }
 
   if (/^(رسائلي|رسائل)$/i.test(command)) {

@@ -7,7 +7,7 @@ let handler = async (m, { conn, usedPrefix }) => {
   const who   = m.mentionedJid?.[0] || m.quoted?.sender || m.sender
   const isSelf = who === m.sender
   const user  = global.db.data.users[who] || (global.db.data.users[who] = {})
-  initUser(user, isSelf ? m.pushName : undefined)
+  initUser(user, isSelf ? m.pushName : undefined, who)
 
   await typingDelay(conn, m.chat, 800)
 

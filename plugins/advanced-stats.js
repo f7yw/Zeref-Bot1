@@ -1,4 +1,4 @@
-import { initEconomy, fmt, isVip } from '../lib/economy.js'
+import { initEconomy, fmt, fmtEnergy, isVip } from '../lib/economy.js'
 
 // ─── Utility ─────────────────────────────────────────────────────────────────
 const msToStr = ms => {
@@ -143,7 +143,7 @@ ${topLines}
 │ 💰 المحفظة:     ${fmt(user.money)}
 │ 🏦 البنك:       ${fmt(user.bank)}
 │ 💎 الماس:       ${user.diamond || 0}
-│ ⚡ الطاقة:      ${user.energy || 0}/100
+│ ⚡ الطاقة:      ${fmtEnergy(user, m.sender)}
 │ 💵 مكتسب كلياً: ${fmt(user.totalEarned || 0)}
 │ 💸 منفق كلياً:  ${fmt(user.totalSpent || 0)}
 │

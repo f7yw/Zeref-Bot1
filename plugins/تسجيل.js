@@ -4,7 +4,7 @@ import { typingDelay } from '../lib/presence.js'
 
 let handler = async (m, { conn, usedPrefix }) => {
   const user = global.db.data.users[m.sender] || (global.db.data.users[m.sender] = {})
-  initUser(user, m.pushName)
+  initUser(user, m.pushName, m.sender)
 
   if (user.registered) {
     const regDate = user.regTime > 0
@@ -28,11 +28,12 @@ let handler = async (m, { conn, usedPrefix }) => {
   user.regTime    = Date.now()
   user.name       = m.pushName || m.sender.split('@')[0]
 
-  // VIP users get premium auto-set
+  // VIP users get premium auto-set (syncVipResources already called via initUser, this is a safety fallback)
   const vip = isVip(m.sender)
   if (vip && !user.premium) {
-    user.premium     = true
-    user.premiumTime = Date.now() + 1000 * 60 * 60 * 24 * 365 * 10 // 10 years
+    user.premium          = true
+    user.premiumTime      = Date.now() + 1000 * 60 * 60 * 24 * 365 * 10
+    user.infiniteResources = true
   }
 
   const pp = await conn.profilePictureUrl(m.sender, 'image').catch(() => './src/avatar_contact.png')

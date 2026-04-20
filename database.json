@@ -92,7 +92,7 @@
       "emas": 0,
       "emerald": 0,
       "esteh": 0,
-      "exp": 22677,
+      "exp": 22756,
       "expg": 0,
       "exphero": 0,
       "expired": 0,
@@ -313,7 +313,7 @@
       "pointxp": 0,
       "potion": 10,
       "premium": true,
-      "premiumTime": 2091845532186,
+      "premiumTime": 2092047935186,
       "ramuan": 0,
       "ramuancentaurlast": 0,
       "ramuangriffinlast": 0,
@@ -413,8 +413,8 @@
         "step": null,
         "soal": null
       },
-      "energy": 100,
-      "lastEnergyRegen": 1776687559727,
+      "energy": 95,
+      "lastEnergyRegen": 1776687935186,
       "lastDaily": 0,
       "lastWork": 1776481197104,
       "totalEarned": 438,
@@ -442,7 +442,7 @@
       "psepick": 0,
       "robo": 0,
       "roboxp": 0,
-      "lastCommandTime": 1776687532919,
+      "lastCommandTime": 1776687952878,
       "commandCount": 1,
       "tasks": [
         {
@@ -453,13 +453,13 @@
       ],
       "notes": [],
       "messages": {
-        "total": 1117,
+        "total": 1121,
         "groups": {
           "120363427285079878@g.us": 837,
           "120363422912330057@g.us": 53,
           "120363360836384520@g.us": 41
         },
-        "last": 1776687559724
+        "last": 1776687952878
       },
       "bannedReason": "",
       "transactions": [
@@ -511,7 +511,8 @@
           "reason": "🆙 مكافأة المستوى 5",
           "time": 1776489947849
         }
-      ]
+      ],
+      "infiniteResources": true
     },
     "158884446605486@lid": {
       "afk": -1,
@@ -2289,10 +2290,10 @@
       "lastSuccess": 1776640191907
     },
     "ai.js": {
-      "total": 14,
-      "success": 13,
-      "last": 1776686135704,
-      "lastSuccess": 1776686135704
+      "total": 15,
+      "success": 14,
+      "last": 1776687954264,
+      "lastSuccess": 1776687954264
     },
     "رهان.js": {
       "total": 4,
@@ -2367,9 +2368,9 @@
       "lastSuccess": 1776686112852
     },
     "لفل.js": {
-      "total": 2,
+      "total": 3,
       "success": 0,
-      "last": 1776687503412,
+      "last": 1776687920579,
       "lastSuccess": 0
     },
     "البنك.js": {
@@ -2377,6 +2378,12 @@
       "success": 2,
       "last": 1776687532927,
       "lastSuccess": 1776687532927
+    },
+    "profile.js": {
+      "total": 2,
+      "success": 2,
+      "last": 1776687937790,
+      "lastSuccess": 1776687937790
     }
   },
   "msgs": {},

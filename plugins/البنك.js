@@ -10,7 +10,7 @@ function timeLeft(last, cooldown) {
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
   const user = global.db.data.users[m.sender] || (global.db.data.users[m.sender] = {})
-  initUser(user, m.pushName)
+  initUser(user, m.pushName, m.sender)
 
   if (!user.registered) {
     return m.reply(`╭────『 🔐 تسجيل مطلوب 』────\n│\n│ يجب التسجيل أولاً للوصول للبنك\n│\n│ 📌 اكتب: *${usedPrefix}تسجيل*\n│ وستحصل على مكافأة ترحيبية!\n│\n╰──────────────────`.trim())
@@ -78,7 +78,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
   const { xp, max } = xpRange(level, global.multiplier)
   const role   = getRole(level)
   const name   = m.pushName || 'مستخدم'
-  const energyBar = fmtEnergy(user)
+  const energyBar = fmtEnergy(user, m.sender)
 
   const workWait  = timeLeft(user.lastWork || user.lastwork || 0, 30 * 60 * 1000)
   const dailyWait = timeLeft(user.lastDaily || 0, 24 * 60 * 60 * 1000)

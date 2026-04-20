@@ -1,29 +1,12 @@
 import { canLevelUp, xpRange } from '../lib/levelling.js'
 import { levelup }             from '../lib/canvas.js'
-import { initEconomy }         from '../lib/economy.js'
+import { initEconomy, getRole } from '../lib/economy.js'
 import { initUser }            from '../lib/userInit.js'
-
-const ROLES = [
-  [100, '👑 أسطورة'],
-  [75,  '💎 الترا'],
-  [50,  '🔥 خبير'],
-  [30,  '⚡ متقدم'],
-  [15,  '🌟 متوسط'],
-  [5,   '🪙 مبتدئ'],
-  [0,   '🌱 جديد'],
-]
-
-function getRole(level) {
-  for (const [min, label] of ROLES) {
-    if ((level || 0) >= min) return label
-  }
-  return '🌱 جديد'
-}
 
 let handler = async (m, { conn }) => {
   let user = global.db.data.users[m.sender]
   if (!user) return m.reply('❌ أرسل أي أمر أولاً لتسجيل حسابك.')
-  initUser(user, m.pushName)
+  initUser(user, m.pushName, m.sender)
   initEconomy(user)
 
   let name = m.pushName || m.sender.split('@')[0]
