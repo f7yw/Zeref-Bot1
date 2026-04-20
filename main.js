@@ -296,9 +296,6 @@ async function connectionUpdate(update) {
 │ ─── الأداء ───
 │ 🧠 الذاكرة: ${memMB} MB
 │ 📦 Node: ${process.version}
-│
-│ ─── الإضافات (${pluginFiles.length}) ───
-${pluginList}
 ╰──────────────────────`
 
         const ownerNumbers = (global.owner || []).filter(([, , isDev]) => isDev).map(([n]) => n)
