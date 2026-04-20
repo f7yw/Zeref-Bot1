@@ -27,6 +27,7 @@ handler.help = ['ارسل_ورد <رقم> <رسالة>'];
 handler.tags = ['tools'];
 handler.command = ['ارسل_ورد', 'ارسل', 'ارسال_شخصي'];
 handler.group = false;
+handler.owner = true;
 
 handler.before = async (m, { conn }) => {
   if (!m.quoted || !m.quoted.id) return;
