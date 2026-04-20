@@ -92,7 +92,7 @@
       "emas": 0,
       "emerald": 0,
       "esteh": 0,
-      "exp": 22887,
+      "exp": 22899,
       "expg": 0,
       "exphero": 0,
       "expired": 0,
@@ -414,7 +414,7 @@
         "soal": null
       },
       "energy": 100,
-      "lastEnergyRegen": 1776688156681,
+      "lastEnergyRegen": 1776688244975,
       "lastDaily": 0,
       "lastWork": 1776481197104,
       "totalEarned": 438,
@@ -442,7 +442,7 @@
       "psepick": 0,
       "robo": 0,
       "roboxp": 0,
-      "lastCommandTime": 1776688180854,
+      "lastCommandTime": 1776688232115,
       "commandCount": 1,
       "tasks": [
         {
@@ -453,13 +453,13 @@
       ],
       "notes": [],
       "messages": {
-        "total": 1130,
+        "total": 1132,
         "groups": {
           "120363427285079878@g.us": 837,
-          "120363422912330057@g.us": 62,
+          "120363422912330057@g.us": 64,
           "120363360836384520@g.us": 41
         },
-        "last": 1776688180850
+        "last": 1776688244971
       },
       "bannedReason": "",
       "transactions": [
@@ -2113,7 +2113,7 @@
       "simi": false,
       "expired": 0,
       "messageStats": {
-        "28648019066900@lid": 13,
+        "28648019066900@lid": 15,
         "158884446605486@lid": 8,
         "967782114485@s.whatsapp.net": 6
       },
@@ -2272,10 +2272,10 @@
       "lastSuccess": 1776579456005
     },
     "menu.js": {
-      "total": 17,
-      "success": 17,
-      "last": 1776688170802,
-      "lastSuccess": 1776688170802
+      "total": 18,
+      "success": 18,
+      "last": 1776688235457,
+      "lastSuccess": 1776688235457
     },
     "اكس.js": {
       "total": 41,

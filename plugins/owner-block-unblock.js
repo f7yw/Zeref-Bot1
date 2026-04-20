@@ -1,19 +1,100 @@
-let handler = async (m, { text, conn, usedPrefix, command }) => {
-let why = `*[❗] مثال للاستخدام الصحيح:*\n*—◉ ${usedPrefix + command} @${m.sender.split("@")[0]}*`
-let who = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : text ? text.replace(/[^0-9]/g, '') + '@s.whatsapp.net' : false
-if (!who) conn.reply(m.chat, why, m, { mentions: [m.sender] })
-let res = [];
-switch (command) {
-case "blok": case "بلوك":
-if (who) await conn.updateBlockStatus(who, "block").then(() => { res.push(who); })
-else conn.reply(m.chat, why, m, { mentions: [m.sender] })
-break
-case "unblok": case "رفع-البلوك":
-if (who) await conn.updateBlockStatus(who, "unblock").then(() => { res.push(who); })
-else conn.reply(m.chat, why, m, { mentions: [m.sender] })
-break
+/**
+ * بلوك / فك_البلوك — Block & Unblock
+ * Accepts: @mention | reply | raw number (e.g. 967778088098)
+ * Owner-only
+ */
+
+function resolveTarget(m, text) {
+  // 1. mention
+  if (m.mentionedJid?.[0]) return m.mentionedJid[0]
+  // 2. reply
+  if (m.quoted?.sender) return m.quoted.sender
+  // 3. raw number in text
+  const digits = (text || '').replace(/\D/g, '')
+  if (digits.length >= 8) return `${digits}@s.whatsapp.net`
+  return null
 }
-if (res[0]) conn.reply(m.chat, `*[❗] تم استخدام الامر بنجاح ${command} للمستخدم ${res ? `${res.map(v => '@' + v.split("@")[0])}` : ''}*`, m, { mentions: res })}
-handler.command = /^(بلوك|رفع-البلوك)$/i
-handler.rowner = true
+
+function safeNum(jid) {
+  return jid ? jid.split('@')[0] : '?'
+}
+
+let handler = async (m, { conn, text, usedPrefix, command }) => {
+  const isBlock   = /^(بلوك|blok|block)$/i.test(command)
+  const action    = isBlock ? 'block' : 'unblock'
+  const actionAr  = isBlock ? 'حظر' : 'رفع الحظر'
+  const icon      = isBlock ? '🚫' : '✅'
+
+  const target = resolveTarget(m, text)
+
+  if (!target) {
+    return m.reply(
+`╭────『 ${icon} ${actionAr} 』────
+│
+│ ❌ لم يتم تحديد المستخدم!
+│
+│ 📖 طرق الاستخدام:
+│
+│ 1️⃣  المنشن:
+│   ${usedPrefix}${command} @شخص
+│
+│ 2️⃣  الرد على رسالته:
+│   رُد على رسالته ثم اكتب ${usedPrefix}${command}
+│
+│ 3️⃣  رقم الهاتف مباشرة:
+│   ${usedPrefix}${command} 967778088098
+│
+╰──────────────────`.trim()
+    )
+  }
+
+  // Protect owner and bot from being blocked
+  const ownerNums = (global.owner || []).map(e => String(Array.isArray(e) ? e[0] : e).replace(/\D/g, ''))
+  const botNum    = (global.db?.data?.settings?.botNumber || conn.user?.id || '').replace(/\D/g, '').slice(0, 12)
+  const targetNum = safeNum(target)
+
+  if (ownerNums.some(n => n === targetNum)) {
+    return m.reply(`╭────『 ⚠️ محمي 』────\n│\n│ ❌ لا يمكن ${actionAr} مالك البوت.\n│\n╰──────────────────`.trim())
+  }
+  if (botNum && targetNum === botNum) {
+    return m.reply(`╭────『 ⚠️ خطأ 』────\n│\n│ ❌ لا يمكن ${actionAr} البوت نفسه.\n│\n╰──────────────────`.trim())
+  }
+
+  try {
+    await conn.updateBlockStatus(target, action)
+
+    let displayName = `@${targetNum}`
+    try { displayName = (await conn.getName(target)) || displayName } catch (_) {}
+
+    await m.reply(
+`╭────『 ${icon} ${actionAr} 』────
+│
+│ ${icon} تمّ بنجاح!
+│
+│ 👤 المستخدم: *${displayName}*
+│ 📱 الرقم:    *+${targetNum}*
+│ 🔧 العملية:  *${actionAr}*
+│
+╰──────────────────`.trim(),
+      null, { mentions: [target] }
+    )
+  } catch (e) {
+    await m.reply(
+`╭────『 ❌ فشل 』────
+│
+│ تعذّرت العملية للمستخدم @${targetNum}
+│ السبب: ${e?.message || 'خطأ غير معروف'}
+│
+│ تأكد أن الرقم صحيح ومسجل على واتساب.
+│
+╰──────────────────`.trim(),
+      null, { mentions: [target] }
+    )
+  }
+}
+
+handler.help    = ['بلوك <@شخص|رقم>', 'فك_البلوك <@شخص|رقم>']
+handler.tags    = ['owner']
+handler.command = /^(بلوك|blok|block|فك_البلوك|فك-البلوك|رفع-البلوك|unblok|unblock)$/i
+handler.rowner  = true
 export default handler
