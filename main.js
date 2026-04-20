@@ -18,6 +18,7 @@ import { makeWASocket, protoType, serialize } from './lib/simple.js';
 import { Low, JSONFile } from 'lowdb';
 import store from './lib/store.js';
 import { mongoDB } from './lib/mongoDB.js';
+import { SupabaseDB } from './lib/supabaseDB.js';
 
 const { proto } = (await import('@whiskeysockets/baileys')).default;
 const {
@@ -70,8 +71,13 @@ global.prefix = new RegExp(
 
 // ====== DATABASE ======
 const MONGODB_URI = process.env.MONGODB_URI;
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
-if (MONGODB_URI) {
+if (SUPABASE_URL && SUPABASE_KEY) {
+  global.db = new SupabaseDB(SUPABASE_URL, SUPABASE_KEY);
+  console.log('[DB] Using Supabase for persistent storage.');
+} else if (MONGODB_URI) {
   global.db = new mongoDB(MONGODB_URI);
   console.log('[DB] Using MongoDB Atlas for persistent storage.');
 } else {
