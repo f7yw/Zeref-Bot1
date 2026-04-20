@@ -15,13 +15,33 @@ var handler = async (m, { conn, command, text, usedPrefix }) => {
   if (/^https?:\/\//i.test(text.trim())) {
     url = text.trim()
   } else {
-    const results = await searchYouTube(text, 1)
-    if (!results.length) throw '*❌ لم يتم العثور على نتائج*'
-    videoInfo = results[0]
-    url = videoInfo.url || `https://www.youtube.com/watch?v=${videoInfo.id}`
+    try {
+      const results = await searchYouTube(text, 1)
+      if (results.length) {
+        videoInfo = results[0]
+        url = videoInfo.url || (videoInfo.id ? `https://www.youtube.com/watch?v=${videoInfo.id}` : null)
+      }
+    } catch (e) {
+      console.error('yt-dlp search failed:', e)
+    }
+
+    // Fallback to yts for searching if yt-dlp search failed or returned nothing
+    if (!url) {
+      try {
+        const s = await yts(text)
+        if (s.videos.length) {
+          videoInfo = s.videos[0]
+          url = videoInfo.url
+        }
+      } catch (e) {
+        console.error('yt-search failed:', e)
+      }
+    }
   }
 
-  // Fallback: use yts for thumbnail/display info
+  if (!url) throw '*❌ لم يتم العثور على نتائج للبحث*'
+
+  // Get video info for display if not already fetched
   if (!videoInfo) {
     try {
       const s = await yts({ videoId: url.match(/[?&]v=([^&]+)/)?.[1] || url.split('/').pop() })
@@ -29,33 +49,51 @@ var handler = async (m, { conn, command, text, usedPrefix }) => {
     } catch (_) {}
   }
 
-  const { filePath, title, thumbnail, webpage_url, views } = await downloadAudio(url, { maxDuration: 600 })
+  try {
+    const { filePath, title, thumbnail, webpage_url } = await downloadAudio(url, { maxDuration: 600 })
 
-  const caption = `*❖───┊ ♪ يوتيوب ♪ ┊───❖*
+    const caption = `╭────『 🎵 يوتيوب ♪ ┊───❖
+│
+│ ❏ *العنوان:* ${title}
+│ ❒ *الرابط:* ${webpage_url || url}
+│
+╰──────────────────`
 
-  ❏ *العنوان:* ${title}
-  ❒ *الرابط:* ${webpage_url || url}`
-
-  // Send thumbnail first if available
-  if (thumbnail) {
-    try {
-      await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption }, { quoted: m })
-    } catch (_) {
+    // Send thumbnail first if available
+    if (thumbnail) {
+      try {
+        await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption }, { quoted: m })
+      } catch (_) {
+        await m.reply(caption)
+      }
+    } else {
       await m.reply(caption)
     }
-  } else {
-    await m.reply(caption)
+
+    // Send audio
+    await conn.sendMessage(m.chat, {
+      audio: { url: filePath },
+      mimetype: 'audio/mpeg',
+      fileName: `${title.slice(0, 80)}.mp3`,
+      ptt: false
+    }, { quoted: m })
+
+    // Clean up
+    if (fs.existsSync(filePath)) {
+      fs.unlink(filePath, () => {})
+    }
+  } catch (e) {
+    console.error('Download failed:', e)
+    const errorMsg = `╭────『 ⚠️ خطأ في التحميل 』────
+│
+│ ❌ عذراً، فشل تحميل الصوت مباشرة.
+│ 📝 السبب: ${e.message.includes('دقيقة') ? e.message : 'مشكلة في الخادم أو حظر من يوتيوب'}
+│ 🔗 يمكنك الاستماع عبر الرابط:
+│ ${url}
+│
+╰──────────────────`
+    await m.reply(errorMsg)
   }
-
-  // Send audio
-  await conn.sendMessage(m.chat, {
-    audio: { url: filePath },
-    mimetype: 'audio/mpeg',
-    fileName: `${title.slice(0, 80)}.mp3`,
-    ptt: false
-  }, { quoted: m })
-
-  fs.unlink(filePath, () => {})
 }
 
 handler.help = ['شغل <اسم الأغنية أو رابط>']

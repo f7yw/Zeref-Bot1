@@ -6,7 +6,6 @@ const COIN_MIN  = 150
 const COIN_MAX  = 400
 const XP_BONUS  = 50
 const DIA_CHANCE = 0.05
-const makeId = () => Math.random().toString(36).slice(2, 6).toUpperCase()
 
 function normalize(s) {
   return String(s || '').trim().toLowerCase()
@@ -17,7 +16,7 @@ function normalize(s) {
     .replace(/[^\p{L}\p{N}]/gu, '')
 }
 
-let handler = async (m, { conn, usedPrefix }) => {
+let handler = async (m, { conn, command, usedPrefix }) => {
   conn.quiz = conn.quiz || {}
   const chatId = m.chat
 
@@ -26,14 +25,30 @@ let handler = async (m, { conn, usedPrefix }) => {
     return
   }
 
-  const baseQ = JSON.parse(fs.readFileSync('./src/game/acertijo.json'))
-  const itQ   = JSON.parse(fs.readFileSync('./src/game/it_questions.json'))
-  const questions = [...baseQ, ...itQ]
+  let file = 'acertijo.json'
+  let title = 'سؤال ذكاء'
+  
+  if (command === 'رياضه') { file = 'رياضه.json'; title = 'سؤال رياضي' }
+  if (command === 'تجميع') { file = 'qoran3.json'; title = 'تجميع كلمات' }
+  if (command === 'تفكيك') { file = 'qoran4.json'; title = 'تفكيك كلمات' }
+
+  let questions = []
+  try {
+    questions = JSON.parse(fs.readFileSync(`./src/game/${file}`))
+    if (command === 'سوال' || command === 'quiz') {
+      const itQ = JSON.parse(fs.readFileSync('./src/game/it_questions.json'))
+      questions = [...questions, ...itQ]
+    }
+  } catch (e) {
+    console.error('Failed to load questions:', e)
+    throw '*❌ حدث خطأ في تحميل الأسئلة*'
+  }
+
   const q = questions[Math.floor(Math.random() * questions.length)]
   const reward = Math.floor(Math.random() * (COIN_MAX - COIN_MIN + 1)) + COIN_MIN
 
   const caption =
-`╭────『 🧠 سؤال SHADOW 』────
+`╭────『 🧠 ${title} 』────
 │
 │ *❓ ${q.question}*
 │
@@ -70,20 +85,13 @@ let handler = async (m, { conn, usedPrefix }) => {
   }
 }
 
-// ── Answer detection ─────────────────────────────────────────
 handler.all = async function (m) {
   const chatId = m.chat
   if (!this.quiz || !(chatId in this.quiz)) return
   if (m.isBaileys) return
 
   const entry = this.quiz[chatId]
-
-  // ✅ يسمح فقط بالرد على نفس رسالة السؤال
-  const isReplyToQuestion =
-    m.quoted &&
-    entry.msgId &&
-    m.quoted.id === entry.msgId
-
+  const isReplyToQuestion = m.quoted && entry.msgId && m.quoted.id === entry.msgId
   if (!isReplyToQuestion) return
 
   const rawText = (m.text || '').trim()
@@ -93,29 +101,28 @@ handler.all = async function (m) {
   const text   = normalize(rawText)
   if (!text) return
 
-  const correct =
-    text === answer ||
-    text.includes(answer) ||
-    (answer.includes(text) && text.length >= 3)
+  const correct = text === answer || text.includes(answer) || (answer.includes(text) && text.length >= 3)
 
-  if (!correct) return
+  if (!correct) {
+    await this.reply(m.chat, '❌ إجابة خاطئة، حاول مرة أخرى.', m)
+    return
+  }
 
   clearTimeout(entry.timer)
   delete this.quiz[chatId]
 
-  const user = global.db.data.users[m.sender]
-  if (user) {
-    initEconomy(user)
-    user.money += entry.reward
-    user.exp   += XP_BONUS
-    user.totalEarned = (user.totalEarned || 0) + entry.reward
-    logTransaction(user, 'earn', entry.reward, `🧠 إجابة صحيحة`)
+  const user = global.db.data.users[m.sender] || (global.db.data.users[m.sender] = {})
+  initEconomy(user, m.sender)
+  user.money = (user.money || 0) + entry.reward
+  user.exp   = (user.exp || 0) + XP_BONUS
+  user.totalEarned = (user.totalEarned || 0) + entry.reward
+  logTransaction(user, 'earn', entry.reward, `🧠 إجابة صحيحة في ${entry.question.question.slice(0, 20)}...`)
 
-    const gotDia = Math.random() < DIA_CHANCE
-    if (gotDia) user.diamond = (user.diamond || 0) + 1
+  const gotDia = Math.random() < DIA_CHANCE
+  if (gotDia) user.diamond = (user.diamond || 0) + 1
 
-    await this.reply(
-      m.chat,
+  await this.reply(
+    m.chat,
 `╭────『 ✅ إجابة صحيحة! 』────
 │
 │ 🎉 أحسنت *@${m.sender.split('@')[0]}*!
@@ -128,20 +135,13 @@ handler.all = async function (m) {
 ${gotDia ? '│ 💎 +1 ماسة!\n' : ''}│
 │ 💰 رصيدك: ${fmt(user.money)}
 ╰──────────────────`.trim(),
-      m,
-      { mentions: [m.sender] }
-    )
-  } else {
-    await this.reply(
-      m.chat,
-      `✅ إجابة صحيحة!\n✔️ *${entry.question.response}*`,
-      m
-    )
-  }
+    m,
+    { mentions: [m.sender] }
+  )
 }
 
-handler.help = ['سوال', 'quiz']
+handler.help = ['سوال', 'رياضه', 'تجميع', 'تفكيك']
 handler.tags = ['game']
-handler.command = /^(سوال|quiz|سؤال|اسأل)$/i
+handler.command = /^(سوال|quiz|سؤال|اسأل|رياضه|تجميع|تفكيك)$/i
 
 export default handler

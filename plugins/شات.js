@@ -1,6 +1,7 @@
 let handler = m => m;
 
 handler.all = async function (m) {
+    if (m.fromMe) return
     let chat = global.db.data.chats[m.chat];
     // أوامر تشغيل/إيقاف الردود التلقائية بنقطة في البداية
  

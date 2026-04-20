@@ -1,63 +1,60 @@
-let handler = async (m, { conn, text, command, usedPrefix, args }) => {
-let pp = 'https://www.bighero6challenge.com/images/thumbs/Piedra,-papel-o-tijera-0003318_1584.jpeg'
-if (!args[0]) throw conn.sendHydrated(m.chat, 'حجر, ورقه, مقص\n\n استخدم الزراير او الاوامر عشان تلعب يقلب شادو ✨💜💫:\n.ppt piedra\n.ppt papel\n.ppt tijera\n\n_Abdelrahman Elshamhout_', wm, pp, null, null, null, null, [
-['حجر 🥌', `${usedPrefix + command} حجر`],
-['ورقة 📄', `${usedPrefix + command} ورقة`],
-['مقص ✂️', `${usedPrefix + command} مقص`]
-], m)
-var astro = Math.random()
-if (astro < 0.34) {
-astro = 'حجر' 
-} else if (astro > 0.34 && astro < 0.67) {
-astro = 'مقص' 
-} else {
-astro = 'ورقة'
+import { initUser } from '../lib/userInit.js'
+import { initEconomy, fmt } from '../lib/economy.js'
+
+let handler = async (m, { conn, text, usedPrefix, command }) => {
+  if (!text) throw `*مثال: ${usedPrefix}${command} حجر*`
+  
+  const choices = ['حجر', 'ورقة', 'مقص']
+  const userChoice = text.trim().toLowerCase()
+  if (!choices.includes(userChoice)) throw `*خياراتك هي: حجر، ورقة، مقص*`
+  
+  let botChoice = ''
+  const astro = Math.random()
+  if (astro < 0.34) botChoice = 'حجر'
+  else if (astro < 0.67) botChoice = 'مقص'
+  else botChoice = 'ورقة'
+
+  const user = global.db.data.users[m.sender] || (global.db.data.users[m.sender] = {})
+  initUser(user, m.pushName, m.sender)
+  initEconomy(user, m.sender)
+
+  let result = ''
+  let win = false
+  let tie = false
+
+  if (userChoice === botChoice) {
+    result = '🤝 تعادل!'
+    tie = true
+  } else if (
+    (userChoice === 'حجر' && botChoice === 'مقص') ||
+    (userChoice === 'ورقة' && botChoice === 'حجر') ||
+    (userChoice === 'مقص' && botChoice === 'ورقة')
+  ) {
+    result = '🎉 فزت!'
+    win = true
+  } else {
+    result = '❌ خسرت!'
+  }
+
+  const xpReward = win ? 1000 : tie ? 500 : -300
+  user.exp = (user.exp || 0) + xpReward
+  if (user.exp < 0) user.exp = 0
+
+  const response = `╭────『 🎮 حجر-ورقة-مقص 』────
+│
+│ 👤 أنت: *${userChoice}*
+│ 🤖 البوت: *${botChoice}*
+│
+│ 🏁 النتيجة: *${result}*
+│ │ ⭐ XP: ${xpReward > 0 ? '+' : ''}${xpReward}
+│
+╰──────────────────`
+
+  await m.reply(response)
 }
-if (text == astro) {
-global.db.data.users[m.sender].exp += 500
-m.reply(`🔰 تعادل!\n\nانت: ${text}\nالبوت: ${astro}\n🎁 لقد حصلت علي +500 نقطة`)
-} else if (text == 'ورقة') {
-if (astro == 'حجر') {
-global.db.data.users[m.sender].exp += 1000
-m.reply(`🥳 لقد فزت! 🎉\n\nانت: ${text}\nالبوت: ${astro}\n🎁 لقد حصلت علي +1000 نقطة`)
-} else {
-global.db.data.users[m.sender].exp -= 300
-m.reply(`☠️ انت تخسر! ❌\n\nانت: ${text}\nالبوت: ${astro}\n❌ تم خصم -300 نقطة`)
-}
-} else if (text == 'مقص') {
-if (astro == 'ورقة') {
-global.db.data.users[m.sender].exp += 1000
-m.reply(`🥳 لقد فزت! 🎉\n\nانت: ${text}\nالبوت: ${astro}\n🎁 لقد حصلت علي +1000 `)
-} else {
-global.db.data.users[m.sender].exp -= 300
-m.reply(`☠️ انت تخسر! ❌\n\nانت: ${text}\nالبوت: ${astro}\n❌ تم خصم -300 نقطة`)
-}
-} else if (text == 'مقص') {
-if (astro == 'ورقة') {
-global.db.data.users[m.sender].exp += 1000
-m.reply(`🥳 لقد فزت! 🎉\n\nانت: ${text}\nالبوت: ${astro}\n🎁 لقد حصلت علي +1000 نقطة`)
-} else {
-global.db.data.users[m.sender].exp -= 300
-m.reply(`☠️ انت تخسر! ❌\n\nانت: ${text}\nالبوت: ${astro}\n❌ تم خصم -300 نقطة`)
-}
-} else if (text == 'ورقة') {
-if (astro == 'حجر') {
-global.db.data.users[m.sender].exp += 1000
-m.reply(`🥳 لقد فزت! 🎉\n\nانت: ${text}\nالبوت: ${astro}\n🎁 لقد حصلت علي +1000 نقطة`)
-} else {
-global.db.data.users[m.sender].exp -= 300
-m.reply(`☠️ انت تخسر! ❌\n\nانت: ${text}\nالبوت: ${astro}\n❌ تم خصم -300 نقطة`)
-}
-} else if (text == 'حجر') {
-if (astro == 'مقص') {
-global.db.data.users[m.sender].exp += 1000
-m.reply(`🥳 لقد فزت! 🎉\n\n*👉🏻 انت: ${text}\n👉🏻 البوت: ${astro}\n🎁 لقد حصلت علي +1000 نقطة`)
-} else {
-global.db.data.users[m.sender].exp -= 300
-m.reply(`☠️ انت تخسر! ❌\n\n*👉🏻 انت: ${text}\n👉🏻 البوت: ${astro}\n❌ تم خصم -300 نقطة`)
-}
-}}
-handler.help = ['ppt']
-handler.tags = ['games']
-handler.command = /^(لعبة)$/i
+
+handler.help = ['حجره', 'لعبة']
+handler.tags = ['game']
+handler.command = /^(حجره|لعبة|ppt)$/i
+
 export default handler

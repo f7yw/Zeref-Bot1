@@ -1,12 +1,45 @@
-let handler = async (m, { conn, participants, usedPrefix, command }) => {
-let BANtext = `[❗] منشن او ريبلاي للشخص المراد حظره\n\n*—◉ مثال :*\n*${usedPrefix + command} @${global.suittag}*`
-if (!m.mentionedJid[0] && !m.quoted) return m.reply(BANtext, m.chat, { mentions: conn.parseMention(BANtext)})
-let who
-if (m.isGroup) who = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted.sender
-else who = m.chat
-let users = global.db.data.users
-users[who].banned = true
-m.reply('*[❗] تم حظر المستخدم بنجاح*\n*—◉ لن يتمكن المستخدم من استخدام البوت حتي يتم الغاء الحظر*')    }
-handler.command = /^بان$/i
+import { initUser } from '../lib/userInit.js'
+
+let handler = async (m, { conn, text, usedPrefix, command }) => {
+  let who
+  if (m.isGroup) who = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : false
+  else who = m.chat
+  
+  if (!who) {
+    let BANtext = `╭────『 🔖 إدارة المستخدم 』────
+│
+│ ⚠️ منشن الشخص أو رد على رسالته
+│
+│ 📌 مثال: *${usedPrefix + command} @${global.suittag || m.sender.split('@')[0]}*
+│
+╰──────────────────`
+    return m.reply(BANtext, m.chat, { mentions: conn.parseMention(BANtext) })
+  }
+  
+  let user = global.db.data.users[who]
+  if (!user) {
+    user = global.db.data.users[who] = {}
+    initUser(user, undefined, who)
+  }
+
+  const isBanning = !command.includes('الغاء') && command !== 'unban'
+  user.banned = isBanning
+  user.bannedReason = text ? text.replace('@' + who.split`@` [0], '').trim() : ''
+
+  const status = isBanning ? '🚫 تم حظر' : '✅ تم إلغاء حظر'
+  const caption = `╭────『 👤 إدارة المستخدم 』────
+│
+│ ${status}: @${who.split('@')[0]}
+│ 📝 السبب: ${user.bannedReason || 'غير محدد'}
+│
+╰──────────────────`
+
+  await conn.reply(m.chat, caption, m, { mentions: [who] })
+}
+
+handler.help = ['banuser', 'unbanuser', 'بان', 'الغاء_بان']
+handler.tags = ['owner']
+handler.command = /^(banuser|unbanuser|بان|الغاء_بان|حظر|الغاء_الحظر)$/i
 handler.rowner = true
+
 export default handler
