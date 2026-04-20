@@ -15,5 +15,5 @@ RUN npm install --legacy-peer-deps && \
 COPY . .
 
 EXPOSE 5000
-ENV PHONE_NUMBER=967782114485
+
 CMD ["node", "index.js"]
