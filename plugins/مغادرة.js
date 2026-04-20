@@ -17,6 +17,7 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner }) => {
     user.energy      = 100
     user.transactions = []
     user.totalEarned  = 0
+    await global.db.write()
     return m.reply(`✅ *تم إلغاء تسجيلك بنجاح.*\n\nتم حذف جميع بياناتك من البوت بما فيها رصيدك.\nيمكنك التسجيل مجدداً في أي وقت باستخدام *.تسجيل*`)
   }
 
@@ -27,19 +28,25 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner }) => {
     const targetUser = global.db?.data?.users?.[target]
     if (!targetUser) throw '❌ هذا المستخدم غير موجود في قاعدة البيانات.'
     delete global.db.data.users[target]
+    await global.db.write()
     return conn.reply(m.chat, `✅ تم حذف بيانات @${target.split('@')[0]} من قاعدة البيانات.`, m, { mentions: [target] })
   }
 
   if (/^(مميز_حذف|حذف_مميز|delprem)$/i.test(command)) {
     if (!isOwner) throw '❌ هذا الأمر للمطور فقط.'
-    const target = m.mentionedJid?.[0] || m.quoted?.sender
+    const target = m.mentionedJid?.[0] || m.quoted?.sender || (args[0] ? args[0].replace(/[^0-9]/g, '') + '@s.whatsapp.net' : null)
     if (!target) throw `حدد العضو:\n${usedPrefix}${command} @الشخص`
-    const targetUser = global.db?.data?.users?.[target]
+    const num = target.split('@')[0].replace(/[^0-9]/g, '')
+    const normalJid = num + '@s.whatsapp.net'
+    const targetUser = global.db?.data?.users?.[normalJid]
     if (!targetUser) throw '❌ هذا المستخدم غير موجود.'
     targetUser.premium = false
     targetUser.premiumTime = 0
     targetUser.infiniteResources = false
-    return conn.reply(m.chat, `✅ تم إلغاء تميّز @${target.split('@')[0]}.`, m, { mentions: [target] })
+    const premIdx = global.prems.indexOf(num)
+    if (premIdx !== -1) global.prems.splice(premIdx, 1)
+    await global.db.write()
+    return conn.reply(m.chat, `✅ تم إلغاء تميّز +${num} بنجاح.`, m, { mentions: [normalJid] })
   }
 }
 

@@ -43,6 +43,7 @@ let handler = async (m, { conn, text }) => {
   user.diamond = (user.diamond || 0) + VIP_BONUS_DIAMOND
 
   logTransaction(user, 'earn', VIP_BONUS_MONEY, '👑 هدية ترقية VIP')
+  await global.db.write()
 
   const msg = `╭────『 👑 ترقية VIP 』────
 │

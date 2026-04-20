@@ -99,6 +99,19 @@ global.loadDatabase = async function () {
   if (global.db.chain !== undefined || !MONGODB_URI) {
     global.db.chain = chain(global.db.data);
   }
+
+  // تنظيف تلقائي: حذف سجلات LID الوهمية (ليست أرقام هواتف حقيقية)
+  let cleaned = 0;
+  for (const key of Object.keys(global.db.data.users || {})) {
+    if (key.endsWith('@lid')) { delete global.db.data.users[key]; cleaned++; }
+  }
+  for (const key of Object.keys(global.db.data.chats || {})) {
+    if (key.endsWith('@lid')) { delete global.db.data.chats[key]; cleaned++; }
+  }
+  if (cleaned > 0) {
+    console.log(chalk.yellow(`[DB] Removed ${cleaned} LID entries from database.`));
+    await global.db.write().catch(console.error);
+  }
 };
 await loadDatabase();
 
