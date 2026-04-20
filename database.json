@@ -1685,7 +1685,7 @@
       "emas": 0,
       "emerald": 0,
       "esteh": 0,
-      "exp": 24801,
+      "exp": 24810,
       "expg": 0,
       "exphero": 0,
       "expired": 0,
@@ -2007,12 +2007,12 @@
         "soal": null
       },
       "messages": {
-        "total": 282,
+        "total": 283,
         "groups": {
           "120363427285079878@g.us": 281,
-          "120363408934664388@g.us": 1
+          "120363408934664388@g.us": 2
         },
-        "last": 1776683914540
+        "last": 1776685155592
       },
       "energy": 90,
       "transactions": [
@@ -2181,7 +2181,7 @@
       "simi": false,
       "expired": 0,
       "messageStats": {
-        "204990769553546@lid": 1,
+        "204990769553546@lid": 2,
         "967782114485@s.whatsapp.net": 1
       }
     },
