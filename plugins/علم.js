@@ -38,6 +38,8 @@ let handler = async (m, { conn, usedPrefix }) => {
 │
 │ *❓ ما اسم هذا العلم؟*
 │
+│ 🚩 العلم: ${q.question}
+│
 │ ⏱️ الوقت: ${TIMEOUT / 1000} ثانية
 │ 💰 الجائزة: ${fmt(reward)}
 │ ⭐ XP: +${XP_BONUS}

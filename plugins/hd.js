@@ -1,4 +1,3 @@
-import sharp from 'sharp'
 import { deductEnergy, syncEnergy, initEconomy, isVip, FEES, MAX_ENERGY } from '../lib/economy.js'
 import { typingDelay } from '../lib/presence.js'
 
@@ -35,7 +34,8 @@ let handler = async (m, { conn, usedPrefix }) => {
   await m.reply(`⚙️ جاري رفع جودة الصورة...${!vip ? ` ⚡ -${FEES.hd} طاقة` : ''}`)
 
   try {
-    const img = await downloadMedia(q)
+    const { default: sharp } = await import('sharp')
+    const img = await q.download()
     if (!img || !Buffer.isBuffer(img) || img.length < 100) throw new Error('تعذر تحميل الصورة')
 
     const meta = await sharp(img).metadata()
@@ -65,16 +65,5 @@ handler.tags = ['tools', 'ai']
 handler.command = /^(جوده|دقه|hd|HD)$/i
 handler.register = false
 handler.limit = false
-export default handler
 
-async function downloadMedia(msg) {
-  if (typeof msg.download === 'function') {
-    const d = await msg.download()
-    if (d) return Buffer.isBuffer(d) ? d : Buffer.from(d)
-  }
-  if (msg.msg && typeof msg.msg.download === 'function') {
-    const d = await msg.msg.download()
-    if (d) return Buffer.isBuffer(d) ? d : Buffer.from(d)
-  }
-  throw new Error('No download method available')
-}
+export default handler
