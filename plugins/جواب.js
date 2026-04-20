@@ -126,5 +126,5 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
 handler.help = ['جواب <رمز> <الإجابة>', 'الجواب']
 handler.tags = ['game']
-handler.command = /^(جواب|اجابة|إجابة|حل|answer|الجواب|اظهر_الجواب|اظهر-الجواب)$/i
+handler.command = /^(جواب|اجابة|إجابة|answer|الجواب|اظهر_الجواب|اظهر-الجواب)$/i
 export default handler

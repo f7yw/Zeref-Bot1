@@ -23,7 +23,7 @@ let handler = async (m, { conn, usedPrefix, command, isOwner, participants }) =>
 
     const txns = Array.isArray(user.transactions) ? user.transactions.slice(-5).reverse() : []
     const txnLines = txns.length
-      ? txns.map(t => `│ ${t.type === 'earn' ? '📈' : '📉'} ${fmt(t.amount)} — ${t.note || '—'}`).join('\n')
+      ? txns.map(t => `│ ${t.type === 'earn' ? '📈' : '📉'} ${fmt(t.amount)} — ${t.reason || '—'}`).join('\n')
       : '│ لا توجد معاملات مسجلة بعد.'
 
     const totalNet = (user.totalEarned || 0) - (user.totalSpent || 0)

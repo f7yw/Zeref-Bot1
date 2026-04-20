@@ -1,4 +1,4 @@
-import { syncEnergy, FEES, initEconomy, logTransaction } from '../lib/economy.js'
+import { syncEnergy, deductEnergy, FEES, initEconomy, logTransaction } from '../lib/economy.js'
 import { execSync } from 'child_process'
 import { existsSync } from 'fs'
 import { join } from 'path'
@@ -74,10 +74,7 @@ let handler = async (m, { conn, usedPrefix, command, text, args }) => {
       if (ytdlp?.downloadAudio) {
         const result = await ytdlp.downloadAudio(url)
         if (result) {
-          if (!user.infiniteResources) {
-            user.energy = Math.max(0, (user.energy || 0) - FEES.ai)
-            user.lastEnergyRegen = Date.now()
-          }
+          deductEnergy(user, FEES.ai, m.sender)
           logTransaction(user, 'spend', 0, '🎵 استخراج صوت')
           return conn.sendMessage(m.chat, { audio: result, mimetype: 'audio/mpeg', ptt: false }, { quoted: m })
         }
@@ -90,9 +87,7 @@ let handler = async (m, { conn, usedPrefix, command, text, args }) => {
       if (y2) {
         const dl = await y2(url, 'mp3')
         if (dl?.link) {
-          if (!user.infiniteResources) {
-            user.energy = Math.max(0, (user.energy || 0) - FEES.ai)
-          }
+          deductEnergy(user, FEES.ai, m.sender)
           logTransaction(user, 'spend', 0, '🎵 استخراج صوت')
           return conn.sendMessage(m.chat, { audio: { url: dl.link }, mimetype: 'audio/mpeg' }, { quoted: m })
         }
@@ -119,9 +114,7 @@ let handler = async (m, { conn, usedPrefix, command, text, args }) => {
       if (ytdlp?.downloadVideo) {
         const result = await ytdlp.downloadVideo(url)
         if (result) {
-          if (!user.infiniteResources) {
-            user.energy = Math.max(0, (user.energy || 0) - FEES.hd)
-          }
+          deductEnergy(user, FEES.hd, m.sender)
           logTransaction(user, 'spend', 0, '🎬 تحميل فيديو')
           return conn.sendMessage(m.chat, { video: result, mimetype: 'video/mp4' }, { quoted: m })
         }
@@ -149,10 +142,7 @@ let handler = async (m, { conn, usedPrefix, command, text, args }) => {
 
       if (!clean) return m.reply('⚠️ لم أجد أي نص في الصورة.')
 
-      const energy = syncEnergy(user)
-      if (!user.infiniteResources && energy >= FEES.ai) {
-        user.energy = Math.max(0, (user.energy || 0) - FEES.ai)
-      }
+      deductEnergy(user, FEES.ai, m.sender)
 
       return m.reply(`╭────『 📝 نص الصورة 』────\n│\n${clean.split('\n').map(l => '│ ' + l).join('\n')}\n│\n╰──────────────────`)
     } catch (e) {

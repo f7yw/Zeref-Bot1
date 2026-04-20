@@ -92,7 +92,7 @@
       "emas": 0,
       "emerald": 0,
       "esteh": 0,
-      "exp": 22675,
+      "exp": 22677,
       "expg": 0,
       "exphero": 0,
       "expired": 0,
@@ -414,7 +414,7 @@
         "soal": null
       },
       "energy": 100,
-      "lastEnergyRegen": 1776687520009,
+      "lastEnergyRegen": 1776687559727,
       "lastDaily": 0,
       "lastWork": 1776481197104,
       "totalEarned": 438,
@@ -453,13 +453,13 @@
       ],
       "notes": [],
       "messages": {
-        "total": 1116,
+        "total": 1117,
         "groups": {
           "120363427285079878@g.us": 837,
           "120363422912330057@g.us": 53,
           "120363360836384520@g.us": 41
         },
-        "last": 1776687532918
+        "last": 1776687559724
       },
       "bannedReason": "",
       "transactions": [

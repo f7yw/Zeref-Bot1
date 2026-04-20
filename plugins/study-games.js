@@ -1,3 +1,5 @@
+import { initEconomy, logTransaction } from '../lib/economy.js'
+
 const words = ['جامعة', 'مدرسة', 'رياضيات', 'فيزياء', 'كيمياء', 'اختبار', 'مراجعة', 'محاضرة', 'واجب', 'تلخيص']
 
 function shuffle(word) {
@@ -40,8 +42,11 @@ let handler = async (m, { conn, command }) => {
     if (answer === game.answer) {
       delete conn.studyGames[m.chat]
       const user = global.db.data.users[m.sender] || (global.db.data.users[m.sender] = {})
-      user.exp = (user.exp || 0) + 25
+      initEconomy(user)
+      user.exp   = (user.exp   || 0) + 25
       user.money = (user.money || 0) + 20
+      user.totalEarned = (user.totalEarned || 0) + 20
+      logTransaction(user, 'earn', 20, '📚 فوز لعبة تعليمية')
       return m.reply('✅ صحيح! حصلت على 25 XP و20 عملة.')
     }
     return m.reply(`❌ غير صحيح. حاول مرة أخرى أو اكتب الإجابة بدقة.`)

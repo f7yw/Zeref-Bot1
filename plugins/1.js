@@ -1,28 +1,41 @@
+import { initEconomy, fmt, getRole } from '../lib/economy.js'
+import { xpRange } from '../lib/levelling.js'
 
-let handler = async (m, {conn, usedPrefix}) => {
-        
-    let who = m.quoted ? m.quoted.sender : m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender
-    let user = global.db.data.users[who]
-    if (!(who in global.db.data.users))throw`✳️ 
-المستخدم مفقود من قاعدة البيانات الخاصة بي`
-conn.reply(m.chat, `
-*◎─━──━─〘الــبــنــك〙─━──━─◎*
-*•┃❖الاســم*:📄┃@${who.split('@')[0]}
-*•┃❖الـماسـك:💎┃${user.diamond}*
-*•┃❖رصــيدك:🏛️┃${user.exp}*
-*•┃❖المستوى:🎚️┃${user.level}*
-*•┃❖الـرتــبــه:🏆┃${user.role}*
-*•┃❖عـمــلات:🪙┃${user.limit}*
-*•┃❖الـطـاقـه:⚡┃${user.joincount}*
-*◎ ─━──━─✎─━──━─ ◎*
-*ملحوظه:* 
-*يمكنك شراء💎 الماس باستخدام الطلبات*
-*◎─━──━─〘الشــراء〙─━──━─◎*
-❏ *❖${usedPrefix}buy <cantidad>*
-❏ *❖${usedPrefix}buyall*`, m, { mentions: [who] })
+let handler = async (m, { conn, usedPrefix }) => {
+  const who  = m.quoted?.sender || m.mentionedJid?.[0] || m.sender
+  const user = global.db.data.users[who]
+  if (!user) throw `✳️ المستخدم مفقود من قاعدة البيانات`
+  initEconomy(user)
+
+  const level = user.level || 0
+  const exp   = user.exp   || 0
+  const { max } = xpRange(level, global.multiplier)
+  const role  = getRole(level)
+
+  let name = who.split('@')[0]
+  try { name = await conn.getName(who) || name } catch (_) {}
+
+  conn.reply(m.chat, `
+╭────『 🏆 الرتبة 』────
+│
+│ 👤 *@${who.split('@')[0]}*
+│ 🏆 المستوى:  *${level}*
+│ ⚔️  الرتبة:   *${role}*
+│ ⭐ XP:        *${exp} / ${max}*
+│
+│ ─── 💰 الاقتصاد ───
+│ 💰 المحفظة:  ${fmt(user.money)}
+│ 🏦 البنك:    ${fmt(user.bank)}
+│ 💎 الماس:    ${user.diamond || 0}
+│ ⚡ الطاقة:   ${user.energy || 0}/100
+│
+│ 📌 ${usedPrefix}بروفايل  ← ملفك الكامل
+│ 📌 ${usedPrefix}البنك     ← إدارة الأموال
+╰──────────────────`.trim(), m, { mentions: [who] })
 }
-handler.help = ['رانك', 'diamond']
-handler.tags = ['econ']
-handler.command = ['رانك', 'diamond'] 
+
+handler.help    = ['رانك']
+handler.tags    = ['econ']
+handler.command = /^(رانك|rank)$/i
 
 export default handler
