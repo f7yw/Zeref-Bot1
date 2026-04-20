@@ -32,6 +32,7 @@
     "@green-code/music-track-data": "^2.0.3",
     "@hapi/boom": "^10.0.1",
     "@shineiichijo/marika": "^2.0.6",
+    "@supabase/supabase-js": "^2.104.0",
     "@vitalets/google-translate-api": "^8.0.0",
     "@whiskeysockets/baileys": "^7.0.0-rc.9",
     "@xct007/frieren-scraper": "^0.0.2",
