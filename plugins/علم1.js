@@ -21,7 +21,7 @@ handler.before = async function (m) {
   if (!(id in this.tekateki)) return !0
 
   const entry = this.tekateki[id]
-  const entryId = Array.isArray(entry) ? entry[0]?.id || entry[0]?.key?.id : entry.msgId
+  const entryId = Array.isArray(entry) ? (entry[0]?.id || entry[0]?.key?.id) : entry.msgId
   if (m.quoted.id !== entryId) return !0
 
   const json = Array.isArray(entry) ? entry[1] : entry.question
@@ -34,12 +34,31 @@ handler.before = async function (m) {
   if (userAns === correctAns) {
     const user = global.db.data.users[m.sender] || (global.db.data.users[m.sender] = {})
     initEconomy(user, m.sender)
-    user.exp = (user.exp || 0) + reward
+    
+    const xpBonus = reward
     const moneyReward = Math.floor(reward / 10)
+    
+    user.exp = (user.exp || 0) + xpBonus
     user.money = (user.money || 0) + moneyReward
+    user.totalEarned = (user.totalEarned || 0) + moneyReward
     logTransaction(user, 'earn', moneyReward, `🎮 فوز في لعبة ${json.question?.slice(0, 10) || 'علم1'}`)
 
-    await this.reply(m.chat, `*اجـــــابـه صــحــيـحــه✅*\n\n⭐ +${reward} Exp\n💰 +${fmt(moneyReward)}`, m)
+    let name = await this.getName(m.sender)
+
+    await this.reply(
+      m.chat, 
+      `╭────『 ✅ إجابة صحيحة! 』────
+│
+│ 🎉 أحسنت *@${m.sender.split('@')[0]}* (${name})!
+│
+│ ⭐ +${xpBonus} XP
+│ 💰 +${fmt(moneyReward)}
+│
+╰──────────────────`.trim(), 
+      m, 
+      { mentions: [m.sender] }
+    )
+    
     clearTimeout(timer)
     delete this.tekateki[id]
   } else if (similarity(userAns, correctAns) >= threshold) {

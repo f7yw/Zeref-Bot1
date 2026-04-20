@@ -26,7 +26,7 @@ function buildQ(lvl) {
 function giveReward(m, entry) {
   const user = global.db.data.users[m.sender]
   if (user) {
-    initEconomy(user)
+    initEconomy(user, m.sender)
     user.money += entry.reward
     user.exp   += entry.xpBonus
     user.totalEarned = (user.totalEarned || 0) + entry.reward
@@ -123,12 +123,13 @@ handler.all = async function (m) {
   delete this.math[chatId]
 
   const user = giveReward(m, entry)
+  let name = await this.getName(m.sender)
 
   await this.reply(
     m.chat,
-`╭────『 🧮 إجابة صحيحة! 』────
+    `╭────『 🧮 إجابة صحيحة! 』────
 │
-│ 🎉 أحسنت *@${m.sender.split('@')[0]}*!
+│ 🎉 أحسنت *@${m.sender.split('@')[0]}* (${name})!
 │ ✅ ${entry.question.expr} = *${entry.question.answer}*
 │
 │ 💰 +${fmt(entry.reward)}

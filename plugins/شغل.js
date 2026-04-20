@@ -84,7 +84,9 @@ var handler = async (m, { conn, command, text, usedPrefix }) => {
     }
   } catch (e) {
     console.error('Download failed:', e)
-    const errorMsg = `╭────『 ⚠️ خطأ في التحميل 』────
+    
+    // Fallback logic: if download fails, provide the link and a clear message
+    let fallbackMsg = `╭────『 ⚠️ خطأ في التحميل 』────
 │
 │ ❌ عذراً، فشل تحميل الصوت مباشرة.
 │ 📝 السبب: ${e.message.includes('دقيقة') ? e.message : 'مشكلة في الخادم أو حظر من يوتيوب'}
@@ -92,7 +94,16 @@ var handler = async (m, { conn, command, text, usedPrefix }) => {
 │ ${url}
 │
 ╰──────────────────`
-    await m.reply(errorMsg)
+    
+    // If we don't have videoInfo yet, try to get it one last time for the fallback
+    if (!videoInfo) {
+      try {
+        const s = await yts(text)
+        if (s.videos.length) videoInfo = s.videos[0]
+      } catch (_) {}
+    }
+
+    await m.reply(fallbackMsg)
   }
 }
 

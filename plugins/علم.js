@@ -104,11 +104,13 @@ handler.all = async function (m) {
   user.totalEarned = (user.totalEarned || 0) + entry.reward
   logTransaction(user, 'earn', entry.reward, `🚩 تخمين علم ${entry.question.response}`)
 
+  let name = await this.getName(m.sender)
+
   await this.reply(
     m.chat,
 `╭────『 ✅ إجابة صحيحة! 』────
 │
-│ 🎉 أحسنت *@${m.sender.split('@')[0]}*!
+│ 🎉 أحسنت *@${m.sender.split('@')[0]}* (${name})!
 │
 │ ✅ الإجابة: *${entry.question.response}*
 │
