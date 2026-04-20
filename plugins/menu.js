@@ -420,34 +420,14 @@ let handler = async (m, { conn, usedPrefix }) => {
 
   await typingDelay(conn, m.chat, 2200)
 
-  const rows = Object.entries(menuSections).map(([num, s]) => ({
-    title: s.title,
-    rowId: num,
-    description: `عرض أوامر قسم ${s.title}`
-  }))
-
-  const button = {
-    title: "📋 أقسام البوت",
-    description: stats,
-    footerText: "اختر قسماً من القائمة أدناه",
-    buttonText: "📋 عرض الأقسام"
-  }
-
   global.menuSessions ??= {}
   global.menuSessions[m.sender] = { prefix: usedPrefix, ts: Date.now() }
 
-  try {
-    // Attempt to send list message
-    await conn.sendListM(m.chat, button, rows, m)
-  } catch (e) {
-    console.error("Error sending list message:", e)
-    // Fallback to text message if list fails
-    await conn.sendMessage(
-      m.chat,
-      { image: global.imagen4, caption: buildMenuText(usedPrefix, stats) },
-      { quoted: m }
-    )
-  }
+  await conn.sendMessage(
+    m.chat,
+    { image: global.imagen4, caption: buildMenuText(usedPrefix, stats) },
+    { quoted: m }
+  )
 }
 
 handler.command = /^(اوامر|أوامر|الاوامر|الأوامر|كل_الاوامر|كل-الاوامر|المهام|مهام|menu|help|قائمة|القائمة|قائمه|القائمه)$/i
@@ -462,16 +442,11 @@ handler.all = async function (m) {
   const prefix = session.prefix || '.'
   let choice = ''
 
-  // Check if it's a list response
-  if (m.mtype === 'listResponseMessage') {
-    choice = m.msg.singleSelectReply?.selectedRowId || ''
-  } else {
-    // Check if it's a normal text message with prefix
-    const raw = (m.text || '').trim()
-    if (!raw.startsWith(prefix)) return
-    const afterPrefix = raw.slice(prefix.length).trim()
-    choice = normalizeChoice(afterPrefix)
-  }
+  // Check if it's a normal text message with prefix
+  const raw = (m.text || '').trim()
+  if (!raw.startsWith(prefix)) return
+  const afterPrefix = raw.slice(prefix.length).trim()
+  choice = normalizeChoice(afterPrefix)
 
   const section = menuSections[choice]
   if (!section) return
