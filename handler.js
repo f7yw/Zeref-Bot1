@@ -56,6 +56,72 @@ const sameJidLoose = (a, b, conn) => {
     }
     return false
 }
+/**
+ * يُحوّل ردود الأزرار/القوائم/التفاعلية إلى m.text (كأمر عادي) ليعمل التوجيه.
+ * يستخرج المعرّف من:
+ *   - buttonsResponseMessage.selectedButtonId
+ *   - listResponseMessage.singleSelectReply.selectedRowId
+ *   - templateButtonReplyMessage.selectedId
+ *   - interactiveResponseMessage.nativeFlowResponseMessage.paramsJson.id
+ * ويضع m.selectedId و m.selectedDisplayText و m.isInteractive.
+ * إذا كان المعرّف لا يبدأ ببادئة، نُضيف '.' افتراضياً ليُعامل كأمر.
+ */
+function parseInteractiveResponse(m) {
+    if (!m || !m.message) return
+    const msg = m.message
+    let selectedId = ''
+    let displayText = ''
+    let kind = ''
+
+    // 1) أزرار Quick Reply
+    if (msg.buttonsResponseMessage) {
+        selectedId  = msg.buttonsResponseMessage.selectedButtonId || ''
+        displayText = msg.buttonsResponseMessage.selectedDisplayText || ''
+        kind = 'button'
+    }
+    // 2) قائمة (List)
+    else if (msg.listResponseMessage) {
+        const sel = msg.listResponseMessage.singleSelectReply || {}
+        selectedId  = sel.selectedRowId || ''
+        displayText = msg.listResponseMessage.title || msg.listResponseMessage.description || ''
+        kind = 'list'
+    }
+    // 3) Template Button
+    else if (msg.templateButtonReplyMessage) {
+        selectedId  = msg.templateButtonReplyMessage.selectedId || ''
+        displayText = msg.templateButtonReplyMessage.selectedDisplayText || ''
+        kind = 'template'
+    }
+    // 4) Native Flow / Interactive Response
+    else if (msg.interactiveResponseMessage) {
+        const ir = msg.interactiveResponseMessage
+        const nf = ir.nativeFlowResponseMessage || {}
+        let paramsJson = nf.paramsJson || ''
+        if (paramsJson) {
+            try {
+                const parsed = JSON.parse(paramsJson)
+                selectedId = parsed.id || parsed.selectedId || parsed.button_id || parsed.row_id || ''
+                displayText = parsed.title || parsed.text || parsed.display_text || ''
+            } catch (_) {}
+        }
+        if (!selectedId) selectedId = nf.name || ''
+        if (!displayText) displayText = ir.body?.text || ''
+        kind = 'interactive'
+    }
+
+    if (!selectedId) return
+
+    m.selectedId         = selectedId
+    m.selectedDisplayText = displayText
+    m.isInteractive      = true
+    m.interactiveType    = kind
+
+    // ضع m.text كأمر قابل للتوجيه — أَضِف بادئة افتراضية إن لم تكن موجودة
+    const looksLikeCommand = global.prefix?.test?.(selectedId)
+    const commandText = looksLikeCommand ? selectedId : ('.' + String(selectedId).replace(/^[/\s]+/, ''))
+    m.text = commandText
+}
+
 const botJidsOf = conn => [
     conn?.user?.jid,
     conn?.user?.id,
@@ -100,6 +166,11 @@ try {
     if (!m) return
     if (typeof m.text !== 'string')
         m.text = ''
+
+    // ── معالجة الردود التفاعلية (أزرار/قوائم/Native Flow) ──
+    // نحوّل selectedButtonId / selectedRowId / interactive id إلى m.text كأمر عادي
+    // كي تعمل كل الإضافات بدون تعديل
+    parseInteractiveResponse(m)
 
     const msgId = `${m?.key?.remoteJid || ''}:${m?.key?.id || ''}:${m?.key?.participant || ''}`
     if (global.seenMessages.has(msgId)) return

@@ -153,6 +153,17 @@ All commands restricted to `rowner = true` (real owner only — 967778088098).
 - Startup log: sent to all developer-flagged owners (5s after connect)
 - Message tracking: `user.messages.total`, `user.messages.groups[chat]`, `chat.messageStats`
 
+## Interactive Responses Parsing (Apr 2026)
+- `handler.js` now parses WhatsApp interactive replies right after `smsg()` via `parseInteractiveResponse(m)`:
+  - `buttonsResponseMessage.selectedButtonId` → button quick-reply
+  - `listResponseMessage.singleSelectReply.selectedRowId` → list row
+  - `templateButtonReplyMessage.selectedId` → template button
+  - `interactiveResponseMessage.nativeFlowResponseMessage.paramsJson` → native flow (`id`/`selectedId`/`button_id`/`row_id`)
+- The selected ID is written back to `m.text`; if it doesn't already start with a valid prefix character, `.` is prepended so the existing prefix-based routing dispatches it as a normal command.
+- Plugins receive extra props on `m`: `m.selectedId`, `m.selectedDisplayText`, `m.isInteractive`, `m.interactiveType` (`button`|`list`|`template`|`interactive`).
+- Convention for plugin authors: when sending buttons/lists, set the `id` to either a full command (`.menu`) or a bare command name (`menu`) — both work, the handler will normalize.
+- No per-plugin code changes needed — all 125 plugins benefit automatically.
+
 ## Loop Protection (Apr 2026 — critical fix)
 - `handler.js` now **unconditionally drops** any message where `m.fromMe || isBotOwnMessage(m, this)` is true.
 - Reason: bot replies often start with markdown chars like `*` or `-`, which are valid prefix chars in `global.prefix`. The previous guard `(fromMe||botOwn) && !prefix.test(text)` allowed bot's own bold replies (`*بطاقات مراجعة:*`) to re-trigger commands → infinite loop until WhatsApp rate-limit (`rate-overlimit` 429).
