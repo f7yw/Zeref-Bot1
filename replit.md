@@ -185,3 +185,8 @@ This means EVERY plugin (incl. obfuscated ones, owner panel, ai, شات, etc.) a
 - Every money/bank/energy/diamond change must call `logTransaction`
 - Arabic command names must not be changed without necessity
 - `premium = true` = status; real balance = always one record; `infiniteResources = true` = bypass energy checks only
+
+## Recent Additions (Apr 2026)
+- **Role-based menu filtering**: each section in `plugins/menu.js` now has an `audience` field (`owner` | `admin` | `all`). Owner-only sections appear only for the developer; group sections appear only for group admins/developer. Logic centralized in `getAllowedSections(conn, { isOwner, isAdmin })`.
+- **Student Mediator** (`plugins/student-mediator.js`, dev-only): registry of university students/groups, indirect messaging via the bot's identity, broadcasts, inbox capture of replies with owner DM notifications, optional auto-signature. All mutations call `global.db.markDirty()`.
+- **ZerefGuard** (`lib/zerefguard.js` + `plugins/zerefguard.js`): SHA-256 manifest of core files (lib/*, critical plugins, main.js), HMAC-signed using owner number + REPL_ID + `ZEREFGUARD_SECRET`. Stored in `.zerefguard/manifest.sig`. Boot check runs 8s after main connects and DMs the owner if any tracked file changed. Commands: `.guard`, `.guard_seal`, `.guard_check`, `.guard_unseal تأكيد`.

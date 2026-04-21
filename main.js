@@ -556,6 +556,14 @@ async function connectionUpdate(update) {
       } catch (e) { console.error('[SCHEDULE-LOAD]', e?.message) }
     }, 7000)
 
+    // ── ZerefGuard: فحص سلامة الكود ──
+    setTimeout(async () => {
+      try {
+        const Guard = (await import('./lib/zerefguard.js')).default
+        await Guard.bootCheck(conn)
+      } catch (e) { console.error('[ZEREFGUARD]', e?.message) }
+    }, 8000)
+
     // ── استعادة حالة الألعاب من DB ──
     try {
       const gs = global.db?.data?.gameState || {}

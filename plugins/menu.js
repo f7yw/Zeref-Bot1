@@ -30,6 +30,7 @@ const sections = {
     title: '👤 التسجيل والبروفايل',
     emoji: '👤',
     featureTag: 'profile',
+    audience: 'all',
     commands: [
       'تسجيل          ← إنشاء حساب في البوت',
       'بروفايل         ← ملفك الشخصي الكامل',
@@ -46,6 +47,7 @@ const sections = {
     title: '🕌 الديني والثقافي',
     emoji: '🕌',
     featureTag: 'islamic',
+    audience: 'all',
     commands: [
       'قران            ← آية قرآنية عشوائية',
       'آية الكرسي      ← آية الكرسي',
@@ -66,6 +68,7 @@ const sections = {
     title: '🎮 الألعاب والترفيه',
     emoji: '🎮',
     featureTag: 'game',
+    audience: 'all',
     commands: [
       '─── ألعاب استراتيجية ───',
       'شطرنج          ← لعبة شطرنج',
@@ -105,6 +108,7 @@ const sections = {
     title: '💰 الاقتصاد والمتجر',
     emoji: '💰',
     featureTag: 'economy',
+    audience: 'all',
     commands: [
       '─── الرصيد ───',
       'البنك           ← رصيدك الكامل',
@@ -131,6 +135,7 @@ const sections = {
     title: '🤖 الذكاء الاصطناعي والتعلم',
     emoji: '🤖',
     featureTag: 'ai',
+    audience: 'all',
     commands: [
       '─── الذكاء الاصطناعي ───',
       'ai [سؤال]       ← نموذج AI عام',
@@ -153,6 +158,7 @@ const sections = {
     title: '🎧 الوسائط والأدوات',
     emoji: '🎧',
     featureTag: 'media',
+    audience: 'all',
     commands: [
       '─── الصوت والفيديو ───',
       'شغل [اسم]       ← تشغيل أغنية من يوتيوب',
@@ -188,6 +194,7 @@ const sections = {
     title: '📋 الإنتاجية والأدوات',
     emoji: '📋',
     featureTag: 'main',
+    audience: 'all',
     commands: [
       '─── المهام ───',
       'مهمة [نص]       ← إضافة مهمة',
@@ -226,6 +233,7 @@ const sections = {
     title: '👥 إدارة المجموعات',
     emoji: '👥',
     featureTag: 'group',
+    audience: 'admin',
     commands: [
       '─── الأعضاء ───',
       'طرد @           ← طرد عضو',
@@ -286,6 +294,7 @@ const sections = {
     title: '👑 أوامر المالك',
     emoji: '👑',
     featureTag: 'owner',
+    audience: 'owner',
     commands: [
       'لوحة_التحكم    ← لوحة كاملة للإدارة',
       '',
@@ -344,6 +353,7 @@ const sections = {
     title: '🔧 تحكم البوت والحساب',
     emoji: '🔧',
     featureTag: 'owner',
+    audience: 'owner',
     commands: [
       'تحكم_البوت     ← لوحة شاملة للتحكم',
       '',
@@ -383,6 +393,46 @@ const sections = {
       'قبول_المكالمات        ← قبول المكالمات',
       'الأجهزة_المرتبطة      ← الأجهزة المرتبطة',
     ]
+  },
+
+  11: {
+    title: '🎓 وسيط طلاب الجامعة',
+    emoji: '🎓',
+    featureTag: 'mediator',
+    audience: 'owner',
+    commands: [
+      '─── إدارة الطلاب ───',
+      'طلاب اضف <رقم> [اسم]   ← تسجيل طالب جديد',
+      'طلاب حذف <رقم>          ← حذف طالب',
+      'طلاب قائمة              ← عرض كل الطلاب المسجلين',
+      'طلاب بحث <اسم/رقم>     ← البحث عن طالب',
+      'طلاب تجميع <مجموعة>    ← تصنيف طالب لمجموعة (شُعبة/سنة)',
+      '',
+      '─── إدارة المجموعات الطلابية ───',
+      'مجموعات_الطلاب اضف <jid>  ← ربط قروب طلابي',
+      'مجموعات_الطلاب حذف <jid>  ← فك الربط',
+      'مجموعات_الطلاب قائمة       ← عرض كل القروبات المربوطة',
+      '',
+      '─── المراسلة غير المباشرة ───',
+      'رسالة_لطالب @ <نص>       ← إرسال رسالة لطالب باسم البوت',
+      'رسالة_للطلاب <نص>         ← إرسال للجميع (DM فردي)',
+      'رسالة_لمجموعة <اسم> <نص>  ← إرسال لمجموعة طلابية',
+      'بث_للطلاب <نص>            ← بث رسمي لكل القروبات الطلابية',
+      'اعلان <نص>                ← إعلان رسمي مزخرف لكل القروبات',
+      '',
+      '─── تتبع الردود ───',
+      'صندوق_الطلاب              ← عرض ردود الطلاب الواردة',
+      'رد_على_طالب <رقم> <نص>   ← الرد على رسالة من الصندوق',
+      'تصفير_صندوق               ← مسح صندوق الردود',
+      '',
+      '─── إعدادات الوسيط ───',
+      'وسيط_الطلاب                ← لوحة الإعدادات',
+      'وسيط_الطلاب تشغيل|ايقاف   ← تفعيل/إيقاف الوسيط',
+      'وسيط_الطلاب توقيع <نص>    ← توقيع تلقائي يُذيَّل في كل رسالة',
+      'وسيط_الطلاب اخفاء_المصدر  ← الرسائل تُرسل بهوية البوت فقط',
+      '',
+      '🔒 *هذا القسم يظهر للمطور فقط*',
+    ]
   }
 }
 
@@ -412,21 +462,36 @@ function buildHeader(m, user, level, role, max, uptime, vipStatus) {
  * البوت الرئيسي → كل الأقسام.
  * البوت الفرعي  → فقط الأقسام التي تطابق وسوم مزاياه (features) + قسم البوتات الفرعية إن وُجد.
  */
-function getAllowedSections(conn) {
+/**
+ * يعيد الأقسام المسموح بها بناءً على:
+ *   1) إن كان البوت فرعياً → يفلتر حسب featureTag مقابل مزايا البوت الفرعي.
+ *   2) audience لكل قسم:
+ *        - 'owner' → يظهر للمطور فقط
+ *        - 'admin' → يظهر لمشرفي القروب أو المطور
+ *        - 'all'   → يظهر للجميع
+ */
+function getAllowedSections(conn, { isOwner = false, isAdmin = false } = {}) {
   const isSubBot = !!conn?.__subBotPhone
-  if (!isSubBot) return sections
+  let pool = sections
 
-  let allowed = []
-  try { allowed = getSubBotFeatures(conn.__subBotPhone) || [] } catch (_) {}
-  // owner لا يُعطى تلقائياً لبوت فرعي إلا لو حدّده المطور
-  const allowSet = new Set(allowed.map(s => String(s).toLowerCase()))
+  if (isSubBot) {
+    let allowed = []
+    try { allowed = getSubBotFeatures(conn.__subBotPhone) || [] } catch (_) {}
+    const allowSet = new Set(allowed.map(s => String(s).toLowerCase()))
+    pool = {}
+    for (const s of Object.values(sections)) {
+      const tag = String(s.featureTag || '').toLowerCase()
+      if (tag && allowSet.has(tag)) pool[Object.keys(pool).length + 1] = s
+    }
+  }
 
+  // فلترة حسب الجمهور (audience)
   const filtered = {}
   let i = 1
-  for (const s of Object.values(sections)) {
-    const tag = String(s.featureTag || '').toLowerCase()
-    if (!tag) continue
-    if (!allowSet.has(tag)) continue
+  for (const s of Object.values(pool)) {
+    const aud = String(s.audience || 'all').toLowerCase()
+    if (aud === 'owner' && !isOwner) continue
+    if (aud === 'admin' && !isOwner && !isAdmin) continue
     filtered[i++] = s
   }
   return filtered
@@ -464,7 +529,7 @@ _👤 ${vipStatus}_`).trim()
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-let handler = async (m, { conn, usedPrefix }) => {
+let handler = async (m, { conn, usedPrefix, isOwner, isAdmin, isROwner }) => {
   const user = global.db.data.users[m.sender] || {}
   initEconomy(user, m.sender)
   syncEnergy(user, m.sender)
@@ -479,7 +544,7 @@ let handler = async (m, { conn, usedPrefix }) => {
   const isSubBot = !!conn?.__subBotPhone
   const subPhone = conn?.__subBotPhone || null
   const allowedFeatures = isSubBot ? (getSubBotFeatures(subPhone) || []) : null
-  const sectionsToShow = getAllowedSections(conn)
+  const sectionsToShow = getAllowedSections(conn, { isOwner: !!(isOwner || isROwner), isAdmin: !!isAdmin })
   const menu = buildIndex(header, vipStatus, sectionsToShow, isSubBot, subPhone, allowedFeatures)
 
   global.menuSessions ??= {}
@@ -508,7 +573,18 @@ handler.all = async function (m) {
   if (!raw || /^[./#!\u0600-\u06FF]/.test(raw)) return
 
   const choice = normalizeChoice(raw)
-  const sectionsToShow = getAllowedSections(this)
+  // إعادة احتساب الصلاحيات هنا (handler.all لا يستلم isOwner/isAdmin)
+  const senderNum = (m.sender || '').replace(/\D/g, '')
+  const isOwner = (global.owner || []).some(o => Array.isArray(o) ? String(o[0]).replace(/\D/g, '') === senderNum : String(o).replace(/\D/g, '') === senderNum)
+  let isAdmin = false
+  try {
+    if (m.isGroup) {
+      const meta = await this.groupMetadata(m.chat).catch(() => null)
+      const p = meta?.participants?.find(x => (x.id === m.sender) || (x.lid && x.lid === m.sender))
+      isAdmin = !!(p && (p.admin === 'admin' || p.admin === 'superadmin'))
+    }
+  } catch (_) {}
+  const sectionsToShow = getAllowedSections(this, { isOwner, isAdmin })
   if (!sectionsToShow[choice]) return
 
   if (Date.now() - session.ts > 5 * 60 * 1000) {
