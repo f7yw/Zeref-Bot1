@@ -27,11 +27,11 @@
       "lastDaily": 0,
       "registered": true,
       "totalSpent": 0,
-      "premiumTime": 3353591285791,
+      "premiumTime": 3353591564233,
       "totalEarned": 0,
       "bannedReason": "",
       "transactions": [],
-      "lastEnergyRegen": 1776791285791,
+      "lastEnergyRegen": 1776791564233,
       "infiniteResources": true
     },
     "967782114485@s.whatsapp.net": {
@@ -381,7 +381,7 @@
       "lastnambang": 0,
       "makanannaga": 0,
       "premiumDate": -1,
-      "premiumTime": 3353591287223,
+      "premiumTime": 3353591578774,
       "seedbrokoli": 0,
       "seedkentang": 0,
       "totalEarned": 0,
@@ -639,7 +639,7 @@
       "kerjatujuhbelas": 0,
       "kucinglastclaim": 0,
       "lastCommandTime": 1776761763373,
-      "lastEnergyRegen": 1776791285791,
+      "lastEnergyRegen": 1776791564233,
       "lastmancingeasy": 0,
       "lastmancinghard": 0,
       "lastpotionclaim": 0,
@@ -710,7 +710,7 @@
       "premium": true,
       "regTime": 1776761136586,
       "registered": true,
-      "premiumTime": 3353591287223,
+      "premiumTime": 3353591578774,
       "infiniteResources": true
     },
     "28648019066900@lid": {
@@ -805,7 +805,7 @@
       "emas": 0,
       "emerald": 0,
       "esteh": 0,
-      "exp": 52,
+      "exp": 25,
       "expg": 0,
       "exphero": 0,
       "expired": 0,
@@ -1026,7 +1026,7 @@
       "pointxp": 0,
       "potion": 10,
       "premium": true,
-      "premiumTime": 3353591287223,
+      "premiumTime": 3353591578774,
       "ramuan": 0,
       "ramuancentaurlast": 0,
       "ramuangriffinlast": 0,
@@ -1040,7 +1040,7 @@
       "ramuanserigalalast": 0,
       "registered": true,
       "reglast": 0,
-      "regTime": 1776791287223,
+      "regTime": 1776791578774,
       "rendang": 0,
       "rhinoceros": 0,
       "rhinocerosexp": 0,
@@ -1129,26 +1129,26 @@
       "infiniteResources": true,
       "tempBannedUntil": 0,
       "energy": 100,
-      "lastEnergyRegen": 1776791303846,
+      "lastEnergyRegen": 1776791621666,
       "messages": {
-        "total": 3,
-        "groups": {
-          "120363427285079878@g.us": 1
-        },
-        "last": 1776791303843
+        "total": 2,
+        "groups": {},
+        "last": 1776791621665
       },
+      "lastCommandTime": 1776791579756,
+      "commandCount": 1,
+      "lastDaily": 0,
+      "lastWork": 0,
+      "totalEarned": 0,
+      "totalSpent": 0,
       "transactions": [
         {
           "type": "earn",
           "amount": 0,
           "reason": "🆙 مكافأة المستوى 0",
-          "time": 1776791287551
+          "time": 1776791582012
         }
       ],
-      "lastDaily": 0,
-      "lastWork": 0,
-      "totalEarned": 0,
-      "totalSpent": 0,
       "catexp": 0,
       "enchant": 0,
       "glimit": 20,
@@ -1170,17 +1170,15 @@
       "psenjata": 0,
       "psepick": 0,
       "robo": 0,
-      "roboxp": 0,
-      "lastCommandTime": 1776791303846,
-      "commandCount": 1
+      "roboxp": 0
     },
     "137465276969165:23@lid": {
       "registered": true,
-      "regTime": 1776791287223,
+      "regTime": 1776791578774,
       "name": "شادو",
       "bio": "🤖 التاجر الرسمي للبوت — موارد لا نهائية",
       "premium": true,
-      "premiumTime": 3353591287223,
+      "premiumTime": 3353591578774,
       "infiniteResources": true,
       "energy": 100,
       "money": 1000000000,
@@ -1276,7 +1274,7 @@
       "autosticker": false,
       "antiviewonce": false,
       "messageStats": {
-        "28648019066900@lid": 132,
+        "28648019066900@lid": 135,
         "204990769553546@lid": 29,
         "967782114485@s.whatsapp.net": 42
       }
@@ -1364,10 +1362,10 @@
       "lastSuccess": 1776788889406
     },
     "menu.js": {
-      "last": 1776791306524,
-      "total": 60,
-      "success": 60,
-      "lastSuccess": 1776791306524
+      "last": 1776791582013,
+      "total": 61,
+      "success": 61,
+      "lastSuccess": 1776791582013
     },
     "anime.js": {
       "last": 1776762332593,
@@ -1470,6 +1468,12 @@
       "total": 2,
       "success": 2,
       "lastSuccess": 1776762542219
+    },
+    "مافيا.js": {
+      "last": 1776791375073,
+      "total": 4,
+      "success": 4,
+      "lastSuccess": 1776791375073
     },
     "bot-control.js": {
       "last": 1776786084692,
