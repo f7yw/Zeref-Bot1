@@ -158,7 +158,7 @@
       "brokoli": 0,
       "centaur": 0,
       "crystal": 0,
-      "diamond": 21,
+      "diamond": 23,
       "emerald": 0,
       "enchant": 0,
       "exphero": 0,
@@ -228,11 +228,12 @@
       "lastturu": 0,
       "lastwork": 0,
       "messages": {
-        "last": 1776735086109,
-        "total": 25,
+        "last": 1776735897578,
+        "total": 28,
         "groups": {
           "120363422912330057@g.us": 11,
-          "120363426033819775@g.us": 1
+          "120363426033819775@g.us": 1,
+          "120363427285079878@g.us": 3
         }
       },
       "oporayam": 0,
@@ -370,6 +371,18 @@
       "pertambangan": 0,
       "seedkangkung": 0,
       "transactions": [
+        {
+          "time": 1776735885782,
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0"
+        },
+        {
+          "time": 1776735873418,
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0"
+        },
         {
           "time": 1776735086117,
           "type": "earn",
@@ -649,8 +662,9 @@
       "autosticker": false,
       "antiviewonce": false,
       "messageStats": {
-        "28648019066900@lid": 15,
-        "204990769553546@lid": 1
+        "28648019066900@lid": 20,
+        "204990769553546@lid": 1,
+        "967782114485@s.whatsapp.net": 3
       }
     }
   },
@@ -674,10 +688,10 @@
       "lastSuccess": 1776734795609
     },
     "menu.js": {
-      "last": 1776735539863,
-      "total": 34,
-      "success": 34,
-      "lastSuccess": 1776735539863
+      "last": 1776735905451,
+      "total": 35,
+      "success": 35,
+      "lastSuccess": 1776735905451
     },
     "اكس.js": {
       "last": 1776735452626,
@@ -764,10 +778,10 @@
       "lastSuccess": 1776723852833
     },
     "group-admin.js": {
-      "last": 1776735690578,
-      "total": 5,
-      "success": 5,
-      "lastSuccess": 1776735690578
+      "last": 1776735897261,
+      "total": 8,
+      "success": 8,
+      "lastSuccess": 1776735897261
     },
     "العاب3.js": {
       "last": 1776734949736,
