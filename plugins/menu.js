@@ -384,7 +384,7 @@ function buildIndex(header, vipStatus) {
   const lines = Object.entries(sections)
     .map(([k, s]) => `  *${k}.* ${s.emoji}  ${s.title.replace(/^[^ ]+ /, '')}`)
     .join('\n')
-  return `${header}\n\n*📋 اختر قسماً (أرسل الرقم):*\n\n${lines}\n\n_👤 ${vipStatus}_`.trim()
+  return `${header}\n\n*📋 اختر قسماً — ردّ (Reply) على هذه الرسالة برقم القسم:*\n\n${lines}\n\n_↩️ ردّ على الرسالة باختيارك_`.trim()
 }
 
 function buildSection(id, header, vipStatus) {
@@ -419,27 +419,35 @@ let handler = async (m, { conn, usedPrefix }) => {
   const menu   = buildIndex(header, vipStatus)
 
   global.menuSessions ??= {}
-  global.menuSessions[m.sender] = { ts: Date.now() }
 
   await typingDelay(conn, m.chat, 500)
   const pp = await conn.profilePictureUrl(m.sender, 'image').catch(() => './src/avatar_contact.png')
-  await conn.sendMessage(m.chat, { image: { url: pp }, caption: menu }, { quoted: m })
+  const sent = await conn.sendMessage(m.chat, { image: { url: pp }, caption: menu }, { quoted: m })
+
+  global.menuSessions[m.sender] = {
+    ts: Date.now(),
+    msgId: sent?.key?.id || null,
+    chat: m.chat
+  }
 }
 
 handler.all = async function (m) {
   const session = global.menuSessions?.[m.sender]
   if (!session) return
 
+  if (Date.now() - session.ts > 5 * 60 * 1000) {
+    delete global.menuSessions[m.sender]
+    return
+  }
+
+  const quotedId = m.quoted?.id || m.message?.extendedTextMessage?.contextInfo?.stanzaId
+  if (!quotedId || quotedId !== session.msgId) return
+
   const raw = (m.text || '').trim()
   if (!raw || /^[./#!\u0600-\u06FF]/.test(raw)) return
 
   const choice = normalizeChoice(raw)
   if (!sections[choice]) return
-
-  if (Date.now() - session.ts > 5 * 60 * 1000) {
-    delete global.menuSessions[m.sender]
-    return
-  }
 
   const user = global.db.data.users[m.sender] || {}
   initEconomy(user, m.sender)
