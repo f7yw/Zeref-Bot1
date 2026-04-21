@@ -1346,6 +1346,16 @@ try {
 
                 if (!isAccept)
                     continue
+                // ── فلترة المزايا للبوتات الفرعية (Jadibot) ──
+                if (this.__isSubBot) {
+                    try {
+                        const { isPluginAllowedForConn } = await import('./lib/jadibot.js')
+                        if (!isPluginAllowedForConn(this, plugin)) {
+                            // ميزة غير مسموحة لهذا البوت الفرعي → تجاهل بصمت
+                            continue
+                        }
+                    } catch (_) {}
+                }
                 m.plugin = name
 if (m.chat in global.db.data.chats || m.sender in global.db.data.users) {
     let chat = global.db.data.chats[m.chat]

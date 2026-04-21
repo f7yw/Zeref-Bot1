@@ -21,6 +21,24 @@ function connect(conn, PORT) {
     }
   })
 
+  // عرض كود الإقران (Pairing Code) النصي على /pairing-code
+  app.get('/pairing-code', async (req, res) => {
+    try {
+      const fs = await import('fs')
+      let body = '⌛ لا يوجد كود إقران حالياً.'
+      if (global.__pairingCode?.code) {
+        const ageMin = Math.floor((Date.now() - global.__pairingCode.at) / 60000)
+        body = `🔐 Pairing Code: ${global.__pairingCode.code}\n📞 Phone: +${global.__pairingCode.phone}\n⏱️ Age: ${ageMin} min`
+      } else if (fs.existsSync('./tmp/pairing-code.txt')) {
+        body = fs.readFileSync('./tmp/pairing-code.txt', 'utf8')
+      }
+      res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+      res.end(body)
+    } catch (e) {
+      res.status(500).send('Error: ' + e.message)
+    }
+  })
+
   // عرض الكود كصورة على المتصفح
   app.use(async (req, res) => {
     res.setHeader('Content-Type', 'image/png')

@@ -1,4 +1,5 @@
 import { isVip } from '../lib/economy.js'
+import { displayPhone } from '../lib/jidUtils.js'
 import TicTacToe from '../lib/tictactoe.js'
 
 function renderBoard(game) {
@@ -10,11 +11,8 @@ function renderBoard(game) {
   }[v]))
 }
 
-function displayJid(jid) {
-  if (!jid) return '?'
-  if (jid.includes('@lid')) return jid.split('@')[0].replace(/^0+/, '')
-  return jid.split('@')[0]
-}
+// عرض رقم الهاتف الحقيقي بدلاً من LID (يستخدم global.lidPhoneMap)
+const displayJid = displayPhone
 
 async function buildBoardStr(conn, room, statusLine) {
   const arr = renderBoard(room.game)
@@ -59,7 +57,7 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
   conn.game = conn.game || {}
 
   const getName = async (jid) => {
-    try { return await conn.getName(jid) } catch { return jid.split('@')[0] }
+    try { return await conn.getName(jid) } catch { return displayPhone(jid) }
   }
 
   const existing = Object.values(conn.game).find(r =>

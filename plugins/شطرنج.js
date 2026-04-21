@@ -1,4 +1,5 @@
 import { isVip } from '../lib/economy.js'
+import { displayPhone, mentionsFor } from '../lib/jidUtils.js'
 import sharp from 'sharp';
 
 const FILES = 'abcdefgh';
@@ -232,7 +233,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
   let game   = findGame(conn, m.chat, m.sender);
 
   const getName = async (jid) => {
-    try { return await conn.getName(jid) } catch { return jid.split('@')[0] }
+    try { return await conn.getName(jid) } catch { return displayPhone(jid) }
   }
 
   // ── End game ──
@@ -250,8 +251,8 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     const img = await renderBoard(game);
     return conn.sendMessage(m.chat, {
       image: img,
-      caption: `🏳️ استسلم ${loserName} (@${m.sender.split('@')[0]}) 👤 ${global.tierBadge ? global.tierBadge(m.sender) : (isVip(m.sender) ? '💎 مميز' : '👤 عادي')}\n🏆 الفائز: ${winnerName} (@${winner.split('@')[0]}) 👤 ${global.tierBadge ? global.tierBadge(winner) : (isVip(winner) ? '💎 مميز' : '👤 عادي')}\n👤 العضوية: ${vipStatus}`,
-      mentions: [m.sender, winner]
+      caption: `🏳️ استسلم ${loserName} (@${displayPhone(m.sender)}) 👤 ${global.tierBadge ? global.tierBadge(m.sender) : (isVip(m.sender) ? '💎 مميز' : '👤 عادي')}\n🏆 الفائز: ${winnerName} (@${displayPhone(winner)}) 👤 ${global.tierBadge ? global.tierBadge(winner) : (isVip(winner) ? '💎 مميز' : '👤 عادي')}\n👤 العضوية: ${vipStatus}`,
+      mentions: mentionsFor([m.sender, winner])
     }, { quoted: m });
   }
 
@@ -265,8 +266,8 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
       const nameB = await getName(waiting.black);
       return conn.sendMessage(m.chat, {
         image: img,
-        caption: `♟️ *شطرنج SHADOW — Chess.com Style*\n\n⬜ الأبيض: ${nameW} (@${waiting.white.split('@')[0]}) 👤 العضوية: ${isVip(waiting.white) ? '💎 مميز' : '❌ عادي'}\n⬛ الأسود: ${nameB} (@${waiting.black.split('@')[0]}) 👤 العضوية: ${isVip(waiting.black) ? '💎 مميز' : '❌ عادي'}\n\n▶️ الدور: ${nameW} (@${waiting.white.split('@')[0]})\n👤 العضوية: ${vipStatus}`,
-        mentions: [waiting.white, waiting.black]
+        caption: `♟️ *شطرنج SHADOW — Chess.com Style*\n\n⬜ الأبيض: ${nameW} (@${displayPhone(waiting.white)}) 👤 العضوية: ${isVip(waiting.white) ? '💎 مميز' : '❌ عادي'}\n⬛ الأسود: ${nameB} (@${displayPhone(waiting.black)}) 👤 العضوية: ${isVip(waiting.black) ? '💎 مميز' : '❌ عادي'}\n\n▶️ الدور: ${nameW} (@${displayPhone(waiting.white)})\n👤 العضوية: ${vipStatus}`,
+        mentions: mentionsFor([waiting.white, waiting.black])
       }, { quoted: m });
     }
     const id = `chess-${Date.now()}`;
@@ -275,8 +276,8 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     const nameW = await getName(m.sender);
     return conn.sendMessage(m.chat, {
       image: img,
-      caption: `♟️ *مباراة شطرنج جديدة!*\n\n⬜ الأبيض: ${nameW} (@${m.sender.split('@')[0]}) 👤 العضوية: ${vipStatus}\n⏳ انتظار لاعب ثانٍ...\n\n📌 للانضمام اكتب: *${usedPrefix}${command}*\n👤 العضوية: ${vipStatus}`,
-      mentions: [m.sender]
+      caption: `♟️ *مباراة شطرنج جديدة!*\n\n⬜ الأبيض: ${nameW} (@${displayPhone(m.sender)}) 👤 العضوية: ${vipStatus}\n⏳ انتظار لاعب ثانٍ...\n\n📌 للانضمام اكتب: *${usedPrefix}${command}*\n👤 العضوية: ${vipStatus}`,
+      mentions: mentionsFor([m.sender])
     }, { quoted: m });
   }
 
@@ -304,8 +305,8 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     delete conn.chess[game.id];
     return conn.sendMessage(m.chat, {
       image: img,
-      caption: `🏆 *كش ملك!*\nالفائز: ${winnerName} (@${m.sender.split('@')[0]}) 🎉\n👤 العضوية: ${vipStatus}`,
-      mentions: [game.white, game.black]
+      caption: `🏆 *كش ملك!*\nالفائز: ${winnerName} (@${displayPhone(m.sender)}) 🎉\n👤 العضوية: ${vipStatus}`,
+      mentions: mentionsFor([game.white, game.black])
     }, { quoted: m });
   }
 
@@ -319,8 +320,8 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
 
   return conn.sendMessage(m.chat, {
     image: img,
-    caption: `♟️ *شطرنج — Chess.com Style*\n\n⬜ ${nameW} (@${game.white.split('@')[0]}) 👤 العضوية: ${isVip(game.white) ? '💎 مميز' : '❌ عادي'}\n⬛ ${nameB} (@${game.black.split('@')[0]}) 👤 العضوية: ${isVip(game.black) ? '💎 مميز' : '❌ عادي'}\n\n▶️ الدور: ${nextPlayerName} (@${nextPlayer.split('@')[0]})\n📌 الحركة: *${usedPrefix}${command} e2 e4*\n🏳️ الانسحاب: *${usedPrefix}${command} استسلام*\n👤 العضوية: ${vipStatus}`,
-    mentions: [game.white, game.black]
+    caption: `♟️ *شطرنج — Chess.com Style*\n\n⬜ ${nameW} (@${displayPhone(game.white)}) 👤 العضوية: ${isVip(game.white) ? '💎 مميز' : '❌ عادي'}\n⬛ ${nameB} (@${displayPhone(game.black)}) 👤 العضوية: ${isVip(game.black) ? '💎 مميز' : '❌ عادي'}\n\n▶️ الدور: ${nextPlayerName} (@${displayPhone(nextPlayer)})\n📌 الحركة: *${usedPrefix}${command} e2 e4*\n🏳️ الانسحاب: *${usedPrefix}${command} استسلام*\n👤 العضوية: ${vipStatus}`,
+    mentions: mentionsFor([game.white, game.black])
   }, { quoted: m });
 };
 

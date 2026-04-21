@@ -1,4 +1,5 @@
 import { isVip } from '../lib/economy.js'
+import { displayPhone, mentionsFor } from '../lib/jidUtils.js'
 
 const ROWS = 6
 const COLS = 7
@@ -51,7 +52,7 @@ function isFull(board) {
 
 async function buildBoardStr(conn, room, statusLine) {
   const getName = async (jid) => {
-    try { return await conn.getName(jid) } catch { return jid.split('@')[0] }
+    try { return await conn.getName(jid) } catch { return displayPhone(jid) }
   }
   const name1 = await getName(room.player1)
   const name2 = await getName(room.player2)
@@ -60,8 +61,8 @@ async function buildBoardStr(conn, room, statusLine) {
 
   return `╭────『 🎮 لعبة Connect 4 』────
 │
-│ 🔴 = ${name1} (@${room.player1.split('@')[0]}) 👤 العضوية: ${vip1}
-│ 🟡 = ${name2} (@${room.player2.split('@')[0]}) 👤 العضوية: ${vip2}
+│ 🔴 = ${name1} (@${displayPhone(room.player1)}) 👤 العضوية: ${vip1}
+│ 🟡 = ${name2} (@${displayPhone(room.player2)}) 👤 العضوية: ${vip2}
 │
 ${renderBoard(room.board)}
 │
@@ -77,7 +78,7 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
   conn.c4 = conn.c4 || {}
 
   const getName = async (jid) => {
-    try { return await conn.getName(jid) } catch { return jid.split('@')[0] }
+    try { return await conn.getName(jid) } catch { return displayPhone(jid) }
   }
 
   const existing = Object.values(conn.c4).find(r =>
@@ -119,10 +120,10 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
     waitingRoom.state   = 'PLAYING'
 
     const nameTurn = await getName(waitingRoom.turn)
-    const str = await buildBoardStr(conn, waitingRoom, `⌛ دورك ${nameTurn} (@${waitingRoom.turn.split('@')[0]})`)
+    const str = await buildBoardStr(conn, waitingRoom, `⌛ دورك ${nameTurn} (@${displayPhone(waitingRoom.turn)})`)
 
     await m.reply(`*✅ تم الانضمام! اللعبة تبدأ الآن...*\n👤 العضوية: ${vipStatus}`)
-    await conn.sendMessage(m.chat, { text: str, mentions: [waitingRoom.player1, waitingRoom.player2] }, { quoted: m })
+    await conn.sendMessage(m.chat, { text: str, mentions: mentionsFor([waitingRoom.player1, waitingRoom.player2]) }, { quoted: m })
 
   } else {
     const room = {
@@ -162,7 +163,7 @@ handler.before = async function (m) {
 
   const vipStatus = global.tierBadge ? global.tierBadge(m.sender) : (isVip(m.sender) ? '💎 مميز' : '👤 عادي')
   const getName = async (jid) => {
-    try { return await this.getName(jid) } catch { return jid.split('@')[0] }
+    try { return await this.getName(jid) } catch { return displayPhone(jid) }
   }
 
   const text = m.text.trim().toLowerCase()
@@ -173,7 +174,7 @@ handler.before = async function (m) {
 
   if (!isSurrender && m.sender !== room.turn) {
     const nameTurn = await getName(room.turn)
-    await m.reply(`⏳ ليس دورك! دور ${nameTurn} (@${room.turn.split('@')[0]})\n👤 العضوية: ${vipStatus}`, null, { mentions: [room.turn] })
+    await m.reply(`⏳ ليس دورك! دور ${nameTurn} (@${displayPhone(room.turn)})\n👤 العضوية: ${vipStatus}`, null, { mentions: mentionsFor([room.turn]) })
     return false
   }
 
@@ -182,7 +183,7 @@ handler.before = async function (m) {
     const winnerName = await getName(winner)
     const loserName = await getName(m.sender)
     const str = await buildBoardStr(this, room, `🏳️ استسلم ${loserName}\n🏆 الفائز: ${winnerName}`)
-    await this.sendMessage(m.chat, { text: `${str}\n👤 العضوية: ${vipStatus}`, mentions: [room.player1, room.player2] }, { quoted: m })
+    await this.sendMessage(m.chat, { text: `${str}\n👤 العضوية: ${vipStatus}`, mentions: mentionsFor([room.player1, room.player2]) }, { quoted: m })
     delete this.c4[room.id]
     return false
   }
@@ -207,7 +208,7 @@ handler.before = async function (m) {
   if (checkWin(room.board, piece)) {
     const winnerName = await getName(room.turn)
     const str = await buildBoardStr(this, room, `🏆 مبروك ${winnerName}! فزت! 🎉`)
-    await this.sendMessage(m.chat, { text: `${str}\n👤 العضوية: ${vipStatus}`, mentions: [room.player1, room.player2] }, { quoted: m })
+    await this.sendMessage(m.chat, { text: `${str}\n👤 العضوية: ${vipStatus}`, mentions: mentionsFor([room.player1, room.player2]) }, { quoted: m })
     
     const users = global.db.data.users
     if (users[room.player1]) users[room.player1].exp = (users[room.player1].exp || 0) + PLAY_SCORE
@@ -220,15 +221,15 @@ handler.before = async function (m) {
 
   if (isFull(room.board)) {
     const str = await buildBoardStr(this, room, `🤝 تعادل!`)
-    await this.sendMessage(m.chat, { text: `${str}\n👤 العضوية: ${vipStatus}`, mentions: [room.player1, room.player2] }, { quoted: m })
+    await this.sendMessage(m.chat, { text: `${str}\n👤 العضوية: ${vipStatus}`, mentions: mentionsFor([room.player1, room.player2]) }, { quoted: m })
     delete this.c4[room.id]
     return false
   }
 
   room.turn = room.turn === room.player1 ? room.player2 : room.player1
   const nameNext = await getName(room.turn)
-  const str = await buildBoardStr(this, room, `⌛ دورك ${nameNext} (@${room.turn.split('@')[0]})`)
-  await this.sendMessage(m.chat, { text: `${str}\n👤 العضوية: ${vipStatus}`, mentions: [room.player1, room.player2] }, { quoted: m })
+  const str = await buildBoardStr(this, room, `⌛ دورك ${nameNext} (@${displayPhone(room.turn)})`)
+  await this.sendMessage(m.chat, { text: `${str}\n👤 العضوية: ${vipStatus}`, mentions: mentionsFor([room.player1, room.player2]) }, { quoted: m })
   
   return false
 }

@@ -1,4 +1,5 @@
 import { fmt, initEconomy, logTransaction , isVip} from '../lib/economy.js'
+import { displayPhone } from '../lib/jidUtils.js'
 
 const TIMEOUT = 30000
 const LEVELS = [
@@ -36,7 +37,7 @@ function giveReward(m, entry) {
 }
 
 let handler = async (m, { conn, args, usedPrefix }) => {
-  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return displayPhone(jid) } }
   const vipStatus = global.tierBadge ? global.tierBadge(m.sender) : (isVip(m.sender) ? '💎 مميز' : '👤 عادي')
   conn.math = conn.math || {}
   const chatId = m.chat
@@ -131,7 +132,7 @@ handler.all = async function (m) {
     m.chat,
     `╭────『 🧮 إجابة صحيحة! 』────
 │
-│ 🎉 أحسنت *@${m.sender.split('@')[0]}* (${name})!
+│ 🎉 أحسنت *@${displayPhone(m.sender)}* (${name})!
 │ ✅ ${entry.question.expr} = *${entry.question.answer}*
 │
 │ 💰 +${fmt(entry.reward)}

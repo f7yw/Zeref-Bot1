@@ -319,6 +319,14 @@ if (!conn.authState.creds.registered) {
       console.log(chalk.green.bold('\n╔══════════════════════════════════════════════════╗'));
       console.log(chalk.green.bold(`║         📱  YOUR PAIRING CODE: ${code.padEnd(16)}║`));
       console.log(chalk.green.bold('╚══════════════════════════════════════════════════╝\n'));
+
+      // اكتب الكود إلى ملف + متغير عام لتعرضه واجهة /pairing-code
+      try {
+        const fsMod = await import('fs')
+        if (!fsMod.existsSync('./tmp')) fsMod.mkdirSync('./tmp', { recursive: true })
+        fsMod.writeFileSync('./tmp/pairing-code.txt', `${code}\nGenerated: ${new Date().toISOString()}\nPhone: +${phoneNumber}`)
+      } catch (_) {}
+      global.__pairingCode = { code, at: Date.now(), phone: phoneNumber }
     } catch (e) {
       console.log(chalk.red.bold('\n[PAIRING ERROR] Failed to generate pairing code!'));
       console.log(chalk.red(`  ➤ Error type   : ${e?.output?.payload?.error || e?.name || 'Unknown'}`));
@@ -517,6 +525,39 @@ async function connectionUpdate(update) {
       }
     }, 3000)
 
+    // ── إرسال تأكيد الإقران للمطور إن طُلب مسح/إعادة إقران ──
+    setTimeout(async () => {
+      try {
+        const pending = global.db?.data?.settings?.pendingPairing
+        if (pending?.requestedBy) {
+          const targetJid = pending.requestedBy
+          await conn.sendMessage(targetJid, {
+            text: `✅ *تم إعادة الربط بنجاح*\n\nالبوت متصل الآن بـ +${phoneNumber}\nوقت الطلب: ${new Date(pending.requestedAt).toLocaleString('ar')}\nوقت الاتصال: ${new Date().toLocaleString('ar')}`
+          }).catch(() => {})
+          delete global.db.data.settings.pendingPairing
+          await global.db.write?.().catch(() => {})
+        }
+      } catch (e) { console.error('[PAIR-CONFIRM]', e?.message) }
+    }, 4000)
+
+    // ── استعادة البوتات الفرعية المخزّنة ──
+    setTimeout(async () => {
+      try {
+        const { restoreAllSubBots } = await import('./lib/jadibot.js')
+        await restoreAllSubBots()
+      } catch (e) { console.error('[JADIBOT-RESTORE]', e?.message) }
+    }, 6000)
+
+    // ── استعادة حالة الألعاب من DB ──
+    try {
+      const gs = global.db?.data?.gameState || {}
+      conn.chess          = gs.chess          || {}
+      conn.game           = gs.tictactoe      || {}
+      conn.c4             = gs.connect4       || {}
+      conn.games3         = gs.games3         || {}
+      console.log(chalk.cyan(`[GAME] استعادة الألعاب: chess=${Object.keys(conn.chess).length} xo=${Object.keys(conn.game).length} c4=${Object.keys(conn.c4).length}`))
+    } catch (e) { console.error('[GAME-RESTORE]', e?.message) }
+
     setTimeout(async () => {
       try {
         const { readdirSync: _rdr } = await import('fs')
@@ -644,6 +685,18 @@ setInterval(async () => {
 
     // لا كتابة إذا البوت خامل وليس هناك تغييرات
     if (isIdle && !global.db.__dirty) return
+
+    // ── snapshot حالة الألعاب الحالية إلى DB لاستعادتها عند إعادة التشغيل ──
+    try {
+      if (global.conn) {
+        global.db.data.gameState = {
+          chess:     global.conn.chess  || {},
+          tictactoe: global.conn.game   || {},
+          connect4:  global.conn.c4     || {},
+          games3:    global.conn.games3 || {},
+        }
+      }
+    } catch (_) {}
 
     // استخدم الدالة الأصلية مباشرة لتجنّب تحديث __lastActivity بشكل وهمي
     if (global.db?.data) await global.__dbWrite().catch(console.error)

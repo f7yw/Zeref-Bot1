@@ -1,5 +1,6 @@
 import fs from 'fs'
 import { fmt, initEconomy, logTransaction , isVip} from '../lib/economy.js'
+import { displayPhone } from '../lib/jidUtils.js'
 
 const TIMEOUT   = 60000
 const COIN_MIN  = 150
@@ -17,7 +18,7 @@ function normalize(s) {
 }
 
 let handler = async (m, { conn, command, usedPrefix }) => {
-  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return displayPhone(jid) } }
   const vipStatus = global.tierBadge ? global.tierBadge(m.sender) : (isVip(m.sender) ? '💎 مميز' : '👤 عادي')
   conn.quiz = conn.quiz || {}
   const chatId = m.chat
@@ -131,7 +132,7 @@ handler.all = async function (m) {
     m.chat,
 `╭────『 ✅ إجابة صحيحة! 』────
 │
-│ 🎉 أحسنت *@${m.sender.split('@')[0]}*!
+│ 🎉 أحسنت *@${displayPhone(m.sender)}*!
 │
 │ ✅ الإجابة: *${entry.question.response}*
 │
