@@ -1,3 +1,4 @@
+import { isVip } from '../lib/economy.js'
 /**
  * بلوك / فك_البلوك — Block & Unblock
  * Accepts: @mention | reply | raw number (e.g. 967778088098)
@@ -20,6 +21,7 @@ function safeNum(jid) {
 }
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const isBlock   = /^(بلوك|blok|block)$/i.test(command)
   const action    = isBlock ? 'block' : 'unblock'
   const actionAr  = isBlock ? 'حظر' : 'رفع الحظر'

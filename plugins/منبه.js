@@ -1,4 +1,6 @@
+import { isVip } from '../lib/economy.js'
 let handler = async (m, { usedPrefix, command }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
     let txt = `🕰️ *قائمة أوامر المنبه:*\n
       ${usedPrefix}*ذكرني* [الوقت] [الرسالة] [مرة|يومي|اسبوعي|شهري]
       ↳ لإضافة تذكير جديد

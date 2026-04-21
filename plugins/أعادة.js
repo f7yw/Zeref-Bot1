@@ -1,6 +1,8 @@
+import { isVip } from '../lib/economy.js'
 //import db from '../lib/database.js'
 
 let handler = async (m, { conn, text }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   function no(number){
     return number.replace(/\s/g,'').replace(/([@+-])/g,'')
   }

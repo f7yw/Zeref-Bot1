@@ -1,3 +1,4 @@
+import { isVip } from '../lib/economy.js'
 import translate from '@vitalets/google-translate-api'
 import { typingDelay } from '../lib/presence.js'
 
@@ -14,6 +15,7 @@ const LANG_MAP = {
 const VALID_LANGS = new Set(Object.keys(LANG_MAP))
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   // Redirect if user mistakenly used this command for auto-translate toggle
   const firstArg = (args[0] || '').trim().toLowerCase()
   if (firstArg === 'تشغيل' || firstArg === 'ايقاف' || firstArg === 'إيقاف' || firstArg === 'on' || firstArg === 'off') {

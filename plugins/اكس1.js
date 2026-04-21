@@ -1,3 +1,5 @@
+import { isVip } from '../lib/economy.js'
+
 const arabicToNum = { '١':'1','٢':'2','٣':'3','٤':'4','٥':'5','٦':'6','٧':'7','٨':'8','٩':'9',
                       '۱':'1','۲':'2','۳':'3','۴':'4','۵':'5','۶':'6','۷':'7','٨':'8','۹':'9' }
 
@@ -28,11 +30,13 @@ async function buildBoardStr(conn, room, statusLine) {
   }
   const nameX = await getName(room.game.playerX)
   const nameO = await getName(room.game.playerO)
+  const vipX = isVip(room.game.playerX) ? '💎 مميز' : '❌ عادي'
+  const vipO = isVip(room.game.playerO) ? '💎 مميز' : '❌ عادي'
 
   return `╭────『 🎮 لعبة XO 』────
 │
-│ ❎ = @${room.game.playerX.split('@')[0]} (${nameX})
-│ ⭕ = @${room.game.playerO.split('@')[0]} (${nameO})
+│ ❎ = ${nameX} (@${room.game.playerX.split('@')[0]}) 👤 العضوية: ${vipX}
+│ ⭕ = ${nameO} (@${room.game.playerO.split('@')[0]}) 👤 العضوية: ${vipO}
 │
 │   ${arr.slice(0, 3).join('')}
 │   ${arr.slice(3, 6).join('')}
@@ -51,33 +55,33 @@ async function sendToRoom(conn, room, text, m) {
 }
 
 export async function before(m) {
-  // Skip bot's own messages
   if (m.isBaileys) return true
-
   this.game = this.game || {}
 
-  // Find a room where this sender is playing
   const room = Object.values(this.game).find(r =>
     r.id && r.game && r.state === 'PLAYING' &&
     [r.game.playerX, r.game.playerO].includes(m.sender)
   )
   if (!room) return true
 
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => {
+    try { return await this.getName(jid) } catch { return jid.split('@')[0] }
+  }
+
   const normalized = normalizeText(m.text)
   const isSurrender = /^(استسلم|nyerah|surrender)$/i.test(normalized)
   const isNumber    = /^[1-9]$/.test(normalized)
 
-  // Not a game input — let other handlers run
   if (!isNumber && !isSurrender) return true
 
-  // Not their turn
   if (!isSurrender && m.sender !== room.game.currentTurn) {
-    await m.reply(`⏳ ليس دورك! دور @${room.game.currentTurn.split('@')[0]}`, null, { mentions: [room.game.currentTurn] })
+    const nameTurn = await getName(room.game.currentTurn)
+    await m.reply(`⏳ ليس دورك! دور ${nameTurn} (@${room.game.currentTurn.split('@')[0]})\n👤 العضوية: ${vipStatus}`, null, { mentions: [room.game.currentTurn] })
     return false
   }
 
   let ok = 1
-
   if (!isSurrender) {
     ok = room.game.turn(m.sender === room.game.playerO, parseInt(normalized) - 1)
     if (ok < 1) {
@@ -87,35 +91,32 @@ export async function before(m) {
         '-1': '❌ الرقم خارج النطاق (1-9)!',
         0:    '🚫 هذه الخانة مشغولة! اختر خانة أخرى.',
       }[ok] || '❌ خطأ غير معروف'
-      await m.reply(errMsg)
+      await m.reply(`${errMsg}\n👤 العضوية: ${vipStatus}`)
       return false
     }
   }
 
   if (isSurrender) {
-    // Make the current player the loser
     room.game._currentTurn = (m.sender === room.game.playerX)
   }
 
-  const isWin = isSurrender
-    ? room.game.currentTurn !== m.sender  // the enemy wins on surrender
-    : !!room.game.winner
+  const isWin = isSurrender ? room.game.currentTurn !== m.sender : !!room.game.winner
   const isTie = !isWin && room.game.board === 511
-
   const winner = isSurrender ? room.game.currentTurn : room.game.winner
 
   let statusLine
   if (isWin) {
-    statusLine = `🏆 مبروك @${winner.split('@')[0]}! فزت! 🎉`
+    const winnerName = await getName(winner)
+    statusLine = `🏆 مبروك ${winnerName} (@${winner.split('@')[0]})! فزت! 🎉`
   } else if (isTie) {
     statusLine = `🤝 تعادل! لعبة رائعة من الطرفين`
   } else {
-    statusLine = `⌛ دورك @${room.game.currentTurn.split('@')[0]}`
+    const nameTurn = await getName(room.game.currentTurn)
+    statusLine = `⌛ دورك ${nameTurn} (@${room.game.currentTurn.split('@')[0]})`
   }
 
   const str = await buildBoardStr(this, room, statusLine)
 
-  // Update XP
   if (isTie || isWin) {
     const users = global.db.data.users
     if (users[room.game.playerX]) users[room.game.playerX].exp = (users[room.game.playerX].exp || 0) + PLAY_SCORE
@@ -124,6 +125,6 @@ export async function before(m) {
     delete this.game[room.id]
   }
 
-  await sendToRoom(this, room, str, m)
-  return false  // stop further processing for this move
+  await sendToRoom(this, room, `${str}\n👤 العضوية: ${vipStatus}`, m)
+  return false
 }

@@ -1,4 +1,6 @@
+import { isVip } from '../lib/economy.js'
 let handler = async (m, { conn, args, text, usedPrefix, command }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   if (!args[0]) throw `*❗ أدخل الرقم أولاً.*\n*مثال:* ${usedPrefix + command} 967778088098 مرحباً، أنا بوت واتساب!`;
 
   const number = args[0].replace(/\D/g, '');
@@ -20,7 +22,7 @@ let handler = async (m, { conn, args, text, usedPrefix, command }) => {
   global.repliesMap = global.repliesMap || new Map();
   global.repliesMap.set(sentMsg.key.id, m.sender);
 
-  await m.reply(`*✅ تم إرسال الرسالة إلى:* wa.me/${number}`);
+  await m.reply(`*✅ تم إرسال الرسالة إلى:* wa.me/${number}\n👤 العضوية: ${vipStatus}`);
 };
 
 handler.help = ['ارسل_ورد <رقم> <رسالة>'];

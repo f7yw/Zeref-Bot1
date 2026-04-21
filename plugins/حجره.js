@@ -1,7 +1,8 @@
 import { initUser } from '../lib/userInit.js'
-import { initEconomy, fmt } from '../lib/economy.js'
+import { initEconomy, fmt , isVip, isVip} from '../lib/economy.js'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   if (!text) throw `*مثال: ${usedPrefix}${command} حجر*`
   
   const choices = ['حجر', 'ورقة', 'مقص']

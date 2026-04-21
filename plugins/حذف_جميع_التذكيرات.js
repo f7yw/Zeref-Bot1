@@ -1,3 +1,4 @@
+import { isVip } from '../lib/economy.js'
 import fs from 'fs'
 import path from 'path'
 

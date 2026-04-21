@@ -1,3 +1,4 @@
+import { isVip } from '../lib/economy.js'
 import { createRequire } from 'module'
 import { readFileSync, unlinkSync, mkdirSync, existsSync } from 'fs'
 import { join, dirname } from 'path'

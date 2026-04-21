@@ -1,5 +1,5 @@
 import similarity from 'similarity'
-import { initEconomy, logTransaction, fmt } from '../lib/economy.js'
+import { initEconomy, logTransaction, fmt , isVip, isVip} from '../lib/economy.js'
 
 const threshold = 0.72
 

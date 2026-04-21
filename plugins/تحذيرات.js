@@ -1,4 +1,6 @@
+import { isVip } from '../lib/economy.js'
 const handler = async (m, {conn, isOwner}) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const adv = Object.entries(global.db.data.users).filter((user) => user[1].warn);
   const warns = global.db.data.users.warn;
   const user = global.db.data.users;

@@ -1,5 +1,7 @@
+import { isVip } from '../lib/economy.js'
 let handler = async (m, { conn, text}) => {
-m.reply(`*╔═══════════════════════════*\n➢ "${pickRandom(global.piropo)}"\n*╚═══════════════════════════*`)
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+m.reply(`*╔═══════════════════════════*\n➢ "${pickRandom(global.piropo)}"\n*╚═══════════════════════════*\n👤 العضوية: ${vipStatus}`)
 }
 handler.tags = ['احاديث']
 handler.command = ['حديث','احاديث']

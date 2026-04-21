@@ -1,4 +1,4 @@
-import { initEconomy, logTransaction, fmt } from '../lib/economy.js'
+import { initEconomy, logTransaction, fmt , isVip, isVip} from '../lib/economy.js'
 
 const words = ['جامعة', 'مدرسة', 'رياضيات', 'فيزياء', 'كيمياء', 'اختبار', 'مراجعة', 'محاضرة', 'واجب', 'تلخيص']
 
@@ -29,12 +29,14 @@ function applyReward(m) {
 }
 
 let handler = async (m, { conn, command }) => {
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   conn.studyGames = conn.studyGames || {}
 
   // ── كلمة / رتب ─────────────────────────────────────────────────────────────
   if (/^(كلمة|رتب)$/i.test(command)) {
     const answer = words[Math.floor(Math.random() * words.length)]
-    const sent = await m.reply(`رتب الكلمة:\n*${shuffle(answer)}*\n\n💡 *ردّ على هذه الرسالة بالكلمة المرتبة*`)
+    const sent = await m.reply(`رتب الكلمة:\n*${shuffle(answer)}*\n\n💡 *ردّ على هذه الرسالة بالكلمة المرتبة*\n👤 العضوية: ${vipStatus}`)
     conn.studyGames[m.chat] = { type: 'word', answer, msg: sent }
     return
   }
@@ -42,7 +44,7 @@ let handler = async (m, { conn, command }) => {
   // ── سرعة / حساب_سريع ────────────────────────────────────────────────────────
   if (/^(سرعة|حساب_سريع)$/i.test(command)) {
     const game = mathQuestion()
-    const sent = await m.reply(`أجب بسرعة:\n*${game.q} = ؟*\n\n💡 *ردّ على هذه الرسالة بالجواب*`)
+    const sent = await m.reply(`أجب بسرعة:\n*${game.q} = ؟*\n\n💡 *ردّ على هذه الرسالة بالجواب*\n👤 العضوية: ${vipStatus}`)
     conn.studyGames[m.chat] = { type: 'math', answer: game.ans, msg: sent }
     return
   }
@@ -50,7 +52,7 @@ let handler = async (m, { conn, command }) => {
   // ── ذاكرة ──────────────────────────────────────────────────────────────────
   if (/^(ذاكرة)$/i.test(command)) {
     const seq = Array.from({ length: 5 }, () => Math.floor(Math.random() * 9) + 1).join('')
-    const sent = await m.reply(`احفظ الرقم خلال 10 ثواني:\n*${seq}*\n\n💡 *ردّ على هذه الرسالة بالرقم*`)
+    const sent = await m.reply(`احفظ الرقم خلال 10 ثواني:\n*${seq}*\n\n💡 *ردّ على هذه الرسالة بالرقم*\n👤 العضوية: ${vipStatus}`)
     conn.studyGames[m.chat] = { type: 'memory', answer: seq, msg: sent }
     return
   }
@@ -58,13 +60,13 @@ let handler = async (m, { conn, command }) => {
   // ── حل (explicit command fallback) ─────────────────────────────────────────
   if (/^(حل)$/i.test(command)) {
     const game = conn.studyGames?.[m.chat]
-    if (!game) return m.reply('لا توجد لعبة تعليمية نشطة. جرّب .كلمة أو .سرعة')
+    if (!game) return m.reply('لا توجد لعبة تعليمية نشطة. جرّب .كلمة أو .سرعة\n👤 العضوية: ' + vipStatus + ')
     const answer = (m.text || '').replace(/^[./#!]?\s*حل\s*/i, '').trim()
-    if (!answer) return m.reply('اكتب الإجابة بعد الأمر. مثال: .حل كيمياء')
-    if (answer !== game.answer) return m.reply(`❌ غير صحيح. حاول مرة أخرى.`)
+    if (!answer) return m.reply('اكتب الإجابة بعد الأمر. مثال: .حل كيمياء\n👤 العضوية: ' + vipStatus + ')
+    if (answer !== game.answer) return m.reply(`❌ غير صحيح. حاول مرة أخرى.\n👤 العضوية: ${vipStatus}`)
     delete conn.studyGames[m.chat]
     const user = applyReward(m)
-    return m.reply(`✅ صحيح! حصلت على *25 XP* و *${fmt(20)}*\n💰 رصيدك: ${fmt(user.money)}`)
+    return m.reply(`✅ صحيح! حصلت على *25 XP* و *${fmt(20)}*\n💰 رصيدك: ${fmt(user.money)}\n👤 العضوية: ${vipStatus}`)
   }
 }
 

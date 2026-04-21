@@ -1,7 +1,9 @@
+import { isVip } from '../lib/economy.js'
 import fs from 'fs'
 import path from 'path'
 
 let handler = async (m, { conn }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   // Owner check
   const isOwner = global.owner.some(entry => {
     const jid = Array.isArray(entry) ? entry[0] : entry

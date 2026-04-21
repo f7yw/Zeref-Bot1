@@ -1,3 +1,4 @@
+import { isVip } from '../lib/economy.js'
 import fs from 'fs'
 import path from 'path'
 
@@ -7,6 +8,7 @@ const remindersFile = path.resolve('./reminders.json')
 if (!fs.existsSync(remindersFile)) fs.writeFileSync(remindersFile, '[]')
 
 let handler = async (m, { usedPrefix, command }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   let data = JSON.parse(fs.readFileSync(remindersFile))
   let userReminders = data.filter(r => r.chat === m.chat)
 
@@ -18,7 +20,7 @@ let handler = async (m, { usedPrefix, command }) => {
     `🔹 *${i + 1}.*\n🕒 الوقت: ${r.time}\n🔁 التكرار: ${r.repeat}\n💬 الرسالة: ${r.message}`
   ).join('\n\n')
 
-  await m.reply(`📋 *قائمة تذكيراتك:*\n\n${list}`)
+  await m.reply(`📋 *قائمة تذكيراتك:*\n\n${list}\n👤 العضوية: ${vipStatus}`)
 }
 
 handler.command = /^(قائمتي|تذكيراتي|قائمة_التذكيرات)$/i

@@ -1,10 +1,13 @@
+import { isVip } from '../lib/economy.js'
 const handler = async (m, {conn, args, groupMetadata, participants, usedPrefix, command, isBotAdmin, isSuperAdmin}) => {
-  if (!args[0]) return m.reply(`*[❗] ادخل رمز الدوله للبحث عن الارقام في هذه المجموعه من تلك الدوله، مثال: ${usedPrefix + command} 20*`);
-  if (isNaN(args[0])) return m.reply(`*[❗] ادخل رمز الدوله للبحث عن الارقام في هذه المجموعه من تلك الدوله، مثال: ${usedPrefix + command} 20*`);
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  if (!args[0]) return m.reply(`*[❗] ادخل رمز الدوله للبحث عن الارقام في هذه المجموعه من تلك الدوله، مثال: ${usedPrefix + command} 20*\n👤 العضوية: ${vipStatus}`);
+  if (isNaN(args[0])) return m.reply(`*[❗] ادخل رمز الدوله للبحث عن الارقام في هذه المجموعه من تلك الدوله، مثال: ${usedPrefix + command} 20*\n👤 العضوية: ${vipStatus}`);
   const lol = args[0].replace(/[+]/g, '');
   const ps = participants.map((u) => u.id).filter((v) => v !== conn.user.jid && v.startsWith(lol || lol));
   const bot = global.db.data.settings[conn.user.jid] || {};
-  if (ps == '') return m.reply(`*[❗] لا يوجد في هذه المجموعه ارقاام بمثل هذه البادئه +${lol}*`);
+  if (ps == '') return m.reply(`*[❗] لا يوجد في هذه المجموعه ارقاام بمثل هذه البادئه +${lol}*\n👤 العضوية: ${vipStatus}`);
   const numeros = ps.map((v)=> '⭔ @' + v.replace(/@.+/, ''));
   const delay = (time) => new Promise((res)=>setTimeout(res, time));
   switch (command) {

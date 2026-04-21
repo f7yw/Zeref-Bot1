@@ -1,6 +1,8 @@
+import { isVip } from '../lib/economy.js'
 /* Creditos a https://github.com/FG98F */
 
-let handler = async (m, { conn, usedPrefix, command }) => {	
+let handler = async (m, { conn, usedPrefix, command }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'	
 if (!m.quoted) throw `*[❗معلومه❗] *الرجاء تحديد الرساله التي تريد حذفها اسمي ايما احذف كل الرسائل  الغير مرغوب فيها*`
 try {
 let delet = m.message.extendedTextMessage.contextInfo.participant

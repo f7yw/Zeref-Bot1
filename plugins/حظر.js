@@ -1,3 +1,4 @@
+import { isVip } from '../lib/economy.js'
 let handler = async (m) => {
  await conn.sendMessage(m.chat, { react: { text: '🛡', key: m.key } })
 global.db.data.chats[m.chat].isBanned = true

@@ -1,4 +1,4 @@
-import { deductEnergy, syncEnergy, fmt, initEconomy, msToHuman, MAX_ENERGY, isVip, logTransaction } from '../lib/economy.js'
+import { deductEnergy, syncEnergy, fmt, initEconomy, msToHuman, MAX_ENERGY, isVip, logTransaction , isVip} from '../lib/economy.js'
 
 const WORK_COOLDOWN = 30 * 60 * 1000  // 30 minutes
 const ENERGY_COST   = 10
@@ -27,8 +27,9 @@ const jobs = [
 ]
 
 const handler = async (m, { usedPrefix }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const user = global.db.data.users[m.sender]
-  if (!user) return m.reply('❌ أرسل أي أمر أولاً لتسجيل حسابك.')
+  if (!user) return m.reply('❌ أرسل أي أمر أولاً لتسجيل حسابك.\n👤 العضوية: ' + vipStatus + ')
   initEconomy(user)
   syncEnergy(user)
 

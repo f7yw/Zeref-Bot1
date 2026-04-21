@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { fmt, initEconomy, logTransaction } from '../lib/economy.js'
+import { fmt, initEconomy, logTransaction , isVip, isVip} from '../lib/economy.js'
 
 const TIMEOUT = 60000
 const POIN = 500
@@ -15,6 +15,8 @@ function normalize(s) {
 }
 
 let handler = async (m, { conn, usedPrefix }) => {
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   conn.tekateki = conn.tekateki || {}
   const id = m.chat
   if (id in conn.tekateki) {

@@ -1,9 +1,11 @@
+import { isVip } from '../lib/economy.js'
 import yts from 'yt-search'
 import fs from 'fs'
 import { downloadAudio, searchYouTube } from '../lib/ytdlp.js'
 import { recordingDelay } from '../lib/presence.js'
 
 var handler = async (m, { conn, command, text, usedPrefix }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   if (!text) throw `*مثال: ${usedPrefix}${command} اية الكرسي*`
 
   await m.reply(global.wait)

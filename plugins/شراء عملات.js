@@ -1,10 +1,11 @@
-import { initEconomy, logTransaction, fmt } from '../lib/economy.js'
+import { initEconomy, logTransaction, fmt , isVip, isVip} from '../lib/economy.js'
 
 const COINS_PER_DIAMOND = 800
 
 let handler = async (m, { conn, usedPrefix, command, args }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const user = global.db.data.users[m.sender]
-  if (!user) return m.reply('❌ أرسل أي أمر أولاً لتسجيل حسابك.')
+  if (!user) return m.reply('❌ أرسل أي أمر أولاً لتسجيل حسابك.\n👤 العضوية: ' + vipStatus + ')
   initEconomy(user)
 
   // Show shop info
@@ -37,7 +38,7 @@ let handler = async (m, { conn, usedPrefix, command, args }) => {
   }
 
   if (!count || count < 1) {
-    return m.reply(`❌ ليس لديك ماس للبيع.`)
+    return m.reply(`❌ ليس لديك ماس للبيع.\n👤 العضوية: ${vipStatus}`)
   }
 
   if ((user.diamond || 0) < count) {

@@ -1,10 +1,12 @@
+import { isVip } from '../lib/economy.js'
 let handler = async (m, { conn, command, args, usedPrefix, isOwner }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   if (!isOwner) throw '❌ هذا الأمر للمطور فقط.'
 
   if (/^(مسح_المستخدمين|clear_users)$/i.test(command)) {
     const confirm = args[0]
     if (confirm !== 'تأكيد') {
-      return m.reply(`⚠️ *تحذير: سيتم حذف بيانات جميع المستخدمين (عدا المحظورين والمميزين)!*\nللتأكيد اكتب:\n*${usedPrefix}${command} تأكيد*`)
+      return m.reply(`⚠️ *تحذير: سيتم حذف بيانات جميع المستخدمين (عدا المحظورين والمميزين)!*\nللتأكيد اكتب:\n*${usedPrefix}${command} تأكيد*\n👤 العضوية: ${vipStatus}`)
     }
     const users = global.db.data.users || {}
     let removed = 0
@@ -15,13 +17,13 @@ let handler = async (m, { conn, command, args, usedPrefix, isOwner }) => {
       }
     }
     await global.db.write()
-    return m.reply(`✅ تم مسح *${removed}* مستخدم.\nتم الاحتفاظ بالمميزين والمحظورين.`)
+    return m.reply(`✅ تم مسح *${removed}* مستخدم.\nتم الاحتفاظ بالمميزين والمحظورين.\n👤 العضوية: ${vipStatus}`)
   }
 
   if (/^(مسح_المحادثات|clear_chats)$/i.test(command)) {
     const confirm = args[0]
     if (confirm !== 'تأكيد') {
-      return m.reply(`⚠️ *تحذير: سيتم حذف بيانات جميع المحادثات!*\nللتأكيد:\n*${usedPrefix}${command} تأكيد*`)
+      return m.reply(`⚠️ *تحذير: سيتم حذف بيانات جميع المحادثات!*\nللتأكيد:\n*${usedPrefix}${command} تأكيد*\n👤 العضوية: ${vipStatus}`)
     }
     global.db.data.chats = {}
     await global.db.write()
@@ -37,7 +39,7 @@ let handler = async (m, { conn, command, args, usedPrefix, isOwner }) => {
   if (/^(مسح_الكل|clear_all)$/i.test(command)) {
     const confirm = args[0]
     if (confirm !== 'تأكيد') {
-      return m.reply(`⚠️ *تحذير: سيتم مسح كل البيانات (عدا المحظورين والمميزين)!*\nللتأكيد:\n*${usedPrefix}${command} تأكيد*`)
+      return m.reply(`⚠️ *تحذير: سيتم مسح كل البيانات (عدا المحظورين والمميزين)!*\nللتأكيد:\n*${usedPrefix}${command} تأكيد*\n👤 العضوية: ${vipStatus}`)
     }
     const users = global.db.data.users || {}
     let removed = 0
@@ -50,7 +52,7 @@ let handler = async (m, { conn, command, args, usedPrefix, isOwner }) => {
     global.db.data.chats = {}
     global.db.data.stats = {}
     await global.db.write()
-    return m.reply(`✅ تم المسح الشامل:\n• مستخدمون محذوفون: *${removed}*\n• المحادثات: مُسحت\n• الإحصاءات: مُسحت\n• المحظورون والمميزون: محفوظون ✅`)
+    return m.reply(`✅ تم المسح الشامل:\n• مستخدمون محذوفون: *${removed}*\n• المحادثات: مُسحت\n• الإحصاءات: مُسحت\n• المحظورون والمميزون: محفوظون ✅\n👤 العضوية: ${vipStatus}`)
   }
 
   if (/^(قاعدة_البيانات|dbinfo)$/i.test(command)) {

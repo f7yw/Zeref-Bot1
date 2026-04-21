@@ -1,4 +1,6 @@
+import { isVip } from '../lib/economy.js'
 const handler = async (m, { conn, command, text }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const lovePercentage = Math.floor(Math.random() * 100);
   const isHighLove = lovePercentage >= 50;
   const loveMessages = [

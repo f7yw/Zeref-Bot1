@@ -1,3 +1,4 @@
+import { isVip } from '../lib/economy.js'
 const subjects = {
   رياضيات: ['راجع القانون أولاً', 'حل 5 مسائل متدرجة', 'اكتب الأخطاء المتكررة', 'أعد حل سؤال أخطأت فيه بدون النظر للحل'],
   فيزياء: ['افهم الفكرة بالرسم', 'اكتب المعطيات والمطلوب', 'حدد القانون', 'راجع الوحدات قبل التعويض'],
@@ -68,6 +69,7 @@ function quiz(subject = 'عام') {
 }
 
 let handler = async (m, { text, command, usedPrefix }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const [first, second, ...rest] = clean(text).split(' ')
   if (/^(تعلم|دراسة|study)$/i.test(command)) {
     return m.reply(`
@@ -85,11 +87,11 @@ ${usedPrefix}جدول
 `.trim())
   }
   if (/^(خطة|خطة_دراسة|studyplan)$/i.test(command)) return m.reply(plan(first, second))
-  if (/^(تلخيص|لخص|summary)$/i.test(command)) return m.reply(`*ملخص سريع:*\n${summarize(text)}`)
-  if (/^(بطاقات|فلاش|flashcards)$/i.test(command)) return m.reply(`*بطاقات مراجعة:*\n${flashcards(text)}`)
+  if (/^(تلخيص|لخص|summary)$/i.test(command)) return m.reply(`*ملخص سريع:*\n${summarize(text)}\n👤 العضوية: ${vipStatus}`)
+  if (/^(بطاقات|فلاش|flashcards)$/i.test(command)) return m.reply(`*بطاقات مراجعة:*\n${flashcards(text)}\n👤 العضوية: ${vipStatus}`)
   if (/^(اختبرني|اختبار_سريع|quizme)$/i.test(command)) return m.reply(quiz(first))
   if (/^(معدلي|نسبتي|gpa)$/i.test(command)) return m.reply(gpa(text))
-  if (/^(قاعدة|قانون_دراسة|studyrule)$/i.test(command)) return m.reply(`قاعدة مفيدة:\n${pick(rules)}`)
+  if (/^(قاعدة|قانون_دراسة|studyrule)$/i.test(command)) return m.reply(`قاعدة مفيدة:\n${pick(rules)}\n👤 العضوية: ${vipStatus}`)
   if (/^(بومودورو|pomodoro)$/i.test(command)) return m.reply('ابدأ الآن: 25 دقيقة تركيز + 5 دقائق راحة. كررها 4 مرات ثم خذ راحة 20 دقيقة.')
   if (/^(مصادر|مصادر_دراسة)$/i.test(command)) return m.reply('مصادر نافعة:\n1. كتاب المدرسة أو ملزمة الجامعة\n2. قناة شرح واحدة فقط\n3. بنك أسئلة أو اختبارات سابقة\n4. دفتر أخطاء تراجعه يومياً')
   if (/^(جدول|جدول_دراسة)$/i.test(command)) return m.reply('جدول يومي مختصر:\n1. 20د مراجعة قديمة\n2. 40د درس جديد\n3. 30د حل أسئلة\n4. 10د تلخيص\n5. 5د تحديد واجب الغد')

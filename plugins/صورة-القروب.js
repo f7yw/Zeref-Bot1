@@ -1,3 +1,4 @@
+import { isVip } from '../lib/economy.js'
 import { downloadContentFromMessage } from '@whiskeysockets/baileys'
 import { Readable } from 'stream'
 
@@ -8,6 +9,7 @@ async function streamToBuffer(stream) {
 }
 
 let handler = async (m, { conn, usedPrefix, command }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   if (!m.isGroup) throw '❌ هذا الأمر للمجموعات فقط.'
 
   if (/^(صورة_القروب|صورة-القروب|getpp|getgpp)$/i.test(command)) {

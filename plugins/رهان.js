@@ -1,11 +1,12 @@
-import { fmt, initEconomy, msToHuman, logTransaction } from '../lib/economy.js'
+import { fmt, initEconomy, msToHuman, logTransaction , isVip, isVip} from '../lib/economy.js'
 
 const SLOT_COOLDOWN = 15 * 1000  // 15 seconds
 const MIN_BET       = 50
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const user = global.db.data.users[m.sender]
-  if (!user) return m.reply('❌ أرسل أي أمر أولاً لتسجيل حسابك.')
+  if (!user) return m.reply('❌ أرسل أي أمر أولاً لتسجيل حسابك.\n👤 العضوية: ' + vipStatus + ')
   initEconomy(user)
 
   if (!args[0] || isNaN(args[0])) {
@@ -17,15 +18,15 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
   const bet = parseInt(args[0])
 
   if (bet < MIN_BET)
-    return m.reply(`❌ الحد الأدنى للرهان هو *${MIN_BET} 🪙*`)
+    return m.reply(`❌ الحد الأدنى للرهان هو *${MIN_BET} 🪙*\n👤 العضوية: ${vipStatus}`)
 
   if (user.money < bet)
-    return m.reply(`❌ رصيدك غير كافٍ!\n💰 محفظتك: ${fmt(user.money)}`)
+    return m.reply(`❌ رصيدك غير كافٍ!\n💰 محفظتك: ${fmt(user.money)}\n👤 العضوية: ${vipStatus}`)
 
   const now  = Date.now()
   const last = user.lastslot || 0
   const rem  = SLOT_COOLDOWN - (now - last)
-  if (rem > 0) return m.reply(`⏳ انتظر *${msToHuman(rem)}* قبل الرهان مجدداً.`)
+  if (rem > 0) return m.reply(`⏳ انتظر *${msToHuman(rem)}* قبل الرهان مجدداً.\n👤 العضوية: ${vipStatus}`)
 
   const emojis  = ['🎯', '💎', '🔮', '🌟', '🎪', '🦋']
   const roll    = () => emojis[Math.floor(Math.random() * emojis.length)]

@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { fmt, initEconomy, logTransaction } from '../lib/economy.js'
+import { fmt, initEconomy, logTransaction , isVip, isVip} from '../lib/economy.js'
 
 const TIMEOUT   = 60000
 const COIN_MIN  = 150
@@ -17,6 +17,8 @@ function normalize(s) {
 }
 
 let handler = async (m, { conn, command, usedPrefix }) => {
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   conn.quiz = conn.quiz || {}
   const chatId = m.chat
 

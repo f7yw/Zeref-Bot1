@@ -1,9 +1,11 @@
+import { isVip } from '../lib/economy.js'
 import moment from 'moment-timezone'
 import PhoneNum from 'awesome-phonenumber'
 
 const regionNames = new Intl.DisplayNames(['ar'], { type: 'region' })
 
 let handler = async (m, { conn, text, usedPrefix, command: cmd }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   let input = (m.quoted?.sender || m.mentionedJid?.[0] || text || '').trim()
 
   if (!input) {

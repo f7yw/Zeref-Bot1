@@ -1,4 +1,6 @@
+import { isVip } from '../lib/economy.js'
 let handler = async (m, { conn, text, command }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   global.db.data.groupRequests ||= {}
   global.db.data.groupRequestCooldown ||= {}
 
@@ -27,7 +29,7 @@ let handler = async (m, { conn, text, command }) => {
 
     if (duplicate) {
       const [id] = duplicate
-      return m.reply(`✅ عندك طلب معلّق بالفعل\n🆔 ID: ${id}`)
+      return m.reply(`✅ عندك طلب معلّق بالفعل\n🆔 ID: ${id}\n👤 العضوية: ${vipStatus}`)
     }
 
     const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6).toUpperCase()
@@ -85,7 +87,7 @@ let handler = async (m, { conn, text, command }) => {
       req.decidedAt = now
 
       await safeNotify(conn, req.from, `✅ تمت الموافقة على طلبك\n🆔 ID: ${req.id}`)
-      return m.reply(`✅ تم قبول الطلب\n🆔 ID: ${req.id}`)
+      return m.reply(`✅ تم قبول الطلب\n🆔 ID: ${req.id}\n👤 العضوية: ${vipStatus}`)
     } catch (e) {
       console.error(e)
       req.status = 'failed'
@@ -114,7 +116,7 @@ let handler = async (m, { conn, text, command }) => {
     req.decidedAt = now
 
     await safeNotify(conn, req.from, `❌ تم رفض طلبك\n🆔 ID: ${req.id}`)
-    return m.reply(`❌ تم رفض الطلب\n🆔 ID: ${req.id}`)
+    return m.reply(`❌ تم رفض الطلب\n🆔 ID: ${req.id}\n👤 العضوية: ${vipStatus}`)
   }
 
   // ===== قائمة =====

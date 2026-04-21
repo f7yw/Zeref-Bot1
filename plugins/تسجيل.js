@@ -1,8 +1,10 @@
 import { initUser } from '../lib/userInit.js'
-import { isVip, fmt, MAX_ENERGY } from '../lib/economy.js'
+import { isVip, fmt, MAX_ENERGY , isVip} from '../lib/economy.js'
 import { typingDelay } from '../lib/presence.js'
 
 let handler = async (m, { conn, usedPrefix }) => {
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const user = global.db.data.users[m.sender] || (global.db.data.users[m.sender] = {})
   initUser(user, m.pushName, m.sender)
 

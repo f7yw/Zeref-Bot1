@@ -1,4 +1,6 @@
+import { isVip } from '../lib/economy.js'
 let handler = async (m, { conn, isOwner }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
 let chats = Object.entries(global.db.data.chats).filter(chat => chat[1].isBanned)
 let users = Object.entries(global.db.data.users).filter(user => user[1].banned)
 let caption = `

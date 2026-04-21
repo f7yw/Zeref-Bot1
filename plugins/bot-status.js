@@ -1,4 +1,6 @@
+import { isVip } from '../lib/economy.js'
 let handler = async (m, { command, args }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const chat = global.db.data.chats[m.chat] || (global.db.data.chats[m.chat] = {})
   const sub = (args[0] || '').toLowerCase()
 

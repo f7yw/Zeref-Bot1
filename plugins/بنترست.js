@@ -1,6 +1,8 @@
+import { isVip } from '../lib/economy.js'
 import axios from 'axios'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   if (!text) throw `*مثال: ${usedPrefix}${command} أزهار طبيعية*`
 
   await m.reply(global.wait)

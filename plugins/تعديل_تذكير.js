@@ -1,3 +1,4 @@
+import { isVip } from '../lib/economy.js'
 import fs from 'fs'
 import path from 'path'
 import schedule from 'node-schedule'
@@ -9,9 +10,10 @@ if (!fs.existsSync(remindersFile)) fs.writeFileSync(remindersFile, '[]')
 
 // === الأمر الرئيسي ===
 let handler = async (m, { args, usedPrefix, command }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
     let example = `مثال:\n${usedPrefix + command} 2 20:00 راجع الدرس شهري`
     if (args.length < 4) {
-        return m.reply(`❗ لاستخدام الأمر اكتب:\n${usedPrefix + command} <الرقم> <الوقت> <الرسالة> <التكرار>\n\n${example}`)
+        return m.reply(`❗ لاستخدام الأمر اكتب:\n${usedPrefix + command} <الرقم> <الوقت> <الرسالة> <التكرار>\n\n${example}\n👤 العضوية: ${vipStatus}`)
     }
 
     let index = parseInt(args[0]) - 1
@@ -52,7 +54,7 @@ let handler = async (m, { args, usedPrefix, command }) => {
     // جدولة التذكير الجديد
     scheduleReminder(updatedReminder, m)
 
-    await m.reply(`✅ تم تعديل التذكير بنجاح\n🕒 الوقت: ${time}\n🔁 التكرار: ${repeat}\n💬 الرسالة: ${message}`)
+    await m.reply(`✅ تم تعديل التذكير بنجاح\n🕒 الوقت: ${time}\n🔁 التكرار: ${repeat}\n💬 الرسالة: ${message}\n👤 العضوية: ${vipStatus}`)
 }
 
 handler.command = /^(تعديل_تذكير)$/i

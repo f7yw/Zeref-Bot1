@@ -1,7 +1,8 @@
-import { initEconomy, fmt, getRole } from '../lib/economy.js'
+import { initEconomy, fmt, getRole , isVip, isVip} from '../lib/economy.js'
 import { xpRange } from '../lib/levelling.js'
 
 let handler = async (m, { conn, usedPrefix }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const who  = m.quoted?.sender || m.mentionedJid?.[0] || m.sender
   const user = global.db.data.users[who]
   if (!user) throw `✳️ المستخدم مفقود من قاعدة البيانات`

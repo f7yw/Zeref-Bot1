@@ -1,3 +1,4 @@
+import { isVip } from '../lib/economy.js'
 import fs from 'fs'
 import path from 'path'
 import schedule from 'node-schedule'
@@ -51,9 +52,10 @@ export function loadAndScheduleReminders(conn) {
 
 // ⚙️ أمر البوت
 let handler = async (m, { args, command, usedPrefix, conn }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   let example = `${usedPrefix + command} 18:30 اشرب دواء يومي`
   if (args.length < 3)
-    return m.reply(`❗ الصيغة الصحيحة:\n${usedPrefix + command} [الوقت] [الرسالة] [التكرار]\nمثال:\n${example}`)
+    return m.reply(`❗ الصيغة الصحيحة:\n${usedPrefix + command} [الوقت] [الرسالة] [التكرار]\nمثال:\n${example}\n👤 العضوية: ${vipStatus}`)
 
   let time = args[0]
   let repeat = args[args.length - 1]
@@ -88,7 +90,7 @@ let handler = async (m, { args, command, usedPrefix, conn }) => {
   fs.writeFileSync(remindersFile, JSON.stringify(data, null, 2))
   scheduleReminder(reminder, conn)
 
-  await m.reply(`✅ تم ضبط التذكير بنجاح\n🕒 الوقت: ${time}\n🔁 التكرار: ${repeat}\n💬 الرسالة: ${message}\n⏳ الوقت المتبقي: ${remainingTime}`)
+  await m.reply(`✅ تم ضبط التذكير بنجاح\n🕒 الوقت: ${time}\n🔁 التكرار: ${repeat}\n💬 الرسالة: ${message}\n⏳ الوقت المتبقي: ${remainingTime}\n👤 العضوية: ${vipStatus}`)
 }
 
 handler.command = /^ذكرني$/i

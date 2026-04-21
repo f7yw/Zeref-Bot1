@@ -1,8 +1,9 @@
 import FormData from 'form-data'
 import sharp from 'sharp'
-import { deductEnergy, syncEnergy, initEconomy, FEES, MAX_ENERGY } from '../lib/economy.js'
+import { deductEnergy, syncEnergy, initEconomy, FEES, MAX_ENERGY , isVip, isVip} from '../lib/economy.js'
 
 let handler = async (m, { conn, usedPrefix }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const user = global.db.data.users[m.sender]
 
   if (user) {
@@ -34,7 +35,7 @@ let handler = async (m, { conn, usedPrefix }) => {
 
   if (user) deductEnergy(user, FEES.hd)
 
-  await m.reply(`⚙️ جاري رفع جودة الصورة... ⚡ -${FEES.hd} طاقة`)
+  await m.reply(`⚙️ جاري رفع جودة الصورة... ⚡ -${FEES.hd} طاقة\n👤 العضوية: ${vipStatus}`)
 
   try {
     const img = await downloadMedia(q)
@@ -62,7 +63,7 @@ let handler = async (m, { conn, usedPrefix }) => {
     )
   } catch (er) {
     console.error('[HD ERROR]', er)
-    m.reply('❌ فشل تحسين الجودة، حاول مجدداً.')
+    m.reply('❌ فشل تحسين الجودة، حاول مجدداً.\n👤 العضوية: ' + vipStatus + ')
   } finally {
     delete conn.hdr[m.sender]
   }

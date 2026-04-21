@@ -1,4 +1,4 @@
-import { initEconomy, fmt, fmtEnergy, isVip } from '../lib/economy.js'
+import { initEconomy, fmt, fmtEnergy, isVip , isVip} from '../lib/economy.js'
 
 // ─── Utility ─────────────────────────────────────────────────────────────────
 const msToStr = ms => {
@@ -14,11 +14,13 @@ const msToStr = ms => {
 }
 
 let handler = async (m, { conn, usedPrefix, command, isOwner, participants }) => {
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const user = global.db.data.users[m.sender]
 
   // ── تقرير_المال / balance_report ──────────────────────────────────────────
   if (/^(تقرير_المال|تقرير-المال|balance_report)$/i.test(command)) {
-    if (!user) return m.reply('❌ أرسل أي أمر أولاً لتسجيل حسابك.')
+    if (!user) return m.reply('❌ أرسل أي أمر أولاً لتسجيل حسابك.\n👤 العضوية: ' + vipStatus + ')
     initEconomy(user)
 
     const txns = Array.isArray(user.transactions) ? user.transactions.slice(-5).reverse() : []
@@ -87,7 +89,7 @@ ${txnLines}
       .slice(0, 5)
 
     const topLines = top5.length
-      ? top5.map(([jid, count], i) => `│ ${i + 1}. @${jid.split('@')[0]} — ${count} رسالة`).join('\n')
+      ? top5.map(([jid, count], i) => `│ ${i + 1}. @${jid.split('@')[0]} — ${count} رسالة\n👤 العضوية: ${vipStatus}`).join('\n')
       : '│ لا توجد بيانات رسائل بعد.'
 
     const allUsers = Object.values(global.db.data.users || {})
@@ -120,7 +122,7 @@ ${topLines}
 
   // ── احصائياتي_مفصل / user_stats ──────────────────────────────────────────
   if (/^(احصائياتي_مفصل|احصائياتي-مفصل|user_stats|إحصائياتي_مفصل)$/i.test(command)) {
-    if (!user) return m.reply('❌ سجّل أولاً.')
+    if (!user) return m.reply('❌ سجّل أولاً.\n👤 العضوية: ' + vipStatus + ')
     initEconomy(user)
 
     const totalMsgs = user.messages?.total || 0
@@ -161,10 +163,10 @@ ${topLines}
     if (!errors.length) return m.reply('✅ لا توجد أخطاء مسجلة حديثاً.')
 
     const lines = errors.slice(-10).reverse()
-      .map((e, i) => `${i + 1}. [${new Date(e.time || Date.now()).toLocaleTimeString('ar')}]\n   ${e.plugin || '—'}: ${e.message || e}`)
+      .map((e, i) => `${i + 1}. [${new Date(e.time || Date.now()).toLocaleTimeString('ar')}]\n   ${e.plugin || '—'}: ${e.message || e}\n👤 العضوية: ${vipStatus}`)
       .join('\n\n')
 
-    return m.reply(`╭────『 ⚠️ آخر الأخطاء 』────\n│\n${lines}\n│\n╰──────────────────`)
+    return m.reply(`╭────『 ⚠️ آخر الأخطاء 』────\n│\n${lines}\n│\n╰──────────────────\n👤 العضوية: ${vipStatus}`)
   }
 
   // ── نسخة_احتياطية / backup ─────────────────────────────────────────────────

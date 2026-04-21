@@ -1,6 +1,8 @@
+import { isVip } from '../lib/economy.js'
 import translate from '@vitalets/google-translate-api'
 import fetch from 'node-fetch'
 let handler = async (m, { args, usedPrefix, command }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
 let msg = `*[❗ملاحظه❗] لاستخدام الامر عليك كتابة: ${usedPrefix + command} (اللغه) (النص)*\n*مثال:*\n*${usedPrefix + command} ar Hello*\n*للتعرف على اللغات المدعومة في:*\n*- https://cloud.google.com/translate/docs/languages*`
 if (!args || !args[0]) return m.reply(msg)  
 let lang = args[0]

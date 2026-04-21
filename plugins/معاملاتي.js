@@ -1,14 +1,15 @@
-import { fmt } from '../lib/economy.js'
+import { fmt , isVip, isVip} from '../lib/economy.js'
 import { typingDelay } from '../lib/presence.js'
 
 let handler = async (m, { conn, usedPrefix }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const user = global.db.data.users[m.sender]
-  if (!user) return m.reply(`❌ استخدم *${usedPrefix}تسجيل* أولاً`)
+  if (!user) return m.reply(`❌ استخدم *${usedPrefix}تسجيل* أولاً\n👤 العضوية: ${vipStatus}`)
 
   await typingDelay(conn, m.chat, 800)
 
   const txs = Array.isArray(user.transactions) ? user.transactions.slice(0, 20) : []
-  if (!txs.length) return m.reply('📭 لا توجد معاملات مسجلة بعد.\nاستخدم البوت أكثر لتظهر هنا!')
+  if (!txs.length) return m.reply('📭 لا توجد معاملات مسجلة بعد.\nاستخدم البوت أكثر لتظهر هنا!\n👤 العضوية: ' + vipStatus + ')
 
   const total = txs.reduce((acc, t) => {
     return t.type === 'earn' ? { ...acc, earned: acc.earned + t.amount } : { ...acc, spent: acc.spent + t.amount }

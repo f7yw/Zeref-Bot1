@@ -1,3 +1,4 @@
+import { isVip } from '../lib/economy.js'
 import translate from '@vitalets/google-translate-api'
 import { typingDelay } from '../lib/presence.js'
 
@@ -11,6 +12,7 @@ const LANG_MAP = {
 const VALID_LANGS = new Set(Object.keys(LANG_MAP))
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const chat = global.db.data.chats[m.chat] || {}
   if (!global.db.data.chats[m.chat]) global.db.data.chats[m.chat] = chat
 
@@ -27,12 +29,12 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
       )
     }
     chat.globalTranslate = { enabled: true, to: lang }
-    return m.reply(`✅ *تم تفعيل الترجمة التلقائية*\n🌍 سيتم ترجمة الرسائل إلى *${LANG_MAP[lang]}* (${lang})`)
+    return m.reply(`✅ *تم تفعيل الترجمة التلقائية*\n🌍 سيتم ترجمة الرسائل إلى *${LANG_MAP[lang]}* (${lang})\n👤 العضوية: ${vipStatus}`)
   }
 
   if (sub === 'ايقاف' || sub === 'إيقاف' || sub === 'off') {
     chat.globalTranslate = { enabled: false, to: 'ar' }
-    return m.reply(`✅ *تم إيقاف الترجمة التلقائية*`)
+    return m.reply(`✅ *تم إيقاف الترجمة التلقائية*\n👤 العضوية: ${vipStatus}`)
   }
 
   const status = chat.globalTranslate?.enabled

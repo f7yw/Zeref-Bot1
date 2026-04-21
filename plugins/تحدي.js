@@ -1,4 +1,4 @@
-import { fmt, initEconomy, logTransaction } from '../lib/economy.js'
+import { fmt, initEconomy, logTransaction , isVip, isVip} from '../lib/economy.js'
 
 const TIMEOUT = 30000
 const LEVELS = [
@@ -36,6 +36,8 @@ function giveReward(m, entry) {
 }
 
 let handler = async (m, { conn, args, usedPrefix }) => {
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   conn.math = conn.math || {}
   const chatId = m.chat
 

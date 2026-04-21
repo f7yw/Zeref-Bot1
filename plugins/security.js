@@ -1,8 +1,11 @@
+import { isVip } from '../lib/economy.js'
 function hasLink(text = '') {
   return /(https?:\/\/|chat\.whatsapp\.com\/|wa\.me\/|t\.me\/|discord\.gg\/)/i.test(text)
 }
 
 let handler = async (m, { args, command }) => {
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const chat = global.db.data.chats[m.chat] || (global.db.data.chats[m.chat] = {})
   const sub = (args[0] || '').toLowerCase()
   if (/^(تشغيل|on)$/i.test(sub)) {
@@ -13,7 +16,7 @@ let handler = async (m, { args, command }) => {
     chat.antiLink = false
     return m.reply('🛡️ تم إيقاف حماية الروابط في القروب.')
   }
-  return m.reply(`استخدم:\n.${command} تشغيل\n.${command} ايقاف`)
+  return m.reply(`استخدم:\n.${command} تشغيل\n.${command} ايقاف\n👤 العضوية: ${vipStatus}`)
 }
 
 handler.before = async function (m, { conn, isAdmin, isBotAdmin, isOwner }) {

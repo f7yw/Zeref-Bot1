@@ -1,3 +1,4 @@
+import { isVip } from '../lib/economy.js'
 function cleanNumber(input = '') {
   return input.replace(/[^0-9]/g, '')
 }
@@ -17,21 +18,23 @@ function participantJids(participants) {
 }
 
 let handler = async (m, { conn, args, text, command, participants, usedPrefix }) => {
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   if (/^(اسم_القروب|اسم-القروب|تغيير_الاسم|setname)$/i.test(command)) {
-    if (!text) return m.reply(`اكتب الاسم الجديد:\n${usedPrefix}${command} الاسم الجديد`)
+    if (!text) return m.reply(`اكتب الاسم الجديد:\n${usedPrefix}${command} الاسم الجديد\n👤 العضوية: ${vipStatus}`)
     await conn.groupUpdateSubject(m.chat, text.trim())
-    return m.reply(`✅ تم تغيير اسم القروب إلى:\n*${text.trim()}*`)
+    return m.reply(`✅ تم تغيير اسم القروب إلى:\n*${text.trim()}*\n👤 العضوية: ${vipStatus}`)
   }
 
   if (/^(وصف_القروب|وصف-القروب|setdesc)$/i.test(command)) {
-    if (!text) return m.reply(`اكتب الوصف الجديد:\n${usedPrefix}${command} الوصف`)
+    if (!text) return m.reply(`اكتب الوصف الجديد:\n${usedPrefix}${command} الوصف\n👤 العضوية: ${vipStatus}`)
     await conn.groupUpdateDescription(m.chat, text.trim())
     return m.reply('✅ تم تغيير وصف القروب.')
   }
 
   if (/^(طرد|kick|حذف)$/i.test(command)) {
     const target = targetUser(m, args)
-    if (!target) return m.reply(`حدد العضو:\n${usedPrefix}${command} @الشخص`)
+    if (!target) return m.reply(`حدد العضو:\n${usedPrefix}${command} @الشخص\n👤 العضوية: ${vipStatus}`)
     if (target === conn.user.jid) return m.reply('لا أستطيع طرد نفسي.')
     await conn.groupParticipantsUpdate(m.chat, [target], 'remove')
     return conn.reply(m.chat, `✅ تم طرد @${target.split('@')[0]}`, m, { mentions: [target] })
@@ -39,21 +42,21 @@ let handler = async (m, { conn, args, text, command, participants, usedPrefix })
 
   if (/^(اضف|إضافة|اضافة|add)$/i.test(command)) {
     const target = targetUser(m, args)
-    if (!target) return m.reply(`اكتب رقم العضو مع رمز الدولة:\n${usedPrefix}${command} 967xxxxxxxx`)
+    if (!target) return m.reply(`اكتب رقم العضو مع رمز الدولة:\n${usedPrefix}${command} 967xxxxxxxx\n👤 العضوية: ${vipStatus}`)
     await conn.groupParticipantsUpdate(m.chat, [target], 'add')
     return conn.reply(m.chat, `✅ تم إرسال طلب إضافة @${target.split('@')[0]}`, m, { mentions: [target] })
   }
 
   if (/^(رفع|ترقية|promote|مشرف)$/i.test(command)) {
     const target = targetUser(m, args)
-    if (!target) return m.reply(`حدد العضو:\n${usedPrefix}${command} @الشخص`)
+    if (!target) return m.reply(`حدد العضو:\n${usedPrefix}${command} @الشخص\n👤 العضوية: ${vipStatus}`)
     await conn.groupParticipantsUpdate(m.chat, [target], 'promote')
     return conn.reply(m.chat, `✅ أصبح @${target.split('@')[0]} مشرفاً`, m, { mentions: [target] })
   }
 
   if (/^(خفض|تنزيل|demote)$/i.test(command)) {
     const target = targetUser(m, args)
-    if (!target) return m.reply(`حدد العضو:\n${usedPrefix}${command} @الشخص`)
+    if (!target) return m.reply(`حدد العضو:\n${usedPrefix}${command} @الشخص\n👤 العضوية: ${vipStatus}`)
     await conn.groupParticipantsUpdate(m.chat, [target], 'demote')
     return conn.reply(m.chat, `✅ تم خفض @${target.split('@')[0]} من الإشراف`, m, { mentions: [target] })
   }

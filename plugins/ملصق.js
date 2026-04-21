@@ -1,3 +1,4 @@
+import { isVip } from '../lib/economy.js'
 import { sticker } from '../lib/sticker.js'
 import { typingDelay, recordingDelay } from '../lib/presence.js'
 
@@ -5,6 +6,7 @@ const BOT_PACK = 'SHADOW Bot'
 const BOT_AUTH = 'Zeref | t.me/ZerefBot'
 
 let handler = async (m, { conn, usedPrefix, command }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const isReverse = /^(صوره|صورة|فك_ملصق|فك-ملصق|unsticker|toimage)$/i.test(command)
 
   try {

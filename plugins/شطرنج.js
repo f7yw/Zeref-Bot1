@@ -1,3 +1,4 @@
+import { isVip } from '../lib/economy.js'
 import sharp from 'sharp';
 
 const FILES = 'abcdefgh';
@@ -225,24 +226,31 @@ function findGame(conn, chat, sender) {
 }
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   conn.chess = conn.chess || {};
   const sub  = (args[0] || '').toLowerCase();
   let game   = findGame(conn, m.chat, m.sender);
 
+  const getName = async (jid) => {
+    try { return await conn.getName(jid) } catch { return jid.split('@')[0] }
+  }
+
   // ── End game ──
   if (/^(انهاء|حذف|stop|end)$/i.test(sub) && game) {
     delete conn.chess[game.id];
-    return m.reply('♟️ تم إنهاء مباراة الشطرنج.');
+    return m.reply(`♟️ تم إنهاء مباراة الشطرنج.\n👤 العضوية: ${vipStatus}`);
   }
 
   // ── Surrender ──
   if (/^(استسلام|surrender)$/i.test(sub) && game) {
     const winner = game.white === m.sender ? game.black : game.white;
+    const winnerName = await getName(winner);
+    const loserName = await getName(m.sender);
     delete conn.chess[game.id];
     const img = await renderBoard(game);
     return conn.sendMessage(m.chat, {
       image: img,
-      caption: `🏳️ استسلم @${m.sender.split('@')[0]}\n🏆 الفائز: @${winner.split('@')[0]}`,
+      caption: `🏳️ استسلم ${loserName} (@${m.sender.split('@')[0]}) 👤 العضوية: ${isVip(m.sender) ? '💎 مميز' : '❌ عادي'}\n🏆 الفائز: ${winnerName} (@${winner.split('@')[0]}) 👤 العضوية: ${isVip(winner) ? '💎 مميز' : '❌ عادي'}\n👤 العضوية: ${vipStatus}`,
       mentions: [m.sender, winner]
     }, { quoted: m });
   }
@@ -253,30 +261,33 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     if (waiting && waiting.white !== m.sender) {
       waiting.black = m.sender;
       const img = await renderBoard(waiting);
+      const nameW = await getName(waiting.white);
+      const nameB = await getName(waiting.black);
       return conn.sendMessage(m.chat, {
         image: img,
-        caption: `♟️ *شطرنج SHADOW — Chess.com Style*\n\n⬜ الأبيض: @${waiting.white.split('@')[0]}\n⬛ الأسود: @${waiting.black.split('@')[0]}\n\n▶️ الأبيض يبدأ أولاً!\n📌 الحركة: *${usedPrefix}${command} e2 e4*\n🏳️ الانسحاب: *${usedPrefix}${command} استسلام*`,
+        caption: `♟️ *شطرنج SHADOW — Chess.com Style*\n\n⬜ الأبيض: ${nameW} (@${waiting.white.split('@')[0]}) 👤 العضوية: ${isVip(waiting.white) ? '💎 مميز' : '❌ عادي'}\n⬛ الأسود: ${nameB} (@${waiting.black.split('@')[0]}) 👤 العضوية: ${isVip(waiting.black) ? '💎 مميز' : '❌ عادي'}\n\n▶️ الدور: ${nameW} (@${waiting.white.split('@')[0]})\n👤 العضوية: ${vipStatus}`,
         mentions: [waiting.white, waiting.black]
       }, { quoted: m });
     }
     const id = `chess-${Date.now()}`;
     conn.chess[id] = { id, chat: m.chat, white: m.sender, black: null, turn: 'w', board: cloneBoard() };
     const img = await renderBoard(conn.chess[id]);
+    const nameW = await getName(m.sender);
     return conn.sendMessage(m.chat, {
       image: img,
-      caption: `♟️ *مباراة شطرنج جديدة!*\n\n⬜ الأبيض: @${m.sender.split('@')[0]}\n⏳ انتظار لاعب ثانٍ...\n\n📌 للانضمام اكتب: *${usedPrefix}${command}*`,
+      caption: `♟️ *مباراة شطرنج جديدة!*\n\n⬜ الأبيض: ${nameW} (@${m.sender.split('@')[0]}) 👤 العضوية: ${vipStatus}\n⏳ انتظار لاعب ثانٍ...\n\n📌 للانضمام اكتب: *${usedPrefix}${command}*\n👤 العضوية: ${vipStatus}`,
       mentions: [m.sender]
     }, { quoted: m });
   }
 
-  if (!game.black) return m.reply('⏳ المباراة بانتظار لاعب ثانٍ.');
-  if (m.sender !== (game.turn === 'w' ? game.white : game.black)) return m.reply('⏳ ليس دورك الآن، انتظر.');
+  if (!game.black) return m.reply(`⏳ المباراة بانتظار لاعب ثانٍ.\n👤 العضوية: ${vipStatus}`);
+  if (m.sender !== (game.turn === 'w' ? game.white : game.black)) return m.reply(`⏳ ليس دورك الآن، انتظر.\n👤 العضوية: ${vipStatus}`);
 
   const fr = pos(args[0] || ''), to = pos(args[1] || '');
-  if (!fr || !to) return m.reply(`اكتب الحركة هكذا:\n*${usedPrefix}${command} e2 e4*`);
+  if (!fr || !to) return m.reply(`اكتب الحركة هكذا:\n*${usedPrefix}${command} e2 e4*\n👤 العضوية: ${vipStatus}`);
 
   const legal = legalMove(game, fr, to);
-  if (legal !== true) return m.reply(`❌ ${legal}`);
+  if (legal !== true) return m.reply(`❌ ${legal}\n👤 العضوية: ${vipStatus}`);
 
   const piece    = game.board[fr.r][fr.c];
   const captured = game.board[to.r][to.c];
@@ -289,21 +300,26 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
 
   if (captured.toLowerCase() === 'k') {
     const img = await renderBoard(game, toSquare);
+    const winnerName = await getName(m.sender);
     delete conn.chess[game.id];
     return conn.sendMessage(m.chat, {
       image: img,
-      caption: `🏆 *كش ملك!*\nالفائز: @${m.sender.split('@')[0]} 🎉`,
+      caption: `🏆 *كش ملك!*\nالفائز: ${winnerName} (@${m.sender.split('@')[0]}) 🎉\n👤 العضوية: ${vipStatus}`,
       mentions: [game.white, game.black]
     }, { quoted: m });
   }
 
   game.turn = game.turn === 'w' ? 'b' : 'w';
   const nextPlayer = game.turn === 'w' ? game.white : game.black;
+  const nextPlayerName = await getName(nextPlayer);
   const img = await renderBoard(game, toSquare);
+
+  const nameW = await getName(game.white);
+  const nameB = await getName(game.black);
 
   return conn.sendMessage(m.chat, {
     image: img,
-    caption: `♟️ *شطرنج — Chess.com Style*\n\n⬜ @${game.white.split('@')[0]}  vs  ⬛ @${game.black.split('@')[0]}\n\n▶️ الدور: @${nextPlayer.split('@')[0]}\n📌 الحركة: *${usedPrefix}${command} e2 e4*\n🏳️ الانسحاب: *${usedPrefix}${command} استسلام*`,
+    caption: `♟️ *شطرنج — Chess.com Style*\n\n⬜ ${nameW} (@${game.white.split('@')[0]}) 👤 العضوية: ${isVip(game.white) ? '💎 مميز' : '❌ عادي'}\n⬛ ${nameB} (@${game.black.split('@')[0]}) 👤 العضوية: ${isVip(game.black) ? '💎 مميز' : '❌ عادي'}\n\n▶️ الدور: ${nextPlayerName} (@${nextPlayer.split('@')[0]})\n📌 الحركة: *${usedPrefix}${command} e2 e4*\n🏳️ الانسحاب: *${usedPrefix}${command} استسلام*\n👤 العضوية: ${vipStatus}`,
     mentions: [game.white, game.black]
   }, { quoted: m });
 };

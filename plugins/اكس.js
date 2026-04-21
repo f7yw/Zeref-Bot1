@@ -1,3 +1,4 @@
+import { isVip } from '../lib/economy.js'
 import TicTacToe from '../lib/tictactoe.js'
 
 function renderBoard(game) {
@@ -16,11 +17,13 @@ async function buildBoardStr(conn, room, statusLine) {
   }
   const nameX = await getName(room.game.playerX)
   const nameO = await getName(room.game.playerO)
+  const vipX = isVip(room.game.playerX) ? '💎 مميز' : '❌ عادي'
+  const vipO = isVip(room.game.playerO) ? '💎 مميز' : '❌ عادي'
 
   return `╭────『 🎮 لعبة XO 』────
 │
-│ ❎ = @${room.game.playerX.split('@')[0]} (${nameX})
-│ ⭕ = @${room.game.playerO.split('@')[0]} (${nameO})
+│ ❎ = ${nameX} (@${room.game.playerX.split('@')[0]}) 👤 العضوية: ${vipX}
+│ ⭕ = ${nameO} (@${room.game.playerO.split('@')[0]}) 👤 العضوية: ${vipO}
 │
 │   ${arr.slice(0, 3).join('')}
 │   ${arr.slice(3, 6).join('')}
@@ -36,22 +39,25 @@ async function buildBoardStr(conn, room, statusLine) {
 async function sendToRoom(conn, room, text, m) {
   const opts = { mentions: conn.parseMention(text) }
   await conn.sendMessage(room.x, { text, ...opts }, { quoted: m })
-  // Only send to O's chat if it's a different chat (DM mode)
   if (room.o && room.o !== room.x) {
     await conn.sendMessage(room.o, { text, ...opts }, { quoted: m })
   }
 }
 
 let handler = async (m, { conn, usedPrefix, command, text }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   conn.game = conn.game || {}
 
-  // Check if sender is already in a game
+  const getName = async (jid) => {
+    try { return await conn.getName(jid) } catch { return jid.split('@')[0] }
+  }
+
   const existing = Object.values(conn.game).find(r =>
     r.id?.startsWith('tictactoe') &&
     r.game && [r.game.playerX, r.game.playerO].includes(m.sender)
   )
   if (existing) {
-    return m.reply(`*❗ أنت بالفعل في لعبة نشطة!*\n\nأرسل رقماً (1-9) للعب أو "استسلم" للخروج.`)
+    return m.reply(`*❗ أنت بالفعل في لعبة نشطة!*\n\nأرسل رقماً (1-9) للعب أو "استسلم" للخروج.\n👤 العضوية: ${vipStatus}`)
   }
 
   if (!text) {
@@ -70,36 +76,36 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
 │   1️⃣2️⃣3️⃣
 │   4️⃣5️⃣6️⃣
 │   7️⃣8️⃣9️⃣
+│
+│ 👤 العضوية: ${vipStatus}
 ╰──────────────────`.trim()
     )
   }
 
-  // Try to join existing waiting room
   const waitingRoom = Object.values(conn.game).find(r =>
     r.state === 'WAITING' && r.name === text
   )
 
   if (waitingRoom) {
     if (waitingRoom.game.playerX === m.sender) {
-      return m.reply('❗ لا يمكنك الانضمام إلى روم أنشأته أنت!')
+      return m.reply(`❗ لا يمكنك الانضمام إلى روم أنشأته أنت!\n👤 العضوية: ${vipStatus}`)
     }
 
     waitingRoom.o           = m.chat
     waitingRoom.game.playerO = m.sender
     waitingRoom.state       = 'PLAYING'
 
+    const nameTurn = await getName(waitingRoom.game.currentTurn)
     const str = await buildBoardStr(
       conn,
       waitingRoom,
-      `⌛ دورك @${waitingRoom.game.currentTurn.split('@')[0]}`
+      `⌛ دورك ${nameTurn} (@${waitingRoom.game.currentTurn.split('@')[0]})`
     )
 
-    await m.reply('*✅ تم الانضمام! اللعبة تبدأ الآن...*')
-    // Send board only once (sendToRoom handles deduplication)
+    await m.reply(`*✅ تم الانضمام! اللعبة تبدأ الآن...*\n👤 العضوية: ${vipStatus}`)
     await sendToRoom(conn, waitingRoom, str, m)
 
   } else {
-    // Create new room
     const room = {
       id:    'tictactoe-' + Date.now(),
       x:     m.chat,
@@ -124,6 +130,8 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
 │   1️⃣2️⃣3️⃣
 │   4️⃣5️⃣6️⃣
 │   7️⃣8️⃣9️⃣
+│
+│ 👤 العضوية: ${vipStatus}
 ╰──────────────────`.trim()
     )
   }

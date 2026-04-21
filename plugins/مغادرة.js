@@ -1,4 +1,7 @@
+import { isVip } from '../lib/economy.js'
 let handler = async (m, { conn, usedPrefix, command, args, isOwner }) => {
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const user = global.db?.data?.users?.[m.sender]
 
   if (/^(مغادرة|غادر|leave|خروج|انسحب)$/i.test(command)) {
@@ -18,7 +21,7 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner }) => {
     user.transactions = []
     user.totalEarned  = 0
     await global.db.write()
-    return m.reply(`✅ *تم إلغاء تسجيلك بنجاح.*\n\nتم حذف جميع بياناتك من البوت بما فيها رصيدك.\nيمكنك التسجيل مجدداً في أي وقت باستخدام *.تسجيل*`)
+    return m.reply(`✅ *تم إلغاء تسجيلك بنجاح.*\n\nتم حذف جميع بياناتك من البوت بما فيها رصيدك.\nيمكنك التسجيل مجدداً في أي وقت باستخدام *.تسجيل*\n👤 العضوية: ${vipStatus}`)
   }
 
   if (/^(حذف_عضو|حذف-عضو|deluser|مسح_عضو)$/i.test(command)) {

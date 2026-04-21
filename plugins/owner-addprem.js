@@ -1,4 +1,4 @@
-import { logTransaction, initEconomy, MAX_ENERGY } from '../lib/economy.js'
+import { logTransaction, initEconomy, MAX_ENERGY , isVip, isVip} from '../lib/economy.js'
 
 const VIP_DURATION = 10 * 365 * 24 * 60 * 60 * 1000
 const VIP_BONUS_MONEY   = 50000
@@ -6,6 +6,7 @@ const VIP_BONUS_BANK    = 10000
 const VIP_BONUS_DIAMOND = 50
 
 let handler = async (m, { conn, text }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   let jid = m.mentionedJid?.[0] || m.quoted?.sender
 
   if (!jid && text) {

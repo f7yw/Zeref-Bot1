@@ -1,3 +1,4 @@
+import { isVip } from '../lib/economy.js'
 import os from 'os'
 import { readdirSync } from 'fs'
 
@@ -17,6 +18,7 @@ function fmtBytes(bytes) {
 }
 
 let handler = async (m, { conn }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const _uptime = process.uptime() * 1000
   const uptime = clockString(_uptime)
   const taguser = '@' + m.sender.split('@')[0]

@@ -1,5 +1,7 @@
+import { isVip } from '../lib/economy.js'
 let handler = async (m, { usedPrefix, command }) => {
-  await m.reply(`❌ أمر تحميل الفيديو معطّل حالياً.\nجرب ${usedPrefix}بحث_يوتيوب للبحث عن الفيديو.`)
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  await m.reply(`❌ أمر تحميل الفيديو معطّل حالياً.\nجرب ${usedPrefix}بحث_يوتيوب للبحث عن الفيديو.\n👤 العضوية: ${vipStatus}`)
 }
 handler.help = []
 handler.tags = ['downloader']

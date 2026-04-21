@@ -1,5 +1,7 @@
+import { isVip } from '../lib/economy.js'
 global.math = global.math ? global.math : {};
 const handler = async (m, {conn, args, usedPrefix, command}) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const mat =`
 *[❗ خطأ ❗] تستخدم الأمر بطريقة غير صحيحة*
 

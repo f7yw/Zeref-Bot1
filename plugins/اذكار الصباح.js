@@ -1,4 +1,6 @@
+import { isVip } from '../lib/economy.js'
 let handler = async (m, { conn }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   let teks = `☀️🌹 *أذكار الصباح* 🌹☀️
 
 🌴 *حصّن نفسك* 🌴

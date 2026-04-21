@@ -1,9 +1,10 @@
 import { xpRange } from '../lib/levelling.js'
-import { isVip, fmt, fmtEnergy, getRole } from '../lib/economy.js'
+import { isVip, fmt, fmtEnergy, getRole , isVip} from '../lib/economy.js'
 import { initUser } from '../lib/userInit.js'
 import { typingDelay } from '../lib/presence.js'
 
 let handler = async (m, { conn, usedPrefix }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const who   = m.mentionedJid?.[0] || m.quoted?.sender || m.sender
   const isSelf = who === m.sender
   const user  = global.db.data.users[who] || (global.db.data.users[who] = {})

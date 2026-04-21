@@ -1,5 +1,6 @@
 
 let handler  = async (m, { conn }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
 conn.reply(m.chat,`*┌────「   𝑺𝒉𝒂𝒅𝒐𝒘    」─*\n*“${pickRandom(global.verdad)}”*\n*◎ ─━──━─✎─━──━─ ◎*`, m)
 }
 handler.help = ['verdad']

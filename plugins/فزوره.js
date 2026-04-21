@@ -1,4 +1,5 @@
 let handler  = async (m, { conn }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
 conn.reply(m.chat,`*♚  مرحبا بك في قسم الفوازي ♚*\n          ꔹ━━━━━━━━━━━ꔹ\n*『${pickRandom(global.wisuiska)}』*\n◎ ─━──━─𝑺𝒉𝒂𝒅𝒐𝒘─━──━─ ◎`, m)
 }
 handler.help = ['jwhsjs']

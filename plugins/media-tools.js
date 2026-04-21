@@ -1,4 +1,4 @@
-import { syncEnergy, deductEnergy, FEES, initEconomy, logTransaction } from '../lib/economy.js'
+import { syncEnergy, deductEnergy, FEES, initEconomy, logTransaction , isVip, isVip} from '../lib/economy.js'
 import { execSync } from 'child_process'
 import { existsSync } from 'fs'
 import { join } from 'path'
@@ -17,14 +17,15 @@ async function fetchMediaInfo(url) {
 }
 
 let handler = async (m, { conn, usedPrefix, command, text, args }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const user = global.db.data.users[m.sender]
-  if (!user) return m.reply('❌ أرسل أي أمر أولاً لتسجيل حسابك.')
+  if (!user) return m.reply('❌ أرسل أي أمر أولاً لتسجيل حسابك.\n👤 العضوية: ' + vipStatus + ')
   initEconomy(user)
 
   // ── معلومات_رابط / link_info ─────────────────────────────────────────────
   if (/^(معلومات_رابط|معلومات-رابط|link_info|info_link)$/i.test(command)) {
     if (!text || !/^https?:\/\//i.test(text))
-      return m.reply(`❌ أرسل رابطاً صحيحاً:\n${usedPrefix}معلومات_رابط https://...`)
+      return m.reply(`❌ أرسل رابطاً صحيحاً:\n${usedPrefix}معلومات_رابط https://...\n👤 العضوية: ${vipStatus}`)
 
     const isYT    = /youtube\.com|youtu\.be/i.test(text)
     const isIG    = /instagram\.com/i.test(text)
@@ -60,13 +61,13 @@ let handler = async (m, { conn, usedPrefix, command, text, args }) => {
   if (/^(تحميل_صوت|استخراج_صوت|extract_audio)$/i.test(command)) {
     const url = args[0] || text
     if (!url || !/^https?:\/\//i.test(url))
-      return m.reply(`❌ مثال:\n${usedPrefix}تحميل_صوت https://youtu.be/xxx`)
+      return m.reply(`❌ مثال:\n${usedPrefix}تحميل_صوت https://youtu.be/xxx\n👤 العضوية: ${vipStatus}`)
 
     const energy = syncEnergy(user)
     if (energy < FEES.ai && !user.infiniteResources)
-      return m.reply(`❌ طاقتك غير كافية (${energy}⚡). الحد الأدنى: ${FEES.ai}⚡`)
+      return m.reply(`❌ طاقتك غير كافية (${energy}⚡). الحد الأدنى: ${FEES.ai}⚡\n👤 العضوية: ${vipStatus}`)
 
-    await m.reply('⏳ جاري البحث عن الصوت...')
+    await m.reply('⏳ جاري البحث عن الصوت...\n👤 العضوية: ' + vipStatus + ')
 
     // Try using lib/ytdlp.js if available
     try {
@@ -94,20 +95,20 @@ let handler = async (m, { conn, usedPrefix, command, text, args }) => {
       }
     } catch (_) {}
 
-    return m.reply('❌ لم أتمكن من تحميل الصوت. يدعم روابط يوتيوب بشكل أساسي.\n💡 جرب: ' + usedPrefix + 'اغنيه صوت <اسم>')
+    return m.reply('❌ لم أتمكن من تحميل الصوت. يدعم روابط يوتيوب بشكل أساسي.\n💡 جرب: ' + usedPrefix + 'اغنيه صوت <اسم>\n👤 العضوية: ' + vipStatus + ')
   }
 
   // ── تحميل_فيديو / extract_video ──────────────────────────────────────────
   if (/^(تحميل_فيديو|استخراج_فيديو|extract_video|extract_image)$/i.test(command)) {
     const url = args[0] || text
     if (!url || !/^https?:\/\//i.test(url))
-      return m.reply(`❌ مثال:\n${usedPrefix}تحميل_فيديو https://youtu.be/xxx`)
+      return m.reply(`❌ مثال:\n${usedPrefix}تحميل_فيديو https://youtu.be/xxx\n👤 العضوية: ${vipStatus}`)
 
     const energy = syncEnergy(user)
     if (energy < FEES.hd && !user.infiniteResources)
-      return m.reply(`❌ طاقتك غير كافية (${energy}⚡). الحد الأدنى: ${FEES.hd}⚡`)
+      return m.reply(`❌ طاقتك غير كافية (${energy}⚡). الحد الأدنى: ${FEES.hd}⚡\n👤 العضوية: ${vipStatus}`)
 
-    await m.reply('⏳ جاري تجهيز الفيديو...')
+    await m.reply('⏳ جاري تجهيز الفيديو...\n👤 العضوية: ' + vipStatus + ')
 
     try {
       const ytdlp = await import('../lib/ytdlp.js').then(m => m.default || m).catch(() => null)
@@ -121,16 +122,16 @@ let handler = async (m, { conn, usedPrefix, command, text, args }) => {
       }
     } catch (_) {}
 
-    return m.reply('❌ لم أتمكن من تحميل الفيديو.\n💡 جرب: ' + usedPrefix + 'فيديو <اسم على يوتيوب>')
+    return m.reply('❌ لم أتمكن من تحميل الفيديو.\n💡 جرب: ' + usedPrefix + 'فيديو <اسم على يوتيوب>\n👤 العضوية: ' + vipStatus + ')
   }
 
   // ── OCR / نص_صورة ────────────────────────────────────────────────────────
   if (/^(ocr|نص_صورة|استخراج_نص|copy_text)$/i.test(command)) {
     const quoted = m.quoted
     if (!quoted?.mimetype?.startsWith('image'))
-      return m.reply(`❌ أرسل صورة ثم رُد عليها بـ:\n${usedPrefix}ocr`)
+      return m.reply(`❌ أرسل صورة ثم رُد عليها بـ:\n${usedPrefix}ocr\n👤 العضوية: ${vipStatus}`)
 
-    await m.reply('⏳ جاري قراءة النص من الصورة...')
+    await m.reply('⏳ جاري قراءة النص من الصورة...\n👤 العضوية: ' + vipStatus + ')
 
     try {
       const Tesseract = await import('tesseract.js').catch(() => null)
@@ -140,32 +141,32 @@ let handler = async (m, { conn, usedPrefix, command, text, args }) => {
       const { data: { text: ocrText } } = await Tesseract.default.recognize(buffer, 'ara+eng')
       const clean = (ocrText || '').trim()
 
-      if (!clean) return m.reply('⚠️ لم أجد أي نص في الصورة.')
+      if (!clean) return m.reply('⚠️ لم أجد أي نص في الصورة.\n👤 العضوية: ' + vipStatus + ')
 
       deductEnergy(user, FEES.ai, m.sender)
 
-      return m.reply(`╭────『 📝 نص الصورة 』────\n│\n${clean.split('\n').map(l => '│ ' + l).join('\n')}\n│\n╰──────────────────`)
+      return m.reply(`╭────『 📝 نص الصورة 』────\n│\n${clean.split('\n').map(l => '│ ' + l).join('\n')}\n│\n╰──────────────────\n👤 العضوية: ${vipStatus}`)
     } catch (e) {
-      return m.reply(`❌ خاصية OCR تحتاج مكتبة tesseract.js\n💡 يمكن إضافتها لاحقاً.\nالخطأ: ${e.message}`)
+      return m.reply(`❌ خاصية OCR تحتاج مكتبة tesseract.js\n💡 يمكن إضافتها لاحقاً.\nالخطأ: ${e.message}\n👤 العضوية: ${vipStatus}`)
     }
   }
 
   // ── تحويل_صيغة / convert_format ──────────────────────────────────────────
   if (/^(تحويل_صيغة|تحويل-صيغة|convert_format)$/i.test(command)) {
     const quoted = m.quoted
-    if (!quoted) return m.reply(`❌ رُد على ملف أو صورة أو فيديو:\n${usedPrefix}تحويل_صيغة`)
+    if (!quoted) return m.reply(`❌ رُد على ملف أو صورة أو فيديو:\n${usedPrefix}تحويل_صيغة\n👤 العضوية: ${vipStatus}`)
 
     const mime = quoted.mimetype || ''
     if (mime.startsWith('image')) {
-      await m.reply('⏳ جاري التحويل إلى ملصق...')
+      await m.reply('⏳ جاري التحويل إلى ملصق...\n👤 العضوية: ' + vipStatus + ')
       try {
         const buf = await quoted.download()
         await conn.sendMessage(m.chat, { sticker: buf }, { quoted: m })
       } catch (e) {
         return m.reply('❌ فشل التحويل: ' + e.message)
       }
-    } else if (mime.startsWith('video') || mime === 'image/gif') {
-      await m.reply('⏳ جاري التحويل إلى ملصق متحرك...')
+    } else if (mime.startsWith('video\n👤 العضوية: ' + vipStatus + ') || mime === 'image/gif') {
+      await m.reply('⏳ جاري التحويل إلى ملصق متحرك...\n👤 العضوية: ' + vipStatus + ')
       try {
         const buf = await quoted.download()
         const { toAudio } = await import('../lib/converter.js')
@@ -175,14 +176,14 @@ let handler = async (m, { conn, usedPrefix, command, text, args }) => {
         return m.reply('❌ فشل التحويل: ' + e.message)
       }
     } else {
-      return m.reply('❌ الصيغة غير مدعومة حالياً. مدعوم: صورة → ملصق، فيديو → صوت.')
+      return m.reply('❌ الصيغة غير مدعومة حالياً. مدعوم: صورة → ملصق، فيديو → صوت.\n👤 العضوية: ' + vipStatus + ')
     }
   }
 
   // ── بحث_صورة / search_image ──────────────────────────────────────────────
   if (/^(بحث_صورة|search_image|صورة_بحث)$/i.test(command)) {
-    if (!text) return m.reply(`❌ مثال:\n${usedPrefix}بحث_صورة قطة`)
-    await m.reply('⏳ جاري البحث عن الصورة...')
+    if (!text) return m.reply(`❌ مثال:\n${usedPrefix}بحث_صورة قطة\n👤 العضوية: ${vipStatus}`)
+    await m.reply('⏳ جاري البحث عن الصورة...\n👤 العضوية: ' + vipStatus + ')
 
     try {
       const got = await import('node-fetch').then(m => m.default).catch(() => null)
@@ -196,7 +197,7 @@ let handler = async (m, { conn, usedPrefix, command, text, args }) => {
       const buf = Buffer.from(await res.arrayBuffer())
       await conn.sendMessage(m.chat, { image: buf, caption: `🔍 نتيجة بحث: ${text}` }, { quoted: m })
     } catch (e) {
-      return m.reply(`❌ البحث عن الصورة فشل: ${e.message}\n💡 جرب: ${usedPrefix}بنترست ${text}`)
+      return m.reply(`❌ البحث عن الصورة فشل: ${e.message}\n💡 جرب: ${usedPrefix}بنترست ${text}\n👤 العضوية: ${vipStatus}`)
     }
   }
 }

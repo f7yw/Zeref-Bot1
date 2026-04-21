@@ -1,10 +1,11 @@
-import { initEconomy, logTransaction, fmt } from '../lib/economy.js'
+import { initEconomy, logTransaction, fmt , isVip, isVip} from '../lib/economy.js'
 
 const COIN_PER_DIAMOND = 1_000
 
 let handler = async (m, { conn, usedPrefix, command, args }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const user = global.db.data.users[m.sender]
-  if (!user) return m.reply('❌ أرسل أي أمر أولاً لتسجيل حسابك.')
+  if (!user) return m.reply('❌ أرسل أي أمر أولاً لتسجيل حسابك.\n👤 العضوية: ' + vipStatus + ')
   initEconomy(user)
 
   // Show shop info
@@ -37,7 +38,7 @@ let handler = async (m, { conn, usedPrefix, command, args }) => {
   }
 
   if (!count || count < 1) {
-    return m.reply(`❌ اكتب عدد الماسات:\n${usedPrefix}شراء_الماس 5`)
+    return m.reply(`❌ اكتب عدد الماسات:\n${usedPrefix}شراء_الماس 5\n👤 العضوية: ${vipStatus}`)
   }
 
   const totalCost = count * COIN_PER_DIAMOND

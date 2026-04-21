@@ -1,13 +1,15 @@
+import { isVip } from '../lib/economy.js'
 import fs from 'fs'
 import path from 'path'
 
 const remindersFile = path.resolve('./reminders.json')
 
 let handler = async (m, { args, usedPrefix, command }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
     let data = JSON.parse(fs.readFileSync(remindersFile))
     let userReminders = data.filter(r => r.chat === m.chat)
 
-    if (!args[0] || isNaN(args[0])) return m.reply(`❗ اكتب رقم التذكير الذي تريد حذفه\nمثال:\n${usedPrefix + command} 2`)
+    if (!args[0] || isNaN(args[0])) return m.reply(`❗ اكتب رقم التذكير الذي تريد حذفه\nمثال:\n${usedPrefix + command} 2\n👤 العضوية: ${vipStatus}`)
     let index = parseInt(args[0]) - 1
 
     if (index < 0 || index >= userReminders.length) return m.reply('❌ رقم غير صالح')

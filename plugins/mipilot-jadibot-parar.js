@@ -1,4 +1,5 @@
 let handler  = async (m, { conn }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
     if (global.conn.user.jid == conn.user.jid)conn.ws.close();
     
   }

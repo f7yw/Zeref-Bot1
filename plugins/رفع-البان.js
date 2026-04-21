@@ -1,4 +1,6 @@
+import { isVip } from '../lib/economy.js'
 let handler = async (m, { conn, text}) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
  await conn.sendMessage(m.chat, { react: { text: '🔔', key: m.key } })
 if (!text) throw '*المنشن*'
 let who

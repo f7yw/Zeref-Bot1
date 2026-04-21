@@ -1,3 +1,4 @@
+import { isVip } from '../lib/economy.js'
 import fs from 'fs'
 
 const BANNED_WORDS = [
@@ -58,6 +59,8 @@ export async function before(m, { conn }) {
 }
 
 let handler = async (m, { conn, args, command, isOwner }) => {
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const chat = global.db.data.chats[m.chat] || (global.db.data.chats[m.chat] = {})
 
   if (/^(حماية_الكلام|antioffensive)$/i.test(command)) {
@@ -70,7 +73,7 @@ let handler = async (m, { conn, args, command, isOwner }) => {
       chat.antiOffensive = false
       return m.reply('⛔ تم إيقاف فلتر الكلام المسيء.')
     }
-    return m.reply(`الحالة الحالية: *${chat.antiOffensive ? 'مفعّل' : 'متوقف'}*\nاستخدم:\n.حماية_الكلام تشغيل\n.حماية_الكلام ايقاف`)
+    return m.reply(`الحالة الحالية: *${chat.antiOffensive ? 'مفعّل' : 'متوقف'}*\nاستخدم:\n.حماية_الكلام تشغيل\n.حماية_الكلام ايقاف\n👤 العضوية: ${vipStatus}`)
   }
 
   if (/^(تحذيرات_عضو|warnings)$/i.test(command)) {

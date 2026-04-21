@@ -1,3 +1,4 @@
+import { isVip } from '../lib/economy.js'
 let handler = async (m) => {
 global.db.data.chats[m.chat].isBanned = false
 m.reply('*تم إلغاء حظر هذه الدردشة بنجاح*')

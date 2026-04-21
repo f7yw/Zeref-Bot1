@@ -1,5 +1,7 @@
+import { isVip } from '../lib/economy.js'
  const handler = async (m, {conn, text}) => {
-  m.reply(`*•┃❖❂━━━━❨🍹❩━━━━━❂*╟❧\n*〄⊱حـكــمــة⊰☕⊱الـــيـــوم⊰〄*\n\n➢ *"${pickRandom(global.hekma)}"*\n*•┃❖━━━━━━❨🍹❩━━━━❂*╟❧`);
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  m.reply(`*•┃❖❂━━━━❨🍹❩━━━━━❂*╟❧\n*〄⊱حـكــمــة⊰☕⊱الـــيـــوم⊰〄*\n\n➢ *"${pickRandom(global.hekma)}"*\n*•┃❖━━━━━━❨🍹❩━━━━❂*╟❧\n👤 العضوية: ${vipStatus}`);
 };
 handler.tags = ['frasss'];
 handler.command = ['حكمه','حكمة'];

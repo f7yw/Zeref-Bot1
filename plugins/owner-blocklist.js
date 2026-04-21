@@ -1,4 +1,6 @@
-let handler = async (m, { conn }) => {	
+import { isVip } from '../lib/economy.js'
+let handler = async (m, { conn }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'	
 await conn.fetchBlocklist().then(async data => {
 let txt = `*≡ قائمة المحظورين من البوت*\n\n*المجموع :* ${data.length}\n\n┌─⊷\n`
 for (let i of data) {

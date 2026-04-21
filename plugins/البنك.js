@@ -1,5 +1,5 @@
 import { xpRange } from '../lib/levelling.js'
-import { syncEnergy, fmtEnergy, fmt, getRole, initEconomy, msToHuman, MAX_ENERGY, isVip, logTransaction } from '../lib/economy.js'
+import { syncEnergy, fmtEnergy, fmt, getRole, initEconomy, msToHuman, MAX_ENERGY, isVip, logTransaction , isVip} from '../lib/economy.js'
 import { initUser } from '../lib/userInit.js'
 
 // ─── DAILY WORK COOLDOWN DISPLAY ────────────────────────────────────────────
@@ -9,6 +9,8 @@ function timeLeft(last, cooldown) {
 }
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const user = global.db.data.users[m.sender] || (global.db.data.users[m.sender] = {})
   initUser(user, m.pushName, m.sender)
 
@@ -25,8 +27,8 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
   // ── .ايداع <amount> ──────────────────────────────────────────────────────
   if (/^(ايداع|ودع|deposit)$/i.test(sub)) {
     const amount = parseInt(dataArgs[0])
-    if (!amount || amount < 1) return m.reply(`*مثال:* ${usedPrefix}ايداع 500`)
-    if (user.money < amount) return m.reply(`❌ ليس لديك ما يكفي!\n💰 محفظتك: ${fmt(user.money)}`)
+    if (!amount || amount < 1) return m.reply(`*مثال:* ${usedPrefix}ايداع 500\n👤 العضوية: ${vipStatus}`)
+    if (user.money < amount) return m.reply(`❌ ليس لديك ما يكفي!\n💰 محفظتك: ${fmt(user.money)}\n👤 العضوية: ${vipStatus}`)
     user.money -= amount
     user.bank += amount
     logTransaction(user, 'spend', amount, `🏦 إيداع في البنك`)
@@ -36,8 +38,8 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
   // ── .سحب <amount> ───────────────────────────────────────────────────────
   if (/^(سحب|withdraw|سح)$/i.test(sub)) {
     const amount = parseInt(dataArgs[0])
-    if (!amount || amount < 1) return m.reply(`*مثال:* ${usedPrefix}سحب 500`)
-    if (user.bank < amount) return m.reply(`❌ رصيد بنكك غير كافٍ!\n🏦 البنك: ${fmt(user.bank)}`)
+    if (!amount || amount < 1) return m.reply(`*مثال:* ${usedPrefix}سحب 500\n👤 العضوية: ${vipStatus}`)
+    if (user.bank < amount) return m.reply(`❌ رصيد بنكك غير كافٍ!\n🏦 البنك: ${fmt(user.bank)}\n👤 العضوية: ${vipStatus}`)
     user.bank -= amount
     user.money += amount
     logTransaction(user, 'earn', amount, `🏦 سحب من البنك`)
@@ -49,13 +51,13 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     const target = m.mentionedJid?.[0] || (m.quoted?.sender)
     const amount = parseInt(dataArgs.find(arg => /^\d+$/.test(arg)) || args.find(arg => /^\d+$/.test(arg)))
     if (!target || !amount || amount < 1)
-      return m.reply(`*مثال:* ${usedPrefix}تحويل @شخص 500\n📌 رسوم التحويل: 5٪`)
-    if (target === m.sender) return m.reply('❌ لا يمكنك التحويل لنفسك.')
-    if (user.money < amount) return m.reply(`❌ ليس لديك ما يكفي!\n💰 محفظتك: ${fmt(user.money)}`)
+      return m.reply(`*مثال:* ${usedPrefix}تحويل @شخص 500\n📌 رسوم التحويل: 5٪\n👤 العضوية: ${vipStatus}`)
+    if (target === m.sender) return m.reply('❌ لا يمكنك التحويل لنفسك.\n👤 العضوية: ' + vipStatus + ')
+    if (user.money < amount) return m.reply(`❌ ليس لديك ما يكفي!\n💰 محفظتك: ${fmt(user.money)}\n👤 العضوية: ${vipStatus}`)
     const fee = Math.ceil(amount * 0.05)
     const net = amount - fee
     const targetUser = global.db.data.users[target]
-    if (!targetUser) return m.reply('❌ المستخدم المحدد غير موجود في قاعدة البيانات.')
+    if (!targetUser) return m.reply('❌ المستخدم المحدد غير موجود في قاعدة البيانات.\n👤 العضوية: ' + vipStatus + ')
     initEconomy(targetUser)
     user.money -= amount
     targetUser.money += net

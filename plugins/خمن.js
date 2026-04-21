@@ -1,9 +1,11 @@
+import { isVip } from '../lib/economy.js'
 import fs from 'fs';
 
 let timeout = 60000;
 let poin = 500;
 
 let handler = async (m, { conn, usedPrefix }) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
     conn.tekateki = conn.tekateki ? conn.tekateki : {};
     let id = m.chat;
     if (id in conn.tekateki) {
