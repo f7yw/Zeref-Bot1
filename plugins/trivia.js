@@ -1,93 +1,193 @@
+/**
+ * سؤال وجواب متعدد الفئات — للثانويين والجامعيين
+ */
 import { isVip, initEconomy, logTransaction, fmt } from '../lib/economy.js'
 
-const REWARD = 500
+const REWARD    = 500
 const XP_REWARD = 100
-const TIMEOUT = 30000 // 30 seconds
+const TIMEOUT   = 35000
 
-const questions = [
-  { q: "ما هي عاصمة اليابان؟", a: "طوكيو" },
-  { q: "من هو مكتشف الجاذبية؟", a: "نيوتن" },
-  { q: "ما هو أطول نهر في العالم؟", a: "النيل" },
-  { q: "ما هي أكبر قارة في العالم؟", a: "آسيا" },
-  { q: "ما هو الكوكب الأحمر؟", a: "المريخ" },
-  { q: "ما هو أسرع حيوان بري؟", a: "الفهد" },
-  { q: "كم عدد ألوان قوس قزح؟", a: "7" },
-  { q: "ما هي عاصمة فرنسا؟", a: "باريس" },
-  { q: "من هو مؤسس شركة مايكروسوفت؟", a: "بيل جيتس" },
-  { q: "ما هو المعدن السائل في درجة حرارة الغرفة؟", a: "الزئبق" },
-  { q: "ما هي عاصمة المملكة العربية السعودية؟", a: "الرياض" },
-  { q: "من هو أول من هبط على سطح القمر؟", a: "نيل أرمسترونج" },
-  { q: "ما هي عاصمة مصر؟", a: "القاهرة" },
-  { q: "ما هو أكبر محيط في العالم؟", a: "المحيط الهادئ" },
-  { q: "ما هو العنصر الكيميائي الذي رمزه O؟", a: "الأكسجين" }
+const QUESTIONS = [
+  // ─── علوم وفيزياء ────────────────────────────────────────────────────────
+  { q: '⚛️ ما هو عدد الإلكترونات في ذرة الأكسجين؟', a: '8', cat: 'علوم' },
+  { q: '🔬 ما وحدة قياس القوة في النظام الدولي؟', a: 'نيوتن', cat: 'فيزياء' },
+  { q: '⚡ ما القانون الذي يربط الجهد والتيار والمقاومة؟', a: 'قانون أوم', cat: 'فيزياء' },
+  { q: '🌡️ ما درجة حرارة الغليان بالكلفن؟', a: '373', cat: 'كيمياء' },
+  { q: '🧪 ما الصيغة الكيميائية للماء؟', a: 'H2O', cat: 'كيمياء' },
+  { q: '⚗️ ما العنصر الأكثر وفرة في القشرة الأرضية؟', a: 'الأكسجين', cat: 'كيمياء' },
+  { q: '🔭 ما سرعة الضوء تقريباً بالكيلومتر في الثانية؟', a: '300000', cat: 'فيزياء' },
+  { q: '🌊 ما قوة الطفو التي وصفها أرخميدس؟', a: 'قوة الدفع', cat: 'فيزياء' },
+  { q: '🧲 ما اسم المجال المحيط بأي موصل يمر فيه تيار؟', a: 'المجال المغناطيسي', cat: 'فيزياء' },
+  { q: '🧬 ما وحدة الوراثة الأساسية في الكائنات الحية؟', a: 'الجين', cat: 'أحياء' },
+
+  // ─── رياضيات ─────────────────────────────────────────────────────────────
+  { q: '📐 ما قانون مساحة الدائرة؟', a: 'π × r²', cat: 'رياضيات' },
+  { q: '➗ ما قيمة الصفر أسّ صفر (0⁰)؟', a: '1', cat: 'رياضيات' },
+  { q: '📊 ما هو لوغاريتم 1000 بالأساس 10؟', a: '3', cat: 'رياضيات' },
+  { q: '∑ ما مجموع الأعداد من 1 إلى 100؟', a: '5050', cat: 'رياضيات' },
+  { q: '📏 ما هو المشتق الأول للدالة x²؟', a: '2x', cat: 'رياضيات' },
+  { q: '🔢 ما هو العدد الأولي الأول بعد 20؟', a: '23', cat: 'رياضيات' },
+  { q: '📐 في مثلث قائم، إذا كان الضلعان a=3 و b=4، ما طول الوتر؟', a: '5', cat: 'رياضيات' },
+
+  // ─── برمجة وتقنية ────────────────────────────────────────────────────────
+  { q: '💻 ما اختصار HTML؟', a: 'HyperText Markup Language', cat: 'تقنية' },
+  { q: '🌐 ما بروتوكول نقل البيانات الآمن على الإنترنت؟', a: 'HTTPS', cat: 'تقنية' },
+  { q: '🐍 من أسس لغة البرمجة Python؟', a: 'غيدو فان روسيم', cat: 'برمجة' },
+  { q: '📱 ما نظام تشغيل الجوال الذي طورته جوجل؟', a: 'أندرويد', cat: 'تقنية' },
+  { q: '💾 ما وحدة تخزين البيانات الأصغر؟', a: 'بت (Bit)', cat: 'تقنية' },
+  { q: '🔣 كم بت في البايت الواحد؟', a: '8', cat: 'تقنية' },
+  { q: '🖧 ما البروتوكول الذي يُرسل البريد الإلكتروني؟', a: 'SMTP', cat: 'شبكات' },
+  { q: '📊 ما هيكل البيانات الذي يعمل بمبدأ LIFO؟', a: 'Stack (مكدس)', cat: 'برمجة' },
+  { q: '🤖 ما خوارزمية تقليل الخطأ في الشبكات العصبية؟', a: 'Backpropagation', cat: 'AI' },
+  { q: '🌐 ما اسم نظام التحكم بالإصدارات الأشهر؟', a: 'Git', cat: 'برمجة' },
+
+  // ─── اقتصاد وإدارة ───────────────────────────────────────────────────────
+  { q: '📈 ما اسم نظرية أن الأسواق الحرة تنظم نفسها بنفسها؟', a: 'اليد الخفية لآدم سميث', cat: 'اقتصاد' },
+  { q: '💵 ما تعريف الناتج المحلي الإجمالي (GDP)؟', a: 'قيمة كل السلع والخدمات خلال عام', cat: 'اقتصاد' },
+  { q: '📊 ما الفرق بين التضخم والانكماش؟', a: 'التضخم: ارتفاع الأسعار. الانكماش: انخفاضها', cat: 'اقتصاد' },
+  { q: '💱 ما معنى سعر الصرف العائم؟', a: 'سعر تحدده قوى السوق', cat: 'اقتصاد' },
+  { q: '🏦 ما وظيفة البنك المركزي؟', a: 'التحكم في السياسة النقدية', cat: 'اقتصاد' },
+
+  // ─── تاريخ وجغرافيا ─────────────────────────────────────────────────────
+  { q: '🗺️ ما العاصمة الأعلى ارتفاعاً في العالم؟', a: 'لاباز (بوليفيا)', cat: 'جغرافيا' },
+  { q: '🌍 ما القارة الأكثر سكاناً في العالم؟', a: 'آسيا', cat: 'جغرافيا' },
+  { q: '🏔️ ما أطول سلسلة جبلية في العالم؟', a: 'جبال الإنديز', cat: 'جغرافيا' },
+  { q: '🏛️ في أي عام سقطت القسطنطينية؟', a: '1453', cat: 'تاريخ' },
+  { q: '📜 من ألّف كتاب "ثروة الأمم"؟', a: 'آدم سميث', cat: 'تاريخ' },
+  { q: '🌐 من أسس الأمم المتحدة؟', a: '51 دولة عام 1945', cat: 'تاريخ' },
+  { q: '🗽 ما اسم أطول نهر في أفريقيا؟', a: 'النيل', cat: 'جغرافيا' },
+  { q: '⚔️ من قاد فتح الأندلس؟', a: 'طارق بن زياد', cat: 'تاريخ إسلامي' },
+
+  // ─── ثقافة عامة ─────────────────────────────────────────────────────────
+  { q: '🎬 من مخرج فيلم "Inception"؟', a: 'كريستوفر نولان', cat: 'ثقافة' },
+  { q: '📚 من كتب رواية "الجريمة والعقاب"؟', a: 'دوستويفسكي', cat: 'أدب' },
+  { q: '🏆 كم مرة حصل محمد صلاح على جائزة أفضل لاعب إفريقي؟', a: '4', cat: 'رياضة' },
+  { q: '🎵 من اخترع الفونوغراف (جهاز الصوت الأول)؟', a: 'توماس إديسون', cat: 'ثقافة' },
+  { q: '🚀 ما اسم أول قمر اصطناعي أُطلق في الفضاء؟', a: 'سبوتنيك', cat: 'علوم' },
+  { q: '📱 من أسس شركة آبل مع ستيف جوبز؟', a: 'ستيف وزنياك', cat: 'تقنية' },
+  { q: '🏢 في أي مدينة يقع مقر الأمم المتحدة الرئيسي؟', a: 'نيويورك', cat: 'عام' },
+  { q: '⚽ ما البلد الذي فاز بكأس العالم 2022؟', a: 'الأرجنتين', cat: 'رياضة' },
+  { q: '🎯 كم عدد كرات الألوان في لعبة السنوكر الأساسية؟', a: '22', cat: 'رياضة' },
+  { q: '💡 من اخترع المصباح الكهربائي؟', a: 'توماس إديسون', cat: 'ثقافة' },
+
+  // ─── فلسفة وعلم النفس ────────────────────────────────────────────────────
+  { q: '🧠 ما نظرية ماسلو المشهورة؟', a: 'هرم الاحتياجات', cat: 'علم نفس' },
+  { q: '🤔 من قال "أنا أفكر إذاً أنا موجود"؟', a: 'ديكارت', cat: 'فلسفة' },
+  { q: '📖 ما الفرق بين علم النفس والطب النفسي؟', a: 'علم النفس لا يصف الدواء', cat: 'علم نفس' },
+  { q: '💡 ما نظرية فرويد الأشهر؟', a: 'اللاوعي والأحلام', cat: 'علم نفس' },
+  { q: '⚖️ من واضع نظرية العدالة الأشهر في القرن الـ20؟', a: 'جون رولز', cat: 'فلسفة' },
+
+  // ─── لغة عربية ──────────────────────────────────────────────────────────
+  { q: '📝 ما إعراب الاسم بعد حرف الجر؟', a: 'مجرور', cat: 'عربي' },
+  { q: '✍️ ما الفرق بين الفعل المتعدي واللازم؟', a: 'المتعدي يأخذ مفعولاً به', cat: 'عربي' },
+  { q: '📖 كم جزءاً في القرآن الكريم؟', a: '30 جزءاً', cat: 'إسلامي' },
+  { q: '🔤 ما عدد حروف اللغة العربية؟', a: '28', cat: 'عربي' },
 ]
 
-let handler = async (m, { conn, usedPrefix, command }) => {
+function normalize(s) {
+  return String(s || '').trim().toLowerCase()
+    .replace(/[ًٌٍَُِّْـ]/g, '')
+    .replace(/[أإآا]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/\s+/g, ' ').trim()
+}
+
+let handler = async (m, { conn, args, command, usedPrefix }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   conn.trivia = conn.trivia || {}
 
   if (conn.trivia[m.chat]) {
-    return m.reply(`*⚠️ هناك سؤال قائم بالفعل في هذا القروب!*\nأجب عليه أولاً.\n👤 العضوية: ${vipStatus}`)
+    const cur = conn.trivia[m.chat]
+    return conn.reply(m.chat,
+      `⚠️ يوجد سؤال لم يُجاب عليه!\n\n❓ *${cur.item.q}*\n🏷️ الفئة: ${cur.item.cat}\n\nاكتب إجابتك مباشرة`,
+      cur.msg)
   }
 
-  const item = questions[Math.floor(Math.random() * questions.length)]
+  // تصفية حسب الفئة
+  const catFilter = (args[0] || '').trim()
+  let pool = QUESTIONS
+  if (catFilter) {
+    pool = QUESTIONS.filter(q => q.cat.includes(catFilter) || normalize(q.cat) === normalize(catFilter))
+    if (!pool.length) pool = QUESTIONS
+  }
+
+  const item = pool[Math.floor(Math.random() * pool.length)]
+
+  const sent = await conn.reply(m.chat,
+`╭────『 ❓ سؤال وجواب 』────
+│
+│ 🏷️ الفئة: *${item.cat}*
+│
+│ ❓ *${item.q}*
+│
+│ ⏳ ${TIMEOUT / 1000} ثانية
+│ 💰 الجائزة: ${fmt(REWARD)}
+│ ⭐ XP: +${XP_REWARD}
+│
+│ 💬 اكتب إجابتك مباشرة
+╰──────────────────`.trim(), m)
+
   const id = Date.now()
-  
   conn.trivia[m.chat] = {
-    id,
-    q: item.q,
-    a: item.a.toLowerCase(),
-    time: setTimeout(() => {
-      if (conn.trivia[m.chat] && conn.trivia[m.chat].id === id) {
-        conn.reply(m.chat, `*⌛ انتهى الوقت!*\nالإجابة الصحيحة كانت: *${item.a}*\n👤 العضوية: ${vipStatus}`, null)
+    id, item,
+    msgId: sent?.key?.id,
+    msg: sent,
+    time: setTimeout(async () => {
+      if (conn.trivia[m.chat]?.id === id) {
+        await conn.reply(m.chat,
+          `⌛ *انتهى الوقت!*\n\n✅ الإجابة: *${item.a}*\n🏷️ ${item.cat}`,
+          conn.trivia[m.chat].msg)
         delete conn.trivia[m.chat]
       }
     }, TIMEOUT)
   }
-
-  const caption = `
-╭────『 ❓ سؤال وجواب 』────
-│
-│ ❓ *السؤال:* ${item.q}
-│
-│ ⏳ لديك *30 ثانية* للإجابة!
-│ 💰 الجائزة: *${fmt(REWARD)}* + *${XP_REWARD} XP*
-│
-│ 💡 أجب بالرد على هذه الرسالة
-│
-│ 👤 العضوية: ${vipStatus}
-╰──────────────────`.trim()
-
-  await conn.reply(m.chat, caption, m)
 }
 
-handler.before = async function (m) {
-  this.trivia = this.trivia || {}
-  if (!this.trivia[m.chat]) return true
-  if (!m.quoted || !m.quoted.fromMe || !m.quoted.text || !/سؤال/i.test(m.quoted.text)) return true
+handler.all = async function (m) {
+  if (!this.trivia || !this.trivia[m.chat]) return
+  if (m.isBaileys) return
 
-  const trivia = this.trivia[m.chat]
-  const answer = m.text.trim().toLowerCase()
-  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const entry = this.trivia[m.chat]
+  const rawText = (m.text || '').trim()
+  if (!rawText || global.prefix?.test?.(rawText)) return
 
-  if (answer === trivia.a) {
-    clearTimeout(trivia.time)
-    const user = global.db.data.users[m.sender]
-    initEconomy(user, m.sender)
-    user.money += REWARD
-    user.exp = (user.exp || 0) + XP_REWARD
-    logTransaction(user, 'earn', REWARD, 'Trivia win')
+  const correct = normalize(entry.item.a)
+  const given   = normalize(rawText)
 
-    const name = await this.getName(m.sender).catch(() => m.sender.split('@')[0])
-    await m.reply(`*🎉 أحسنت يا ${name} (@${m.sender.split('@')[0]})! إجابة صحيحة!*\n\n💰 ربحت: *${fmt(REWARD)}*\n⭐ XP: *+${XP_REWARD}*\n👤 العضوية: ${vipStatus}`, null, { mentions: [m.sender] })
+  if (!given || given.length < 1) return
+
+  if (given.includes(correct) || (correct.includes(given) && given.length >= 3)) {
+    clearTimeout(entry.time)
     delete this.trivia[m.chat]
-    return false
+
+    const user = global.db.data.users[m.sender] ||= {}
+    initEconomy(user, m.sender)
+    user.money = (user.money || 0) + REWARD
+    user.exp   = (user.exp   || 0) + XP_REWARD
+    user.totalEarned = (user.totalEarned || 0) + REWARD
+    logTransaction(user, 'earn', REWARD, `❓ trivia win: ${entry.item.cat}`)
+    await global.db.write()
+
+    return this.reply(m.chat,
+`╭────『 🎉 إجابة صحيحة! 』────
+│
+│ @${m.sender.split('@')[0]} أحسنت! 🏆
+│ ✅ ${entry.item.a}
+│ 🏷️ ${entry.item.cat}
+│
+│ 💰 +${fmt(REWARD)}
+│ ⭐ +${XP_REWARD} XP
+│ 💼 رصيدك: ${fmt(user.money)}
+╰──────────────────`.trim(), m, { mentions: [m.sender] })
   }
-  return true
+
+  const isDirect = m.quoted && entry.msgId && m.quoted.id === entry.msgId
+  if (isDirect) {
+    await this.reply(m.chat, `❌ إجابة خاطئة، حاول مجدداً!`, m)
+  }
 }
 
-handler.help = ['سؤال_وجواب']
+handler.help = ['سؤال_وجواب', 'trivia']
 handler.tags = ['game']
-handler.command = /^(سؤال_وجواب|trivia|سؤال2)$/i
-
+handler.command = /^(سؤال_وجواب|trivia|سؤال2|معلومة)$/i
 export default handler
