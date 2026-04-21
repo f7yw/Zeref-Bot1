@@ -1,5 +1,5 @@
 import { xpRange } from '../lib/levelling.js'
-import { isVip, fmt, fmtEnergy, getRole , isVip} from '../lib/economy.js'
+import { isVip, fmt, fmtEnergy, getRole } from '../lib/economy.js'
 import { initUser } from '../lib/userInit.js'
 import { typingDelay } from '../lib/presence.js'
 

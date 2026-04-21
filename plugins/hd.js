@@ -64,7 +64,7 @@ let handler = async (m, { conn, usedPrefix }) => {
     )
   } catch (er) {
     console.error('[HD ERROR]', er)
-    m.reply('❌ فشل تحسين الجودة، حاول مجدداً.\n👤 العضوية: ' + vipStatus + ')
+    m.reply('❌ فشل تحسين الجودة، حاول مجدداً.\n👤 العضوية: ' + vipStatus)
   } finally {
     delete conn.hdr[m.sender]
   }

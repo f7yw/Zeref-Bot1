@@ -23,10 +23,16 @@ function renderBoard(game) {
   }[v]))
 }
 
+function displayJid(jid) {
+  if (!jid || jid === 'pending') return '?'
+  if (jid.includes('@lid')) return jid.split('@')[0].replace(/^0+/, '')
+  return jid.split('@')[0]
+}
+
 async function buildBoardStr(conn, room, statusLine) {
   const arr = renderBoard(room.game)
   const getName = async (jid) => {
-    try { return await conn.getName(jid) } catch { return jid.split('@')[0] }
+    try { return await conn.getName(jid) } catch { return displayJid(jid) }
   }
   const nameX = await getName(room.game.playerX)
   const nameO = await getName(room.game.playerO)
@@ -35,8 +41,8 @@ async function buildBoardStr(conn, room, statusLine) {
 
   return `╭────『 🎮 لعبة XO 』────
 │
-│ ❎ = ${nameX} (@${room.game.playerX.split('@')[0]}) 👤 العضوية: ${vipX}
-│ ⭕ = ${nameO} (@${room.game.playerO.split('@')[0]}) 👤 العضوية: ${vipO}
+│ ❎ = ${nameX} (@${displayJid(room.game.playerX)}) 👤 العضوية: ${vipX}
+│ ⭕ = ${nameO} (@${displayJid(room.game.playerO)}) 👤 العضوية: ${vipO}
 │
 │   ${arr.slice(0, 3).join('')}
 │   ${arr.slice(3, 6).join('')}
@@ -77,7 +83,7 @@ export async function before(m) {
 
   if (!isSurrender && m.sender !== room.game.currentTurn) {
     const nameTurn = await getName(room.game.currentTurn)
-    await m.reply(`⏳ ليس دورك! دور ${nameTurn} (@${room.game.currentTurn.split('@')[0]})\n👤 العضوية: ${vipStatus}`, null, { mentions: [room.game.currentTurn] })
+    await m.reply(`⏳ ليس دورك! دور ${nameTurn} (@${displayJid(room.game.currentTurn)})\n👤 العضوية: ${vipStatus}`, null, { mentions: [room.game.currentTurn] })
     return false
   }
 
@@ -107,12 +113,12 @@ export async function before(m) {
   let statusLine
   if (isWin) {
     const winnerName = await getName(winner)
-    statusLine = `🏆 مبروك ${winnerName} (@${winner.split('@')[0]})! فزت! 🎉`
+    statusLine = `🏆 مبروك ${winnerName} (@${displayJid(winner)})! فزت! 🎉`
   } else if (isTie) {
     statusLine = `🤝 تعادل! لعبة رائعة من الطرفين`
   } else {
     const nameTurn = await getName(room.game.currentTurn)
-    statusLine = `⌛ دورك ${nameTurn} (@${room.game.currentTurn.split('@')[0]})`
+    statusLine = `⌛ دورك ${nameTurn} (@${displayJid(room.game.currentTurn)})`
   }
 
   const str = await buildBoardStr(this, room, statusLine)

@@ -1,5 +1,5 @@
 import { initUser } from '../lib/userInit.js'
-import { isVip, fmt, MAX_ENERGY , isVip} from '../lib/economy.js'
+import { isVip, fmt, MAX_ENERGY } from '../lib/economy.js'
 import { typingDelay } from '../lib/presence.js'
 
 let handler = async (m, { conn, usedPrefix }) => {

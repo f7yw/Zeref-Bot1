@@ -60,9 +60,9 @@ let handler = async (m, { conn, command }) => {
   // ── حل (explicit command fallback) ─────────────────────────────────────────
   if (/^(حل)$/i.test(command)) {
     const game = conn.studyGames?.[m.chat]
-    if (!game) return m.reply('لا توجد لعبة تعليمية نشطة. جرّب .كلمة أو .سرعة\n👤 العضوية: ' + vipStatus + ')
+    if (!game) return m.reply('لا توجد لعبة تعليمية نشطة. جرّب .كلمة أو .سرعة\n👤 العضوية: ' + vipStatus)
     const answer = (m.text || '').replace(/^[./#!]?\s*حل\s*/i, '').trim()
-    if (!answer) return m.reply('اكتب الإجابة بعد الأمر. مثال: .حل كيمياء\n👤 العضوية: ' + vipStatus + ')
+    if (!answer) return m.reply('اكتب الإجابة بعد الأمر. مثال: .حل كيمياء\n👤 العضوية: ' + vipStatus)
     if (answer !== game.answer) return m.reply(`❌ غير صحيح. حاول مرة أخرى.\n👤 العضوية: ${vipStatus}`)
     delete conn.studyGames[m.chat]
     const user = applyReward(m)

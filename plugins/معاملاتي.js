@@ -10,7 +10,7 @@ let handler = async (m, { conn, usedPrefix }) => {
   await typingDelay(conn, m.chat, 800)
 
   const txs = Array.isArray(user.transactions) ? user.transactions.slice(0, 20) : []
-  if (!txs.length) return m.reply('📭 لا توجد معاملات مسجلة بعد.\nاستخدم البوت أكثر لتظهر هنا!\n👤 العضوية: ' + vipStatus + ')
+  if (!txs.length) return m.reply('📭 لا توجد معاملات مسجلة بعد.\nاستخدم البوت أكثر لتظهر هنا!\n👤 العضوية: ' + vipStatus)
 
   const total = txs.reduce((acc, t) => {
     return t.type === 'earn' ? { ...acc, earned: acc.earned + t.amount } : { ...acc, spent: acc.spent + t.amount }

@@ -12,7 +12,7 @@ Arabic WhatsApp bot built with Node.js and Baileys. Focused on: study support, e
 ## Tech Stack
 - **Runtime:** Node.js ES Modules
 - **WhatsApp:** `@whiskeysockets/baileys`
-- **Database:** Lowdb JSON (`database.json`) — auto-saved every 30 seconds, after each handled message, and on shutdown
+- **Database:** Supabase PostgreSQL (primary) + local JSON fallback — auto-upserted after every change and every 30s
 - **Server:** Express on port 3000
 
 ## Architecture

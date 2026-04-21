@@ -1,5 +1,5 @@
 import { xpRange } from '../lib/levelling.js'
-import { syncEnergy, fmtEnergy, fmt, getRole, initEconomy, msToHuman, MAX_ENERGY, isVip, logTransaction , isVip} from '../lib/economy.js'
+import { syncEnergy, fmtEnergy, fmt, getRole, initEconomy, msToHuman, MAX_ENERGY, isVip, logTransaction } from '../lib/economy.js'
 import { initUser } from '../lib/userInit.js'
 
 // ─── DAILY WORK COOLDOWN DISPLAY ────────────────────────────────────────────
@@ -52,12 +52,12 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     const amount = parseInt(dataArgs.find(arg => /^\d+$/.test(arg)) || args.find(arg => /^\d+$/.test(arg)))
     if (!target || !amount || amount < 1)
       return m.reply(`*مثال:* ${usedPrefix}تحويل @شخص 500\n📌 رسوم التحويل: 5٪\n👤 العضوية: ${vipStatus}`)
-    if (target === m.sender) return m.reply('❌ لا يمكنك التحويل لنفسك.\n👤 العضوية: ' + vipStatus + ')
+    if (target === m.sender) return m.reply('❌ لا يمكنك التحويل لنفسك.\n👤 العضوية: ' + vipStatus)
     if (user.money < amount) return m.reply(`❌ ليس لديك ما يكفي!\n💰 محفظتك: ${fmt(user.money)}\n👤 العضوية: ${vipStatus}`)
     const fee = Math.ceil(amount * 0.05)
     const net = amount - fee
     const targetUser = global.db.data.users[target]
-    if (!targetUser) return m.reply('❌ المستخدم المحدد غير موجود في قاعدة البيانات.\n👤 العضوية: ' + vipStatus + ')
+    if (!targetUser) return m.reply('❌ المستخدم المحدد غير موجود في قاعدة البيانات.\n👤 العضوية: ' + vipStatus)
     initEconomy(targetUser)
     user.money -= amount
     targetUser.money += net

@@ -1,4 +1,4 @@
-import { syncEnergy, MAX_ENERGY, fmt, initEconomy, msToHuman, isVip, logTransaction , isVip} from '../lib/economy.js'
+import { syncEnergy, MAX_ENERGY, fmt, initEconomy, msToHuman, isVip, logTransaction } from '../lib/economy.js'
 
 const DAILY_COOLDOWN = 24 * 60 * 60 * 1000
 const ENERGY_BONUS   = 50
@@ -8,8 +8,9 @@ const XP_BONUS       = 200
 const DIAMOND_CHANCE = 0.10  // 10% chance to get a diamond
 
 let handler = async (m) => {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   const user = global.db.data.users[m.sender]
-  if (!user) return m.reply('❌ سجّل أولاً باستخدام أي أمر.\n👤 العضوية: ' + vipStatus + ')
+  if (!user) return m.reply('❌ سجّل أولاً باستخدام أي أمر.\n👤 العضوية: ' + vipStatus)
   initEconomy(user)
 
   const vip  = isVip(m.sender)

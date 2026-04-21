@@ -34,7 +34,7 @@ let handler = async (m, { conn, text, command, usedPrefix, participants }) => {
 
   if (/^(مهامي)$/i.test(command)) {
     if (!user.tasks.length) return m.reply(`لا توجد مهام محفوظة.\n👤 العضوية: ${vipStatus}`)
-    return m.reply(user.tasks.map((task, i) => `${i + 1}. ${task.done ? '✅' : '⬜'} ${task.text}`))).join('\n'))
+    return m.reply(user.tasks.map((task, i) => `${i + 1}. ${task.done ? '✅' : '⬜'} ${task.text}`).join('\n'))
   }
 
   if (/^(تم)$/i.test(command)) {
@@ -59,7 +59,7 @@ let handler = async (m, { conn, text, command, usedPrefix, participants }) => {
 
   if (/^(ملاحظاتي)$/i.test(command)) {
     if (!user.notes.length) return m.reply(`لا توجد ملاحظات محفوظة.\n👤 العضوية: ${vipStatus}`)
-    return m.reply(user.notes.map((note, i) => `${i + 1}. ${note.text}`))).join('\n'))
+    return m.reply(user.notes.map((note, i) => `${i + 1}. ${note.text}`).join('\n'))
   }
 
   if (/^(احصائياتي)$/i.test(command)) {
@@ -87,13 +87,13 @@ let handler = async (m, { conn, text, command, usedPrefix, participants }) => {
   if (/^(ترتيب_الرسائل|ترتيب-الرسائل)$/i.test(command)) {
     const stats = m.isGroup ? (global.db.data.chats[m.chat]?.messageStats || {}) : Object.fromEntries(Object.entries(global.db.data.users || {}).map(([jid, data]) => [jid, data.messages?.total || 0]))
     const top = Object.entries(stats).sort((a, b) => (b[1] || 0) - (a[1] || 0)).slice(0, 10)
-    if (!top.length) return m.reply('لا توجد رسائل محفوظة بعد.\n👤 العضوية: ' + vipStatus + '`)
-    return conn.reply(m.chat, top.map(([jid, count], i) => `${i + 1}. @${jid.split('@')[0]} — ${count} رسالة`))).join('\n'), m, { mentions: top.map(([jid]) => jid) })
+    if (!top.length) return m.reply('لا توجد رسائل محفوظة بعد.\n👤 العضوية: ' + vipStatus)
+    return conn.reply(m.chat, top.map(([jid, count], i) => `${i + 1}. @${jid.split('@')[0]} — ${count} رسالة`).join('\n'), m, { mentions: top.map(([jid]) => jid) })
   }
 
   if (/^(ترتيب)$/i.test(command)) {
     const top = Object.entries(global.db.data.users || {}).sort((a, b) => (b[1].exp || 0) - (a[1].exp || 0)).slice(0, 10)
-    return m.reply(top.map(([jid, data], i) => `${i + 1}. @${jid.split('@')[0]} — ${data.exp || 0} XP`))).join('\n'), null, { mentions: top.map(([jid]) => jid) })
+    return m.reply(top.map(([jid, data], i) => `${i + 1}. @${jid.split('@')[0]} — ${data.exp || 0} XP`).join('\n'), null, { mentions: top.map(([jid]) => jid) })
   }
 
   if (/^(نشاط_القروب|نشاط-القروب)$/i.test(command)) {

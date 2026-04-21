@@ -10,20 +10,30 @@ function renderBoard(game) {
   }[v]))
 }
 
+function displayJid(jid) {
+  if (!jid) return '?'
+  if (jid.includes('@lid')) return jid.split('@')[0].replace(/^0+/, '')
+  return jid.split('@')[0]
+}
+
 async function buildBoardStr(conn, room, statusLine) {
   const arr = renderBoard(room.game)
   const getName = async (jid) => {
-    try { return await conn.getName(jid) } catch { return jid.split('@')[0] }
+    try { return await conn.getName(jid) } catch { return displayJid(jid) }
   }
   const nameX = await getName(room.game.playerX)
-  const nameO = await getName(room.game.playerO)
+  const nameO = room.game.playerO && room.game.playerO !== 'pending'
+    ? await getName(room.game.playerO)
+    : '⏳ ينتظر'
   const vipX = isVip(room.game.playerX) ? '💎 مميز' : '❌ عادي'
-  const vipO = isVip(room.game.playerO) ? '💎 مميز' : '❌ عادي'
+  const vipO = room.game.playerO && room.game.playerO !== 'pending'
+    ? (isVip(room.game.playerO) ? '💎 مميز' : '❌ عادي')
+    : ''
 
   return `╭────『 🎮 لعبة XO 』────
 │
-│ ❎ = ${nameX} (@${room.game.playerX.split('@')[0]}) 👤 العضوية: ${vipX}
-│ ⭕ = ${nameO} (@${room.game.playerO.split('@')[0]}) 👤 العضوية: ${vipO}
+│ ❎ = ${nameX} (@${displayJid(room.game.playerX)}) 👤 العضوية: ${vipX}
+│ ⭕ = ${nameO}${room.game.playerO && room.game.playerO !== 'pending' ? ` (@${displayJid(room.game.playerO)}) 👤 العضوية: ${vipO}` : ''}
 │
 │   ${arr.slice(0, 3).join('')}
 │   ${arr.slice(3, 6).join('')}
@@ -99,7 +109,7 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
     const str = await buildBoardStr(
       conn,
       waitingRoom,
-      `⌛ دورك ${nameTurn} (@${waitingRoom.game.currentTurn.split('@')[0]})`
+      `⌛ دورك ${nameTurn} (@${displayJid(waitingRoom.game.currentTurn)})`
     )
 
     await m.reply(`*✅ تم الانضمام! اللعبة تبدأ الآن...*\n👤 العضوية: ${vipStatus}`)
