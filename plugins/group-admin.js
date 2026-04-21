@@ -22,6 +22,31 @@ function participantJids(participants) {
   return participants.map(p => p.id || p.jid).filter(Boolean)
 }
 
+function explainError(e) {
+  const raw = (e?.data || e?.output?.statusCode || e?.message || '').toString().toLowerCase()
+  if (raw.includes('forbidden') || raw.includes('403')) return 'البوت ليس مشرفاً في هذا القروب.'
+  if (raw.includes('not-authorized') || raw.includes('401')) return 'لا يوجد صلاحية لتنفيذ هذا الأمر.'
+  if (raw.includes('item-not-found') || raw.includes('404')) return 'هذا الرقم غير موجود على واتساب.'
+  if (raw.includes('conflict') || raw.includes('409')) return 'العضو موجود مسبقاً أو حالته لا تسمح بالعملية.'
+  if (raw.includes('bad-request') || raw.includes('400')) return 'الرقم غير صالح أو لا يمكن إضافته (قد يحتاج دعوة برابط).'
+  if (raw.includes('rate') || raw.includes('429')) return 'تم تجاوز الحد المسموح، حاول لاحقاً.'
+  return 'فشل تنفيذ الأمر. تأكد من صلاحيات البوت وصحة الرقم.'
+}
+
+async function safeUpdate(conn, chat, jids, action) {
+  try {
+    const res = await conn.groupParticipantsUpdate(chat, jids, action)
+    const failed = (res || []).filter(r => r.status && r.status !== '200')
+    if (failed.length === (jids?.length || 0) && failed.length > 0) {
+      const codes = failed.map(f => f.status).join(',')
+      throw Object.assign(new Error('all-failed: ' + codes), { data: codes })
+    }
+    return { ok: true, res }
+  } catch (e) {
+    return { ok: false, error: e, message: explainError(e) }
+  }
+}
+
 let handler = async (m, { conn, args, text, command, participants, usedPrefix }) => {
   const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
 
@@ -44,7 +69,8 @@ let handler = async (m, { conn, args, text, command, participants, usedPrefix })
     const target = targetUser(m, args)
     if (!target) return m.reply(`حدد العضو:\n${usedPrefix}${command} @الشخص`)
     if (target === conn.user.jid) return m.reply('❌ لا أستطيع طرد نفسي.')
-    await conn.groupParticipantsUpdate(m.chat, [target], 'remove')
+    const r = await safeUpdate(conn, m.chat, [target], 'remove')
+    if (!r.ok) return m.reply(`❌ تعذر طرد @${target.split('@')[0]}\nالسبب: ${r.message}`)
     return conn.sendMessage(m.chat,
       { text: `✅ تم طرد @${target.split('@')[0]}`, mentions: [target] }, { quoted: m })
   }
@@ -53,7 +79,16 @@ let handler = async (m, { conn, args, text, command, participants, usedPrefix })
   if (/^(اضف|إضافة|اضافة|add)$/i.test(command)) {
     const target = targetUser(m, args)
     if (!target) return m.reply(`اكتب رقم العضو مع رمز الدولة:\n${usedPrefix}${command} 967xxxxxxxx`)
-    await conn.groupParticipantsUpdate(m.chat, [target], 'add')
+    const r = await safeUpdate(conn, m.chat, [target], 'add')
+    if (!r.ok) {
+      try {
+        const code = await conn.groupInviteCode(m.chat).catch(() => null)
+        const link = code ? `\nرابط الدعوة: https://chat.whatsapp.com/${code}` : ''
+        return m.reply(`❌ تعذر إضافة @${target.split('@')[0]}\nالسبب: ${r.message}${link}`)
+      } catch {
+        return m.reply(`❌ تعذر إضافة @${target.split('@')[0]}\nالسبب: ${r.message}`)
+      }
+    }
     return conn.sendMessage(m.chat,
       { text: `✅ تم إرسال طلب إضافة @${target.split('@')[0]}`, mentions: [target] }, { quoted: m })
   }
@@ -62,7 +97,8 @@ let handler = async (m, { conn, args, text, command, participants, usedPrefix })
   if (/^(رفع|ترقية|promote|مشرف)$/i.test(command)) {
     const target = targetUser(m, args)
     if (!target) return m.reply(`حدد العضو:\n${usedPrefix}${command} @الشخص`)
-    await conn.groupParticipantsUpdate(m.chat, [target], 'promote')
+    const r = await safeUpdate(conn, m.chat, [target], 'promote')
+    if (!r.ok) return m.reply(`❌ تعذر الترقية\nالسبب: ${r.message}`)
     const name = await getName(target)
     return conn.sendMessage(m.chat,
       { text: `✅ *${name}* (@${target.split('@')[0]}) أصبح مشرفاً 👑`, mentions: [target] }, { quoted: m })
@@ -72,7 +108,8 @@ let handler = async (m, { conn, args, text, command, participants, usedPrefix })
   if (/^(خفض|تنزيل|demote)$/i.test(command)) {
     const target = targetUser(m, args)
     if (!target) return m.reply(`حدد العضو:\n${usedPrefix}${command} @الشخص`)
-    await conn.groupParticipantsUpdate(m.chat, [target], 'demote')
+    const r = await safeUpdate(conn, m.chat, [target], 'demote')
+    if (!r.ok) return m.reply(`❌ تعذر الخفض\nالسبب: ${r.message}`)
     const name = await getName(target)
     return conn.sendMessage(m.chat,
       { text: `✅ تم خفض *${name}* (@${target.split('@')[0]}) من الإشراف`, mentions: [target] }, { quoted: m })

@@ -219,8 +219,18 @@ ${bar} ${pct}%
         ? await m.download()
         : null
     if (!img) return m.reply(`أرسل أو رُدّ على صورة مع الأمر:\n${usedPrefix}${command}`)
-    await conn.updateProfilePicture(conn.user.id, img)
-    return m.reply('✅ تم تغيير صورة البوت بنجاح!')
+    try {
+      const sharp = (await import('sharp')).default
+      const cleaned = await sharp(img, { failOn: 'none' })
+        .rotate()
+        .resize(640, 640, { fit: 'cover' })
+        .jpeg({ quality: 90, mozjpeg: true })
+        .toBuffer()
+      await conn.updateProfilePicture(conn.user.id, cleaned)
+      return m.reply('✅ تم تغيير صورة البوت بنجاح!')
+    } catch (e) {
+      return m.reply('❌ فشل تغيير الصورة: الملف تالف أو غير مدعوم. جرّب صورة أخرى (PNG أو JPG عادي).')
+    }
   }
 
   if (/^(حذف_صورة_البوت|removebotpic)$/i.test(command)) {
