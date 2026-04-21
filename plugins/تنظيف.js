@@ -1,17 +1,13 @@
-import { isVip } from '../lib/economy.js'
+import { isVip, isOwner as isOwnerFn } from '../lib/economy.js'
 import fs from 'fs'
 import path from 'path'
 
-let handler = async (m, { conn }) => {
+let handler = async (m, { conn, isOwner, isROwner }) => {
   const vipStatus = global.tierBadge ? global.tierBadge(m.sender) : (isVip(m.sender) ? '💎 مميز' : '👤 عادي')
   const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
-  // Owner check
-  const isOwner = global.owner.some(entry => {
-    const jid = Array.isArray(entry) ? entry[0] : entry
-    return jid.split('@')[0] === m.sender.split('@')[0]
-  })
-  
-  if (!isOwner) return m.reply('*『 الميزه دي للمطور بس!』*')
+  // Owner check (central — supports LID resolution)
+  const isDev = isROwner || isOwner || isOwnerFn(m.sender)
+  if (!isDev) return m.reply('*『 الميزه دي للمطور بس!』*')
 
   const tmpDir = './tmp'
   if (!fs.existsSync(tmpDir)) {
