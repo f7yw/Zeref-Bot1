@@ -158,7 +158,7 @@
       "brokoli": 0,
       "centaur": 0,
       "crystal": 0,
-      "diamond": 28,
+      "diamond": 32,
       "emerald": 0,
       "enchant": 0,
       "exphero": 0,
@@ -228,12 +228,12 @@
       "lastturu": 0,
       "lastwork": 0,
       "messages": {
-        "last": 1776737000834,
-        "total": 33,
+        "last": 1776752140908,
+        "total": 40,
         "groups": {
           "120363422912330057@g.us": 11,
           "120363426033819775@g.us": 1,
-          "120363427285079878@g.us": 5
+          "120363427285079878@g.us": 9
         }
       },
       "oporayam": 0,
@@ -375,7 +375,31 @@
           "type": "earn",
           "amount": 0,
           "reason": "🆙 مكافأة المستوى 0",
-          "time": 1776737000842
+          "time": 1776752140913
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776752090149
+        },
+        {
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0",
+          "time": 1776752074069
+        },
+        {
+          "time": 1776737144644,
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0"
+        },
+        {
+          "time": 1776737000842,
+          "type": "earn",
+          "amount": 0,
+          "reason": "🆙 مكافأة المستوى 0"
         },
         {
           "time": 1776736561359,
@@ -571,7 +595,7 @@
       "kerjaempatbelas": 0,
       "kerjatujuhbelas": 0,
       "kucinglastclaim": 0,
-      "lastCommandTime": 1776734282590,
+      "lastCommandTime": 1776752073413,
       "lastEnergyRegen": 1776734113215,
       "lastmancingeasy": 0,
       "lastmancinghard": 0,
@@ -698,7 +722,7 @@
       "emas": 0,
       "emerald": 0,
       "esteh": 0,
-      "exp": 111,
+      "exp": 162,
       "expg": 0,
       "exphero": 0,
       "expired": 0,
@@ -1024,30 +1048,30 @@
         "groups": {
           "120363427285079878@g.us": 10
         },
-        "last": 1776737114253
+        "last": 1776752267263
       },
-      "lastCommandTime": 1776737108315,
+      "lastCommandTime": 1776752267263,
       "commandCount": 1,
-      "energy": 100,
-      "lastEnergyRegen": 1776737114253,
-      "lastDaily": 0,
-      "lastWork": 0,
-      "totalEarned": 0,
-      "totalSpent": 0,
+      "energy": 60,
       "transactions": [
         {
           "type": "earn",
           "amount": 200,
           "reason": "🆙 مكافأة المستوى 1",
-          "time": 1776737109967
+          "time": 1776752215349
         },
         {
           "type": "earn",
           "amount": 0,
           "reason": "🆙 مكافأة المستوى 0",
-          "time": 1776736971590
+          "time": 1776752073309
         }
       ],
+      "lastEnergyRegen": 1776752089107,
+      "lastDaily": 0,
+      "lastWork": 0,
+      "totalEarned": 0,
+      "totalSpent": 0,
       "premiumDate": -1,
       "catexp": 0,
       "enchant": 0,
@@ -1159,9 +1183,9 @@
       "autosticker": false,
       "antiviewonce": false,
       "messageStats": {
-        "28648019066900@lid": 65,
+        "28648019066900@lid": 77,
         "204990769553546@lid": 2,
-        "967782114485@s.whatsapp.net": 5
+        "967782114485@s.whatsapp.net": 9
       }
     },
     "967778088098@s.whatsapp.net": {
@@ -1294,20 +1318,20 @@
       "lastSuccess": 1776733886357
     },
     "تنظيف.js": {
-      "last": 1776723852833,
-      "total": 2,
-      "success": 2,
-      "lastSuccess": 1776723852833
+      "last": 1776752090045,
+      "total": 4,
+      "success": 4,
+      "lastSuccess": 1776752090045
     },
     "bot-control.js": {
-      "last": 1776737001003,
-      "total": 14,
-      "success": 11,
-      "lastSuccess": 1776736990143
+      "last": 1776752141063,
+      "total": 16,
+      "success": 12,
+      "lastSuccess": 1776752122434
     },
     "group-admin.js": {
-      "last": 1776736811544,
-      "total": 12,
+      "last": 1776752074207,
+      "total": 14,
       "success": 12,
       "lastSuccess": 1776736811544
     },
@@ -1330,10 +1354,10 @@
       "lastSuccess": 0
     },
     "owner-addprem.js": {
-      "last": 1776736092064,
-      "total": 14,
-      "success": 9,
-      "lastSuccess": 1776734811458
+      "last": 1776752073309,
+      "total": 16,
+      "success": 11,
+      "lastSuccess": 1776752073309
     },
     "advanced-stats.js": {
       "last": 1776736711127,
@@ -1352,6 +1376,12 @@
       "total": 2,
       "success": 2,
       "lastSuccess": 1776736640473
+    },
+    "group-extra.js": {
+      "total": 4,
+      "success": 4,
+      "last": 1776752267859,
+      "lastSuccess": 1776752267859
     }
   },
   "msgs": {},
