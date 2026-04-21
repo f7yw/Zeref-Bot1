@@ -17,6 +17,26 @@ const botJidsOf = conn => [
     conn?.decodeJid?.(conn?.user?.jid || ''),
     conn?.decodeJid?.(conn?.user?.id || '')
 ].filter(Boolean)
+
+/**
+ * مقارنة JID بشكل مرن — يتجاهل لاحقة الجهاز ونوع الشبكة
+ * @param {string} a
+ * @param {string} b
+ * @param {object} conn - كائن الاتصال (اختياري)
+ */
+function sameJidLoose(a, b, conn) {
+    if (!a || !b) return false
+    const normalize = jid => {
+        if (!jid) return ''
+        let decoded = conn?.decodeJid?.(jid) ?? jid
+        if (typeof decoded !== 'string') decoded = String(decoded || jid)
+        return decoded.replace(/:\d+@\S+$/, '').replace(/@\S+$/, '').toLowerCase()
+    }
+    return normalize(a) === normalize(b)
+}
+
+const isNumber = x => typeof x === 'number' && !isNaN(x)
+
 const isBotOwnMessage = (m, conn) => Boolean(
     m?.key?.fromMe ||
     m?.fromMe ||
