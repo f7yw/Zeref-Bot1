@@ -29,6 +29,8 @@ let handler = async (m, { conn, usedPrefix }) => {
   user.registered = true
   user.regTime    = Date.now()
   user.name       = m.pushName || m.sender.split('@')[0]
+  // حفظ فوري في القاعدة السحابية حتى لا يضيع التسجيل
+  try { await global.db.write() } catch (e) { console.error('[REG-WRITE]', e?.message) }
 
   // VIP users get premium auto-set (syncVipResources already called via initUser, this is a safety fallback)
   const vip = isVip(m.sender)
