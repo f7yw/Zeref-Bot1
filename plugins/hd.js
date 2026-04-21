@@ -108,17 +108,17 @@ async function downloadMedia(msg) {
 }
 
 async function localEnhance(buffer) {
-  const img = sharp(buffer)
+  const img = sharp(buffer, { failOn: 'none' })
   const meta = await img.metadata()
 
   const w = meta.width || 800
   const h = meta.height || 600
 
-  return await sharp(buffer)
+  return await sharp(buffer, { failOn: 'none' })
     .resize(Math.min(w * 2, 4096), Math.min(h * 2, 4096), { fit: 'inside' })
     .modulate({ brightness: 1.05, saturation: 1.1 })
     .sharpen({ sigma: 1.2 })
-    .jpeg({ quality: 92 })
+    .jpeg({ quality: 92, progressive: false })
     .toBuffer()
 }
 
