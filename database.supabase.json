@@ -654,6 +654,12 @@
     }
   },
   "stats": {
+    "1.js": {
+      "last": 1776735352024,
+      "total": 2,
+      "success": 2,
+      "lastSuccess": 1776735352024
+    },
     "ai.js": {
       "last": 1776729724421,
       "total": 2,
@@ -667,10 +673,10 @@
       "lastSuccess": 1776734795609
     },
     "menu.js": {
-      "last": 1776734729157,
-      "total": 31,
-      "success": 31,
-      "lastSuccess": 1776734729157
+      "last": 1776735332195,
+      "total": 32,
+      "success": 32,
+      "lastSuccess": 1776735332195
     },
     "اكس.js": {
       "last": 1776733927162,
