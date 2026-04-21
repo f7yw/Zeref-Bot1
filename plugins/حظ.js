@@ -1,6 +1,7 @@
 import { isVip } from '../lib/economy.js'
 let handler = async (m, { conn, command, text }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
 let stupidity = `*قـــيـــاس نسـبـــه حضـــك🍹*
 *•┃❖❂━━━━━━❨🕊️❩━━━━━━❂*╟❧
 *نسبة حــضـــكك ${text}هيا* *${Math.floor(Math.random() * 

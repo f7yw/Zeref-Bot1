@@ -1,4 +1,4 @@
-import { initEconomy, logTransaction, fmt , isVip, isVip} from '../lib/economy.js'
+import { initEconomy, logTransaction, fmt , isVip} from '../lib/economy.js'
 
 const words = ['جامعة', 'مدرسة', 'رياضيات', 'فيزياء', 'كيمياء', 'اختبار', 'مراجعة', 'محاضرة', 'واجب', 'تلخيص']
 

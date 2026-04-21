@@ -1,4 +1,4 @@
-import { fmt, initEconomy, logTransaction , isVip, isVip} from '../lib/economy.js'
+import { fmt, initEconomy, logTransaction , isVip} from '../lib/economy.js'
 
 const TIMEOUT = 30000
 const LEVELS = [

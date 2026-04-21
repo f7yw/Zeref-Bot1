@@ -1,6 +1,7 @@
 import { isVip } from '../lib/economy.js'
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
 if (!text) throw `*[❗تحذير❗] ادخل مشكلتك و بلاغك*\n\n*مثال:*\n*${usedPrefix + command} مرحباً سيدي ${usedPrefix}هناك خطا*`
 if (text.length < 10) throw `*[❗تحذير❗] البلاغ لا يقل عن عشرة احرف*`
 if (text.length > 1000) throw `*[❗تحذير❗] البلاغ لا يزيد عن الف حرف*`

@@ -44,7 +44,7 @@ export async function before(m, { conn }) {
     user.tempBannedUntil = Date.now() + TEMP_BAN_DURATION
     user.offensiveWarnings = []
     try {
-      await m.reply(`🚫 @${m.sender.split('@')[0]} تم حظرك مؤقتاً من استخدام البوت لمدة 30 دقيقة بسبب استخدام كلمات مسيئة.`, null, { mentions: [m.sender] })
+      await m.reply(`🚫 @${m.sender.split('@')[0]} تم حظرك مؤقتاً من استخدام البوت لمدة 30 دقيقة بسبب استخدام كلمات مسيئة.\n👤 العضوية: ${vipStatus}`, null, { mentions: [m.sender] })
     } catch (_) {}
     return false
   }
@@ -94,7 +94,7 @@ let handler = async (m, { conn, args, command, isOwner }) => {
     if (!targetUser) throw '❌ المستخدم غير موجود.'
     targetUser.tempBannedUntil = 0
     targetUser.offensiveWarnings = []
-    return conn.reply(m.chat, `✅ تم رفع الحظر المؤقت عن @${target.split('@')[0]}`, m, { mentions: [target] })
+    return conn.reply(m.chat, `✅ تم رفع الحظر المؤقت عن @${target.split('@')[0]}\n👤 العضوية: ${vipStatus}`, m, { mentions: [target] })
   }
 }
 

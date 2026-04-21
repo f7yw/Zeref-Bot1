@@ -1,6 +1,7 @@
 import { isVip } from '../lib/economy.js'
 let handler = async (m, { conn, command, args, usedPrefix, isOwner }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
   if (!isOwner) throw '❌ هذا الأمر للمطور فقط.'
 
   if (/^(مسح_المستخدمين|clear_users)$/i.test(command)) {

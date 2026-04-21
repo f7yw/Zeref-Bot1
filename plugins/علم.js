@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { fmt, initEconomy, logTransaction , isVip, isVip} from '../lib/economy.js'
+import { fmt, initEconomy, logTransaction , isVip} from '../lib/economy.js'
 
 const TIMEOUT = 60000
 const POIN = 500

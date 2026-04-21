@@ -32,7 +32,7 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner }) => {
     if (!targetUser) throw '❌ هذا المستخدم غير موجود في قاعدة البيانات.'
     delete global.db.data.users[target]
     await global.db.write()
-    return conn.reply(m.chat, `✅ تم حذف بيانات @${target.split('@')[0]} من قاعدة البيانات.`, m, { mentions: [target] })
+    return conn.reply(m.chat, `✅ تم حذف بيانات @${target.split('@')[0]} من قاعدة البيانات.\n👤 العضوية: ${vipStatus}`, m, { mentions: [target] })
   }
 
   if (/^(مميز_حذف|حذف_مميز|delprem)$/i.test(command)) {
@@ -49,7 +49,7 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner }) => {
     const premIdx = global.prems.indexOf(num)
     if (premIdx !== -1) global.prems.splice(premIdx, 1)
     await global.db.write()
-    return conn.reply(m.chat, `✅ تم إلغاء تميّز +${num} بنجاح.`, m, { mentions: [normalJid] })
+    return conn.reply(m.chat, `✅ تم إلغاء تميّز +${num} بنجاح.\n👤 العضوية: ${vipStatus}`, m, { mentions: [normalJid] })
   }
 }
 

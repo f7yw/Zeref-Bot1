@@ -1,5 +1,6 @@
 let handler  = async (m, { conn }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
     if (global.conn.user.jid == conn.user.jid)conn.ws.close();
     
   }

@@ -1,7 +1,8 @@
-import { syncEnergy, msToNextRegen, MAX_ENERGY, fmtEnergy, FEES, initEconomy , isVip, isVip} from '../lib/economy.js'
+import { syncEnergy, msToNextRegen, MAX_ENERGY, fmtEnergy, FEES, initEconomy , isVip} from '../lib/economy.js'
 
 let handler = async (m, { usedPrefix }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
   const user = global.db.data.users[m.sender]
   if (!user) return m.reply('❌ أرسل أي أمر أولاً لتسجيل حسابك.\n👤 العضوية: ' + vipStatus + ')
   initEconomy(user)

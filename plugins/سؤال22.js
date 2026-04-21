@@ -1,6 +1,7 @@
 let handler  = async (m, { conn }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
-conn.reply(m.chat,`*┌────「 سـ2ـؤال 」─*\n*“${pickRandom(global.bucin)}”*\n*└────「 Shadow 」─*`, m)
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
+conn.reply(m.chat,`*┌────「 سـ2ـؤال 」─*\n*“${pickRandom(global.bucin)}”*\n*└────「 Shadow 」─*\n👤 العضوية: ${vipStatus}`, m)
 }
 handler.help = ['reto']
 handler.tags = ['fun']

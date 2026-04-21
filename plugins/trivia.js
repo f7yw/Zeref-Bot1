@@ -1,4 +1,4 @@
-import { isVip, initEconomy, logTransaction, fmt , isVip} from '../lib/economy.js'
+import { isVip, initEconomy, logTransaction, fmt } from '../lib/economy.js'
 
 const REWARD = 500
 const XP_REWARD = 100
@@ -14,7 +14,12 @@ const questions = [
   { q: "كم عدد ألوان قوس قزح؟", a: "7" },
   { q: "ما هي عاصمة فرنسا؟", a: "باريس" },
   { q: "من هو مؤسس شركة مايكروسوفت؟", a: "بيل جيتس" },
-  { q: "ما هو المعدن السائل في درجة حرارة الغرفة؟", a: "الزئبق" }
+  { q: "ما هو المعدن السائل في درجة حرارة الغرفة؟", a: "الزئبق" },
+  { q: "ما هي عاصمة المملكة العربية السعودية؟", a: "الرياض" },
+  { q: "من هو أول من هبط على سطح القمر؟", a: "نيل أرمسترونج" },
+  { q: "ما هي عاصمة مصر؟", a: "القاهرة" },
+  { q: "ما هو أكبر محيط في العالم؟", a: "المحيط الهادئ" },
+  { q: "ما هو العنصر الكيميائي الذي رمزه O؟", a: "الأكسجين" }
 ]
 
 let handler = async (m, { conn, usedPrefix, command }) => {
@@ -34,7 +39,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     a: item.a.toLowerCase(),
     time: setTimeout(() => {
       if (conn.trivia[m.chat] && conn.trivia[m.chat].id === id) {
-        conn.reply(m.chat, `*⌛ انتهى الوقت!*\nالإجابة الصحيحة كانت: *${item.a}*`, null)
+        conn.reply(m.chat, `*⌛ انتهى الوقت!*\nالإجابة الصحيحة كانت: *${item.a}*\n👤 العضوية: ${vipStatus}`, null)
         delete conn.trivia[m.chat]
       }
     }, TIMEOUT)
@@ -74,11 +79,9 @@ handler.before = async function (m) {
     logTransaction(user, 'earn', REWARD, 'Trivia win')
 
     const name = await this.getName(m.sender).catch(() => m.sender.split('@')[0])
-    await m.reply(`*🎉 أحسنت يا ${name}! إجابة صحيحة!*\n\n💰 ربحت: *${fmt(REWARD)}*\n⭐ XP: *+${XP_REWARD}*\n👤 العضوية: ${vipStatus}`)
+    await m.reply(`*🎉 أحسنت يا ${name} (@${m.sender.split('@')[0]})! إجابة صحيحة!*\n\n💰 ربحت: *${fmt(REWARD)}*\n⭐ XP: *+${XP_REWARD}*\n👤 العضوية: ${vipStatus}`, null, { mentions: [m.sender] })
     delete this.trivia[m.chat]
     return false
-  } else {
-    // Optional: notify wrong answer
   }
   return true
 }

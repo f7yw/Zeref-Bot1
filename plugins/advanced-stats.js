@@ -1,4 +1,4 @@
-import { initEconomy, fmt, fmtEnergy, isVip , isVip} from '../lib/economy.js'
+import { initEconomy, fmt, fmtEnergy, isVip} from '../lib/economy.js'
 
 // ─── Utility ─────────────────────────────────────────────────────────────────
 const msToStr = ms => {
@@ -114,7 +114,7 @@ ${topLines}
 │
 │ 💰 إجمالي ثروة أنشط 5: ${fmt(totalMoneyInGroup)}
 │
-╰──────────────────`,
+╰──────────────────\n👤 العضوية: ${vipStatus}`,
       m,
       { mentions: top5.map(([jid]) => jid) }
     )

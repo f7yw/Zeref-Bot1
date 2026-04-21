@@ -22,6 +22,7 @@ function safeNum(jid) {
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
   const isBlock   = /^(بلوك|blok|block)$/i.test(command)
   const action    = isBlock ? 'block' : 'unblock'
   const actionAr  = isBlock ? 'حظر' : 'رفع الحظر'

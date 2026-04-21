@@ -9,6 +9,7 @@ if (!fs.existsSync(remindersFile)) fs.writeFileSync(remindersFile, '[]')
 
 let handler = async (m, { usedPrefix, command }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
   let data = JSON.parse(fs.readFileSync(remindersFile))
   let userReminders = data.filter(r => r.chat === m.chat)
 

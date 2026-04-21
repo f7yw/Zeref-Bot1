@@ -1,6 +1,7 @@
 import { isVip } from '../lib/economy.js'
 let handler = async (m, { conn, text, command }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
   global.db.data.groupRequests ||= {}
   global.db.data.groupRequestCooldown ||= {}
 
@@ -57,7 +58,7 @@ let handler = async (m, { conn, text, command }) => {
 `✅ تم تسجيل الطلب
 
 🆔 ID: ${id}
-⏳ بانتظار موافقة المالك`
+⏳ بانتظار موافقة المالك\n👤 العضوية: ${vipStatus}`
     )
   }
 

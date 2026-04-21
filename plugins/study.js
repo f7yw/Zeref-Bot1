@@ -70,6 +70,7 @@ function quiz(subject = 'عام') {
 
 let handler = async (m, { text, command, usedPrefix }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
   const [first, second, ...rest] = clean(text).split(' ')
   if (/^(تعلم|دراسة|study)$/i.test(command)) {
     return m.reply(`

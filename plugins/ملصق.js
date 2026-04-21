@@ -7,6 +7,7 @@ const BOT_AUTH = 'Zeref | t.me/ZerefBot'
 
 let handler = async (m, { conn, usedPrefix, command }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
   const isReverse = /^(صوره|صورة|فك_ملصق|فك-ملصق|unsticker|toimage)$/i.test(command)
 
   try {

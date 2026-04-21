@@ -3,6 +3,7 @@ import { isVip } from '../lib/economy.js'
 
 let handler = async (m, { conn, text }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
   function no(number){
     return number.replace(/\s/g,'').replace(/([@+-])/g,'')
   }
@@ -15,11 +16,11 @@ let handler = async (m, { conn, text }) => {
     var number = text
   }
 
-  if(!text && !m.quoted) return conn.reply(m.chat, `*❏إعادة تعيين المستخدم*\n\nمنشن المستخدم, *اكتب الرقم أو قم بالرد على رسالة المستخدم الذي تريد *إعادة تعيينه`, m)
+  if(!text && !m.quoted) return conn.reply(m.chat, `*❏إعادة تعيين المستخدم*\n\nمنشن المستخدم, *اكتب الرقم أو قم بالرد على رسالة المستخدم الذي تريد *إعادة تعيينه\n👤 العضوية: ${vipStatus}`, m)
   //let exists = await conn.isOnWhatsApp(number)
-  // if (exists) return conn.reply(m.chat, `*الرقم غير مسجل في واتس اب*`, m)
-  if(isNaN(number)) return conn.reply(m.chat, `*❏ إعادة تعيين المستخدم*\nالرقم الذي ادخلته خاطأً`, m)
- // if(number.length > 8) return conn.reply(m.chat, `*❏ إعادة تعيين المستخدم*\nالرقم الذي ادخلته خاطأً!`, m)
+  // if (exists) return conn.reply(m.chat, `*الرقم غير مسجل في واتس اب*\n👤 العضوية: ${vipStatus}`, m)
+  if(isNaN(number)) return conn.reply(m.chat, `*❏ إعادة تعيين المستخدم*\nالرقم الذي ادخلته خاطأً\n👤 العضوية: ${vipStatus}`, m)
+ // if(number.length > 8) return conn.reply(m.chat, `*❏ إعادة تعيين المستخدم*\nالرقم الذي ادخلته خاطأً!\n👤 العضوية: ${vipStatus}`, m)
   try {
     if(text) {
       var user = number + '@s.whatsapp.net'
@@ -38,7 +39,7 @@ let handler = async (m, { conn, text }) => {
 
   delete global.global.db.data.users[user]
 
-  conn.reply(m.chat, `*❏ إعادة تعيين المستخدم*\n\n✅ إعادة التشغيل إلى @${number}من *قاعدة البيانات*`, null, { mentions: [user] })
+  conn.reply(m.chat, `*❏ إعادة تعيين المستخدم*\n\n✅ إعادة التشغيل إلى @${number}من *قاعدة البيانات*\n👤 العضوية: ${vipStatus}`, null, { mentions: [user] })
 
 
  }

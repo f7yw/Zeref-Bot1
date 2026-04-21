@@ -1,6 +1,7 @@
 import { isVip } from '../lib/economy.js'
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
 let regex = /x/g
 if (!text) throw '*فين الرقم يا باااكا ..🙂*'
 if (!text.match(regex)) throw `*مثال للاستخدام: ${usedPrefix + command} 9677780xxx*`

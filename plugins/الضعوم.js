@@ -19,6 +19,7 @@ function fmtBytes(bytes) {
 
 let handler = async (m, { conn }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
   const _uptime = process.uptime() * 1000
   const uptime = clockString(_uptime)
   const taguser = '@' + m.sender.split('@')[0]

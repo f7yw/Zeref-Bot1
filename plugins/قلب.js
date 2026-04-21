@@ -1,6 +1,7 @@
 import { isVip } from '../lib/economy.js'
 const handler = async (m, { conn, command, text }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
   const lovePercentage = Math.floor(Math.random() * 100);
   const isHighLove = lovePercentage >= 50;
   const loveMessages = [
@@ -38,7 +39,7 @@ var hawemod = [
                     "♥️",
                       "❤️‍🩹"
 ]
-   let { key } = await conn.sendMessage(m.chat, {text: `*❮ ⏳ ┇ جـاري تـنـفـيـذ أمـر قـلـب ❯*`, mentions: conn.parseMention(response)}, {quoted: m})
+   let { key } = await conn.sendMessage(m.chat, {text: `*❮ ⏳ ┇ جـاري تـنـفـيـذ أمـر قـلـب ❯*\n👤 العضوية: ${vipStatus}`, mentions: conn.parseMention(response)}, {quoted: m})
  for (let i = 0; i < hawemod.length; i++) {
    await new Promise(resolve => setTimeout(resolve, 1000)); 
    await conn.sendMessage(m.chat, {text: hawemod[i], edit: key, mentions: conn.parseMention(response)}, {quoted: m}); 

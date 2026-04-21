@@ -3,6 +3,7 @@ let linkRegex = /chat.whatsapp.com\/([0-9A-Za-z]{20,24})/i
 
 let handler = async (m, { conn, text, isMods, isOwner, isPrems }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
   let link = (m.quoted ? m.quoted.text ? m.quoted.text : text : text) || text
   let [_, code] = link.match(linkRegex) || []
 
@@ -18,7 +19,7 @@ let handler = async (m, { conn, text, isMods, isOwner, isPrems }) => {
   // Regular user → notify developer and inform user
   const data = global.owner.filter(([id]) => id)
   for (let jid of data.map(([id]) => `${id}@s.whatsapp.net`).filter(v => v !== conn.user.jid)) {
-    await conn.sendMessage(jid, { text: `*[❗] طلب إضافة بوت لمجموعة جديد [❗]*\n\n*—◉ رقم مقدم الطلب:* wa.me/${m.sender.split('@')[0]}\n*—◉ رابط المجموعة:* ${link}` })
+    await conn.sendMessage(jid, { text: `*[❗] طلب إضافة بوت لمجموعة جديد [❗]*\n\n*—◉ رقم مقدم الطلب:* wa.me/${m.sender.split('@')[0]}\n*—◉ رابط المجموعة:* ${link}\n👤 العضوية: ${vipStatus}` })
   }
 
   await m.reply('*[❗] تم إرسال رابط مجموعتك للمطور*\n\n*👉🏻 ستكون مجموعتك قيد التقييم وسيقرر المالك ما إذا كان سيضيف البوت أم لا*\n\n*[❗] أسباب محتملة للرفض:*\n*1. البوت مشبع (جروبات كثيرة)*\n*2. تم طرد البوت من قبل*\n*3. تم تغيير رابط المجموعة*\n\n*👉🏻 قد يستغرق الطلب ساعات أو أيام. تحلّ بالصبر!*')

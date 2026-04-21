@@ -6,6 +6,7 @@ import { recordingDelay } from '../lib/presence.js'
 
 var handler = async (m, { conn, command, text, usedPrefix }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
   if (!text) throw `*مثال: ${usedPrefix}${command} اية الكرسي*`
 
   await m.reply(global.wait)

@@ -1,10 +1,11 @@
 import { canLevelUp, xpRange } from '../lib/levelling.js'
 import { levelup }             from '../lib/canvas.js'
-import { initEconomy, getRole , isVip, isVip} from '../lib/economy.js'
+import { initEconomy, getRole , isVip} from '../lib/economy.js'
 import { initUser }            from '../lib/userInit.js'
 
 let handler = async (m, { conn }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
   let user = global.db.data.users[m.sender]
   if (!user) return m.reply('❌ أرسل أي أمر أولاً لتسجيل حسابك.\n👤 العضوية: ' + vipStatus + ')
   initUser(user, m.pushName, m.sender)

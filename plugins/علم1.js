@@ -1,5 +1,5 @@
 import similarity from 'similarity'
-import { initEconomy, logTransaction, fmt , isVip, isVip} from '../lib/economy.js'
+import { initEconomy, logTransaction, fmt , isVip} from '../lib/economy.js'
 
 const threshold = 0.72
 
@@ -14,6 +14,7 @@ function normalize(s) {
 
 let handler = m => m
 handler.before = async function (m) {
+  const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
   let id = m.chat
   this.tekateki = this.tekateki || {}
   

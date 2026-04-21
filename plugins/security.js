@@ -25,7 +25,7 @@ handler.before = async function (m, { conn, isAdmin, isBotAdmin, isOwner }) {
   if (!chat?.antiLink || isAdmin || isOwner) return false
   if (!hasLink(m.text)) return false
   await conn.sendMessage(m.chat, { delete: m.key }).catch(() => {})
-  await conn.reply(m.chat, `🛡️ تم حذف رابط من @${m.sender.split('@')[0]}${isBotAdmin ? '' : '\nارفع البوت مشرفاً ليتمكن من الطرد عند الحاجة.'}`, m, { mentions: [m.sender] })
+  await conn.reply(m.chat, `🛡️ تم حذف رابط من @${m.sender.split('@')[0]}${isBotAdmin ? '' : '\nارفع البوت مشرفاً ليتمكن من الطرد عند الحاجة.'}\n👤 العضوية: ${vipStatus}`, m, { mentions: [m.sender] })
   return true
 }
 

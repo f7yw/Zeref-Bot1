@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { fmt, initEconomy, logTransaction , isVip, isVip} from '../lib/economy.js'
+import { fmt, initEconomy, logTransaction , isVip} from '../lib/economy.js'
 
 const TIMEOUT   = 60000
 const COIN_MIN  = 150
@@ -23,7 +23,7 @@ let handler = async (m, { conn, command, usedPrefix }) => {
   const chatId = m.chat
 
   if (chatId in conn.quiz) {
-    await conn.reply(m.chat, `❗ *هناك سؤال لم تتم الإجابة عليه بعد!*`, conn.quiz[chatId].msg)
+    await conn.reply(m.chat, `❗ *هناك سؤال لم تتم الإجابة عليه بعد!*\n👤 العضوية: ${vipStatus}`, conn.quiz[chatId].msg)
     return
   }
 

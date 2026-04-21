@@ -13,6 +13,7 @@ const VALID_LANGS = new Set(Object.keys(LANG_MAP))
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
   const chat = global.db.data.chats[m.chat] || {}
   if (!global.db.data.chats[m.chat]) global.db.data.chats[m.chat] = chat
 
@@ -85,7 +86,7 @@ handler.before = async (m, { conn }) => {
       const langName = LANG_MAP[lang] || lang
       await conn.sendMessage(
         m.chat,
-        { text: `🌍 *ترجمة تلقائية إلى ${langName}:*\n${translated}` },
+        { text: `🌍 *ترجمة تلقائية إلى ${langName}:*\n${translated}\n👤 العضوية: ${vipStatus}` },
         { quoted: m }
       )
     }

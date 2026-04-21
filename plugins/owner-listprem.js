@@ -1,6 +1,7 @@
 import { isVip } from '../lib/economy.js'
 let handler = async (m, { conn }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
   let prem = global.prems
     .map(v => v.replace(/[^0-9]/g, ''))
     .filter(v => v && v !== conn.user.jid?.split('@')[0])

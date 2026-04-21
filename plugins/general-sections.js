@@ -1,5 +1,5 @@
 import yts from 'yt-search'
-import { fmt, initEconomy , isVip, isVip} from '../lib/economy.js'
+import { fmt, initEconomy , isVip} from '../lib/economy.js'
 
 const ensureUser = jid => {
   const user = global.db.data.users[jid] || (global.db.data.users[jid] = {})
@@ -10,6 +10,7 @@ const ensureUser = jid => {
 
 let handler = async (m, { conn, text, command, usedPrefix, participants }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
   const user = ensureUser(m.sender)
   const now = new Date().toLocaleString('ar')
 
@@ -33,7 +34,7 @@ let handler = async (m, { conn, text, command, usedPrefix, participants }) => {
 
   if (/^(مهامي)$/i.test(command)) {
     if (!user.tasks.length) return m.reply(`لا توجد مهام محفوظة.\n👤 العضوية: ${vipStatus}`)
-    return m.reply(user.tasks.map((task, i) => `${i + 1}. ${task.done ? '✅' : '⬜'} ${task.text}`).join('\n'))
+    return m.reply(user.tasks.map((task, i) => `${i + 1}. ${task.done ? '✅' : '⬜'} ${task.text}`))).join('\n'))
   }
 
   if (/^(تم)$/i.test(command)) {
@@ -58,7 +59,7 @@ let handler = async (m, { conn, text, command, usedPrefix, participants }) => {
 
   if (/^(ملاحظاتي)$/i.test(command)) {
     if (!user.notes.length) return m.reply(`لا توجد ملاحظات محفوظة.\n👤 العضوية: ${vipStatus}`)
-    return m.reply(user.notes.map((note, i) => `${i + 1}. ${note.text}`).join('\n'))
+    return m.reply(user.notes.map((note, i) => `${i + 1}. ${note.text}`))).join('\n'))
   }
 
   if (/^(احصائياتي)$/i.test(command)) {
@@ -80,19 +81,19 @@ let handler = async (m, { conn, text, command, usedPrefix, participants }) => {
     const target = ensureUser(who)
     const groupMessages = m.isGroup ? (target.messages?.groups?.[m.chat] || 0) : 0
     const name = await Promise.resolve(conn.getName(who)).catch(() => who.split('@')[0])
-    return conn.reply(m.chat, `💬 *متتبع الرسائل*\nالعضو: @${who.split('@')[0]}\nالاسم: ${name || '-'}\nإجمالي الرسائل: ${target.messages?.total || 0}\nرسائل هذا القروب: ${m.isGroup ? groupMessages : 'خاص'}\nآخر نشاط: ${target.messages?.last ? new Date(target.messages.last).toLocaleString('ar') : 'غير محفوظ'}`, m, { mentions: [who] })
+    return conn.reply(m.chat, `💬 *متتبع الرسائل*\nالعضو: @${who.split('@')[0]}\nالاسم: ${name || '-'}\nإجمالي الرسائل: ${target.messages?.total || 0}\nرسائل هذا القروب: ${m.isGroup ? groupMessages : 'خاص'}\nآخر نشاط: ${target.messages?.last ? new Date(target.messages.last).toLocaleString('ar') : 'غير محفوظ'}\n👤 العضوية: ${vipStatus}`, m, { mentions: [who] })
   }
 
   if (/^(ترتيب_الرسائل|ترتيب-الرسائل)$/i.test(command)) {
     const stats = m.isGroup ? (global.db.data.chats[m.chat]?.messageStats || {}) : Object.fromEntries(Object.entries(global.db.data.users || {}).map(([jid, data]) => [jid, data.messages?.total || 0]))
     const top = Object.entries(stats).sort((a, b) => (b[1] || 0) - (a[1] || 0)).slice(0, 10)
-    if (!top.length) return m.reply('لا توجد رسائل محفوظة بعد.\n👤 العضوية: ' + vipStatus + ')
-    return conn.reply(m.chat, top.map(([jid, count], i) => `${i + 1}. @${jid.split('@')[0]} — ${count} رسالة`).join('\n'), m, { mentions: top.map(([jid]) => jid) })
+    if (!top.length) return m.reply('لا توجد رسائل محفوظة بعد.\n👤 العضوية: ' + vipStatus + '`)
+    return conn.reply(m.chat, top.map(([jid, count], i) => `${i + 1}. @${jid.split('@')[0]} — ${count} رسالة`))).join('\n'), m, { mentions: top.map(([jid]) => jid) })
   }
 
   if (/^(ترتيب)$/i.test(command)) {
     const top = Object.entries(global.db.data.users || {}).sort((a, b) => (b[1].exp || 0) - (a[1].exp || 0)).slice(0, 10)
-    return m.reply(top.map(([jid, data], i) => `${i + 1}. @${jid.split('@')[0]} — ${data.exp || 0} XP`).join('\n'), null, { mentions: top.map(([jid]) => jid) })
+    return m.reply(top.map(([jid, data], i) => `${i + 1}. @${jid.split('@')[0]} — ${data.exp || 0} XP`))).join('\n'), null, { mentions: top.map(([jid]) => jid) })
   }
 
   if (/^(نشاط_القروب|نشاط-القروب)$/i.test(command)) {

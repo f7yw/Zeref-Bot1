@@ -94,7 +94,7 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
 
     if (won) {
       delete conn.games3[`hang_${chatId}`]
-      return m.reply(`${HANGMAN_STAGES[g.wrong]}\n\n🏆 *صحيح! الكلمة هي: ${g.word}*\nمبروك @${senderId.split('@')[0]} 🎉`, null, { mentions: [senderId] })
+      return m.reply(`${HANGMAN_STAGES[g.wrong]}\n\n🏆 *صحيح! الكلمة هي: ${g.word}*\nمبروك @${senderId.split('@')[0]} 🎉\n👤 العضوية: ${vipStatus}`, null, { mentions: [senderId] })
     }
     if (g.wrong >= 6) {
       delete conn.games3[`hang_${chatId}`]
@@ -161,7 +161,7 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
 
     if (sub.includes(existing.answer) || existing.answer.includes(sub)) {
       delete conn.games3[gameKey]
-      return m.reply(`🏆 *صحيح!* الجواب هو: *${existing.answer}* 🎉\nمبروك @${senderId.split('@')[0]}`, null, { mentions: [senderId] })
+      return m.reply(`🏆 *صحيح!* الجواب هو: *${existing.answer}* 🎉\nمبروك @${senderId.split('@')[0]}\n👤 العضوية: ${vipStatus}`, null, { mentions: [senderId] })
     }
 
     return m.reply(`❌ إجابة خاطئة، حاول مجدداً!\n${existing.emojis}\n👤 العضوية: ${vipStatus}`)

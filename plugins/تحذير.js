@@ -29,7 +29,7 @@ const handler = async (m, { conn, text, command, usedPrefix }) => {
   const mention = `@${who.split('@')[0]}`
   await conn.reply(
     m.chat,
-    `${mention} تلقى تحذيرًا في هذه المجموعة!\nالسبب: ${sdms}\n*التحذيرات ${user.warn}/3*`,
+    `${mention} تلقى تحذيرًا في هذه المجموعة!\nالسبب: ${sdms}\n*التحذيرات ${user.warn}/3*\n👤 العضوية: ${vipStatus}`,
     m,
     { mentions: [who] }
   )
@@ -37,7 +37,7 @@ const handler = async (m, { conn, text, command, usedPrefix }) => {
   if (user.warn >= 3) {
     await conn.reply(
       m.chat,
-      `تم تجاوز 3 تحذيرات.\n${mention} سيتم طرده الآن.`,
+      `تم تجاوز 3 تحذيرات.\n${mention} سيتم طرده الآن.\n👤 العضوية: ${vipStatus}`,
       m,
       { mentions: [who] }
     )

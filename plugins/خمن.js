@@ -6,6 +6,7 @@ let poin = 500;
 
 let handler = async (m, { conn, usedPrefix }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
     conn.tekateki = conn.tekateki ? conn.tekateki : {};
     let id = m.chat;
     if (id in conn.tekateki) {
@@ -27,7 +28,7 @@ let handler = async (m, { conn, usedPrefix }) => {
        await conn.reply(m.chat, caption, m),
         json, poin,
         setTimeout(async () => {
-            if (conn.tekateki[id]) await conn.reply(m.chat, `❮ ⌛┇انتهي الوقت┇⌛❯\n ❐↞┇الاجـابـة✅↞ ${json.response}┇`, conn.tekateki[id][0]);
+            if (conn.tekateki[id]) await conn.reply(m.chat, `❮ ⌛┇انتهي الوقت┇⌛❯\n ❐↞┇الاجـابـة✅↞ ${json.response}┇\n👤 العضوية: ${vipStatus}`, conn.tekateki[id][0]);
             delete conn.tekateki[id];
         }, timeout)
     ];

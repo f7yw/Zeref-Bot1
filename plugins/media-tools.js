@@ -1,4 +1,4 @@
-import { syncEnergy, deductEnergy, FEES, initEconomy, logTransaction , isVip, isVip} from '../lib/economy.js'
+import { syncEnergy, deductEnergy, FEES, initEconomy, logTransaction , isVip} from '../lib/economy.js'
 import { execSync } from 'child_process'
 import { existsSync } from 'fs'
 import { join } from 'path'
@@ -18,6 +18,7 @@ async function fetchMediaInfo(url) {
 
 let handler = async (m, { conn, usedPrefix, command, text, args }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
   const user = global.db.data.users[m.sender]
   if (!user) return m.reply('❌ أرسل أي أمر أولاً لتسجيل حسابك.\n👤 العضوية: ' + vipStatus + ')
   initEconomy(user)

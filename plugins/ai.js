@@ -6,6 +6,7 @@ import { typingDelay } from '../lib/presence.js'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
   if (!text) throw `*يرجى إدخال نص*\n\n*مثال: ${usedPrefix + command} كيف حالك؟*`
 
   const who = m.mentionedJid?.[0] || m.quoted?.sender || m.sender
@@ -82,7 +83,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     const energyLeft = user?.energy ?? MAX_ENERGY
 
     await m.reply(
-      `${vip ? '💎 *VIP*\n' : ''}${result}\n\n⚡ *طاقتك المتبقية:* ${energyLeft}/${MAX_ENERGY}`
+      `${vip ? '💎 *VIP*\n' : ''}${result}\n\n⚡ *طاقتك المتبقية:* ${energyLeft}/${MAX_ENERGY}\n👤 العضوية: ${vipStatus}`
     )
   } catch (e) {
     console.error('AI ERROR:', e)
@@ -112,7 +113,7 @@ async function tryFallbackModel(m, text, apiKey, user, vip = false) {
     const result = data.choices?.[0]?.message?.content || 'لم أتمكن من توليد رد.'
 
     await m.reply(
-      `${vip ? '💎 *VIP*\n' : ''}${result}\n\n⚡ *طاقتك المتبقية:* ${user?.energy ?? MAX_ENERGY}/${MAX_ENERGY}`
+      `${vip ? '💎 *VIP*\n' : ''}${result}\n\n⚡ *طاقتك المتبقية:* ${user?.energy ?? MAX_ENERGY}/${MAX_ENERGY}\n👤 العضوية: ${vipStatus}`
     )
   } catch (e) {
     throw new Error('جميع النماذج المجانية غير متاحة حالياً. يرجى المحاولة لاحقاً.')

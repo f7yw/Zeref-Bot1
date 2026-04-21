@@ -2,6 +2,7 @@ import { isVip } from '../lib/economy.js'
 global.math = global.math ? global.math : {};
 const handler = async (m, {conn, args, usedPrefix, command}) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
   const mat =`
 *[❗ خطأ ❗] تستخدم الأمر بطريقة غير صحيحة*
 
@@ -31,11 +32,11 @@ conn.sendHydrated(m.chat, mat, author, null, null, null, null, null, [
   if (id in global.math) return conn.reply(m.chat, '*🕝انتهت🕝 𝚃𝙾𝙳𝙰𝚅𝙸𝙰 𝙷𝙰𝚈 𝙿𝚁𝙴𝙶𝚄𝙽𝚃𝙰𝚂 𝚂𝙸𝙽 𝚁𝙴𝚂𝙿𝙾𝙽𝙳𝙴𝚁 𝙴𝙽 𝙴𝚂𝚃𝙴 𝙲𝙷𝙰𝚃!*', global.math[id][0]);
   const math = genMath(mode);
   global.math[id] = [
-    await conn.reply(m.chat, `𝙲 احسب المعادله *${math.str}*?\n\n*⏳ الوقت: ${(math.time / 1000).toFixed(2)} 𝚜𝚎𝚐𝚞𝚗𝚍𝚘𝚜*\n*🏆 الجائزه: ${math.bonus} 𝚇𝙿*`, m),
+    await conn.reply(m.chat, `𝙲 احسب المعادله *${math.str}*?\n\n*⏳ الوقت: ${(math.time / 1000).toFixed(2)} 𝚜𝚎𝚐𝚞𝚗𝚍𝚘𝚜*\n*🏆 الجائزه: ${math.bonus} 𝚇𝙿*\n👤 العضوية: ${vipStatus}`, m),
     math, 4,
     setTimeout(() => {
       if (global.math[id]) {
-        conn.reply(m.chat, `*[🕝انتهت🕝] انتهي وقت المعادله العب مره اخري*\n\n*الاجـابـه الـصحـيحه ${math.result}*`, m),
+        conn.reply(m.chat, `*[🕝انتهت🕝] انتهي وقت المعادله العب مره اخري*\n\n*الاجـابـه الـصحـيحه ${math.result}*\n👤 العضوية: ${vipStatus}`, m),
         // conn.sendButton(m.chat, `*[❗𝐈𝐍𝐅𝐎❗] 𝚂𝙴 𝙰𝙷 𝙵𝙸𝙽𝙰𝙻𝙸𝚉𝙰𝙳𝙾 𝙴𝙻 𝚃𝙸𝙴𝙼𝙿𝙾 𝙿𝙰𝚁𝙰 𝚁𝙴𝚂𝙿𝙾𝙽𝙳𝙴𝚁*\n\n*𝙻𝙰 𝚁𝙴𝚂𝙿𝚄𝙴𝚂𝚃𝙰 𝙴𝚂 ${math.result}*`, author, null, [['𝚅𝙾𝙻𝚅𝙴𝚁 𝙰 𝙸𝙽𝚃𝙴𝙽𝚃𝙰𝚁', `${usedPrefix + command} ${math.mode}`]], global.math[id][0])
         delete global.math[id];
       }

@@ -1,3 +1,4 @@
+import { isVip } from '../lib/economy.js'
 let handler = m => m; 
   
  handler.all = async function (m) { 

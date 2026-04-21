@@ -3,6 +3,7 @@ import moment from 'moment-timezone'
 
 let handler = async (m, { conn }) => {
   const vipStatus = isVip(m.sender) ? '💎 مميز' : '❌ عادي'
+  const getName = async (jid) => { try { return await conn.getName(jid) } catch { return jid.split('@')[0] } }
 const fechaper = moment().tz('America/Lima').format('DD/MM HH:mm')
 const fechamex = moment().tz('America/Mexico_City').format('DD/MM HH:mm')
 const fechabol = moment().tz('America/La_Paz').format('DD/MM HH:mm')

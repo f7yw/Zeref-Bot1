@@ -29,7 +29,7 @@ let handler = async (m, { conn, args, text, command, participants, usedPrefix })
   if (/^(وصف_القروب|وصف-القروب|setdesc)$/i.test(command)) {
     if (!text) return m.reply(`اكتب الوصف الجديد:\n${usedPrefix}${command} الوصف\n👤 العضوية: ${vipStatus}`)
     await conn.groupUpdateDescription(m.chat, text.trim())
-    return m.reply('✅ تم تغيير وصف القروب.')
+    return m.reply(`✅ تم تغيير وصف القروب.\n👤 العضوية: ${vipStatus}`)
   }
 
   if (/^(طرد|kick|حذف)$/i.test(command)) {
@@ -37,50 +37,50 @@ let handler = async (m, { conn, args, text, command, participants, usedPrefix })
     if (!target) return m.reply(`حدد العضو:\n${usedPrefix}${command} @الشخص\n👤 العضوية: ${vipStatus}`)
     if (target === conn.user.jid) return m.reply('لا أستطيع طرد نفسي.')
     await conn.groupParticipantsUpdate(m.chat, [target], 'remove')
-    return conn.reply(m.chat, `✅ تم طرد @${target.split('@')[0]}`, m, { mentions: [target] })
+    return conn.reply(m.chat, `✅ تم طرد @${target.split('@')[0]}\n👤 العضوية: ${vipStatus}`, m, { mentions: [target] })
   }
 
   if (/^(اضف|إضافة|اضافة|add)$/i.test(command)) {
     const target = targetUser(m, args)
     if (!target) return m.reply(`اكتب رقم العضو مع رمز الدولة:\n${usedPrefix}${command} 967xxxxxxxx\n👤 العضوية: ${vipStatus}`)
     await conn.groupParticipantsUpdate(m.chat, [target], 'add')
-    return conn.reply(m.chat, `✅ تم إرسال طلب إضافة @${target.split('@')[0]}`, m, { mentions: [target] })
+    return conn.reply(m.chat, `✅ تم إرسال طلب إضافة @${target.split('@')[0]}\n👤 العضوية: ${vipStatus}`, m, { mentions: [target] })
   }
 
   if (/^(رفع|ترقية|promote|مشرف)$/i.test(command)) {
     const target = targetUser(m, args)
     if (!target) return m.reply(`حدد العضو:\n${usedPrefix}${command} @الشخص\n👤 العضوية: ${vipStatus}`)
     await conn.groupParticipantsUpdate(m.chat, [target], 'promote')
-    return conn.reply(m.chat, `✅ أصبح @${target.split('@')[0]} مشرفاً`, m, { mentions: [target] })
+    return conn.reply(m.chat, `✅ أصبح ${await getName(target)} (@${target.split('@')[0]}) مشرفاً\n👤 العضوية: ${vipStatus}`, m, { mentions: [target] })
   }
 
   if (/^(خفض|تنزيل|demote)$/i.test(command)) {
     const target = targetUser(m, args)
     if (!target) return m.reply(`حدد العضو:\n${usedPrefix}${command} @الشخص\n👤 العضوية: ${vipStatus}`)
     await conn.groupParticipantsUpdate(m.chat, [target], 'demote')
-    return conn.reply(m.chat, `✅ تم خفض @${target.split('@')[0]} من الإشراف`, m, { mentions: [target] })
+    return conn.reply(m.chat, `✅ تم خفض ${await getName(target)} (@${target.split('@')[0]}) من الإشراف\n👤 العضوية: ${vipStatus}`, m, { mentions: [target] })
   }
 
   if (/^(قفل_القروب|قفل-القروب|closegc|قفل)$/i.test(command)) {
     await conn.groupSettingUpdate(m.chat, 'announcement')
-    return m.reply('🔒 تم قفل القروب. المشرفون فقط يمكنهم الإرسال.')
+    return m.reply(`🔒 تم قفل القروب. المشرفون فقط يمكنهم الإرسال.\n👤 العضوية: ${vipStatus}`)
   }
 
   if (/^(فتح_القروب|فتح-القروب|opengc|فتح)$/i.test(command)) {
     await conn.groupSettingUpdate(m.chat, 'not_announcement')
-    return m.reply('🔓 تم فتح القروب. الجميع يمكنهم الإرسال.')
+    return m.reply(`🔓 تم فتح القروب. الجميع يمكنهم الإرسال.\n👤 العضوية: ${vipStatus}`)
   }
 
   const members = participantJids(participants)
   if (/^(منشن_مخفي|منشن-مخفي|مخفي|hidetag)$/i.test(command)) {
     const msg = text || 'تنبيه للجميع'
-    return conn.sendMessage(m.chat, { text: msg, mentions: members }, { quoted: m })
+    return conn.sendMessage(m.chat, { text: msg + `\n\n👤 العضوية: ${vipStatus}`, mentions: members }, { quoted: m })
   }
 
   if (/^(منشن_ظاهر|منشن-ظاهر|الكل|منشن|tagall)$/i.test(command)) {
     const header = text ? `*${text}*\n\n` : '*منشن جماعي:*\n\n'
-    const list = members.map(jid => `@${jid.split('@')[0]}`).join('\n')
-    return conn.sendMessage(m.chat, { text: header + list, mentions: members }, { quoted: m })
+    const list = (await Promise.all(members.map(async jid => `${await getName(jid)} (@${jid.split('@')[0]})`))).join('\n')
+    return conn.sendMessage(m.chat, { text: header + list + `\n\n👤 العضوية: ${vipStatus}`, mentions: members }, { quoted: m })
   }
 }
 
