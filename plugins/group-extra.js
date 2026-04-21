@@ -141,14 +141,22 @@ let handler = async (m, { conn, args, text, command, participants, groupMetadata
 
   // ── تغيير صورة القروب ────────────────────────────────────────────────────
   if (/^(صورة_القروب|صوره_القروب|seticon|غير_صورة)$/i.test(command)) {
-    const img = m.quoted?.msg?.mimetype?.startsWith('image')
-      ? await m.quoted.download()
-      : m.msg?.mimetype?.startsWith('image')
-        ? await m.download()
-        : null
+    const isQuotedImg = m.quoted && (m.quoted.mtype === 'imageMessage' || m.quoted.mimetype?.startsWith?.('image'))
+    const isOwnImg    = m.mtype === 'imageMessage' || m.msg?.mimetype?.startsWith?.('image')
+    const img = isQuotedImg ? await m.quoted.download()
+              : isOwnImg    ? await m.download()
+              : null
     if (!img) return m.reply(`أرسل أو رُدّ على صورة مع الأمر:\n${usedPrefix}${command}`)
-    await conn.updateProfilePicture(m.chat, img)
-    return m.reply('✅ تم تغيير صورة القروب بنجاح!')
+    try {
+      const sharp = (await import('sharp')).default
+      const cleaned = await sharp(img, { failOn: 'none' })
+        .rotate().resize(640, 640, { fit: 'cover' })
+        .jpeg({ quality: 90, mozjpeg: true }).toBuffer()
+      await conn.updateProfilePicture(m.chat, cleaned)
+      return m.reply('✅ تم تغيير صورة القروب بنجاح!')
+    } catch (e) {
+      return m.reply('❌ فشل تغيير الصورة: الملف تالف أو غير مدعوم.')
+    }
   }
 
   // ── إزالة صورة القروب ────────────────────────────────────────────────────
@@ -249,20 +257,40 @@ let handler = async (m, { conn, args, text, command, participants, groupMetadata
   // ── تثبيت رسالة ──────────────────────────────────────────────────────────
   if (/^(تثبيت|pin)$/i.test(command)) {
     if (!m.quoted) return m.reply(`رُدّ على رسالة مع الأمر ${usedPrefix}${command}`)
-    const duration = parseInt(args[0]) || 86400  // default: يوم واحد
-    await conn.sendMessage(m.chat, {
-      pin: { type: 1, time: duration, key: m.quoted.key }
-    })
-    return m.reply('📌 تم تثبيت الرسالة.')
+    // المدد المسموحة: 86400 (24س)، 604800 (7أ)، 2592000 (30ي)
+    const requested = parseInt(args[0]) || 86400
+    const allowed   = [86400, 604800, 2592000]
+    const duration  = allowed.includes(requested) ? requested : 86400
+    try {
+      const key = m.quoted.vM?.key || {
+        remoteJid: m.chat,
+        fromMe: m.quoted.fromMe,
+        id: m.quoted.id,
+        ...(m.isGroup ? { participant: m.quoted.sender } : {})
+      }
+      await conn.sendMessage(m.chat, { pin: key, type: 1, time: duration })
+      const label = duration === 604800 ? '7 أيام' : duration === 2592000 ? '30 يوم' : '24 ساعة'
+      return m.reply(`📌 تم تثبيت الرسالة لمدة ${label}.`)
+    } catch (e) {
+      return m.reply(`❌ فشل التثبيت: ${e?.message || 'خطأ غير معروف'}`)
+    }
   }
 
   // ── إلغاء تثبيت رسالة ────────────────────────────────────────────────────
   if (/^(الغاء_تثبيت|unpin)$/i.test(command)) {
     if (!m.quoted) return m.reply(`رُدّ على الرسالة المثبتة مع الأمر ${usedPrefix}${command}`)
-    await conn.sendMessage(m.chat, {
-      pin: { type: 2, time: 0, key: m.quoted.key }
-    })
-    return m.reply('📌 تم إلغاء تثبيت الرسالة.')
+    try {
+      const key = m.quoted.vM?.key || {
+        remoteJid: m.chat,
+        fromMe: m.quoted.fromMe,
+        id: m.quoted.id,
+        ...(m.isGroup ? { participant: m.quoted.sender } : {})
+      }
+      await conn.sendMessage(m.chat, { pin: key, type: 2, time: 0 })
+      return m.reply('📌 تم إلغاء تثبيت الرسالة.')
+    } catch (e) {
+      return m.reply(`❌ فشل إلغاء التثبيت: ${e?.message || 'خطأ غير معروف'}`)
+    }
   }
 
   // ── عد أعضاء المجموعة ────────────────────────────────────────────────────

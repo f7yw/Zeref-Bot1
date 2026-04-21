@@ -213,11 +213,11 @@ ${bar} ${pct}%
   }
 
   if (/^(صورة_البوت|setbotpic|غير_صورة_البوت)$/i.test(command)) {
-    const img = m.quoted?.msg?.mimetype?.startsWith('image')
-      ? await m.quoted.download()
-      : m.msg?.mimetype?.startsWith('image')
-        ? await m.download()
-        : null
+    const isQuotedImg = m.quoted && (m.quoted.mtype === 'imageMessage' || m.quoted.mimetype?.startsWith?.('image'))
+    const isOwnImg    = m.mtype === 'imageMessage' || m.msg?.mimetype?.startsWith?.('image')
+    const img = isQuotedImg ? await m.quoted.download()
+              : isOwnImg    ? await m.download()
+              : null
     if (!img) return m.reply(`أرسل أو رُدّ على صورة مع الأمر:\n${usedPrefix}${command}`)
     try {
       const sharp = (await import('sharp')).default
@@ -334,21 +334,41 @@ ${bar} ${pct}%
 
   if (/^(نشر_حالة|post_status|حالة_واتساب)$/i.test(command)) {
     if (!text && !m.quoted) return m.reply(`استخدام:\n${usedPrefix}${command} نص الحالة\nأو رُدّ على صورة/فيديو لنشره`)
-    if (m.quoted?.msg?.mimetype?.startsWith('image')) {
-      const img = await m.quoted.download()
-      await conn.sendMessage('status@broadcast', {
-        image: img,
-        caption: text || '',
-        backgroundColor: '#075E54'
-      }, { statusJidList: [] })
-    } else {
-      await conn.sendMessage('status@broadcast', {
-        text: text || m.quoted?.text || '',
-        backgroundColor: '#128C7E',
-        font: 4
-      }, { statusJidList: [] })
+    try {
+      // اجمع جهات الاتصال لرؤية الحالة (وإلا لن يراها أحد)
+      const audience = []
+      const seen = new Set()
+      for (const jid of Object.keys(conn.contacts || {})) {
+        if (jid?.endsWith?.('@s.whatsapp.net') && !seen.has(jid)) {
+          audience.push(jid); seen.add(jid)
+        }
+      }
+      for (const u of Object.keys(global.db?.data?.users || {})) {
+        if (u?.endsWith?.('@s.whatsapp.net') && !seen.has(u)) {
+          audience.push(u); seen.add(u)
+        }
+      }
+      const opts = { statusJidList: audience.length ? audience : [conn.user?.id?.split(':')[0] + '@s.whatsapp.net'] }
+
+      const isQuotedImg   = m.quoted && (m.quoted.mtype === 'imageMessage' || m.quoted.mimetype?.startsWith?.('image'))
+      const isQuotedVideo = m.quoted && (m.quoted.mtype === 'videoMessage' || m.quoted.mimetype?.startsWith?.('video'))
+
+      if (isQuotedImg) {
+        const img = await m.quoted.download()
+        await conn.sendMessage('status@broadcast',
+          { image: img, caption: text || m.quoted.caption || '' }, opts)
+      } else if (isQuotedVideo) {
+        const vid = await m.quoted.download()
+        await conn.sendMessage('status@broadcast',
+          { video: vid, caption: text || m.quoted.caption || '' }, opts)
+      } else {
+        await conn.sendMessage('status@broadcast',
+          { text: text || m.quoted?.text || '', backgroundColor: '#128C7E', font: 4 }, opts)
+      }
+      return m.reply(`✅ تم نشر الحالة بنجاح إلى ${audience.length} جهة.`)
+    } catch (e) {
+      return m.reply(`❌ فشل نشر الحالة: ${e?.message || 'خطأ غير معروف'}`)
     }
-    return m.reply('✅ تم نشر الحالة بنجاح.')
   }
 
   // ─── إعداد الردود التلقائية ─────────────────────────────────────────────

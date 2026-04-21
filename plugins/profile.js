@@ -57,7 +57,7 @@ let handler = async (m, { conn, usedPrefix }) => {
   const text =
 `╭──────『 👤 ${name} 』──────
 │
-│ 🆔 *الرقم:* @${who.split('@')[0]}
+│ 🆔 *الرقم:* +${who.split('@')[0]}
 │ 📋 *الحالة:* ${regLine}
 │ 💎 *العضوية:* ${premLabel}
 │ 🚫 *محظور:* ${user.banned ? `نعم — ${user.bannedReason || 'بدون سبب'}` : 'لا'}

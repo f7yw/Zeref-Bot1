@@ -7,13 +7,25 @@ import { isVip } from '../lib/economy.js'
 
 function resolveTarget(m, text) {
   // 1. mention
-  if (m.mentionedJid?.[0]) return m.mentionedJid[0]
+  let jid = m.mentionedJid?.[0]
   // 2. reply
-  if (m.quoted?.sender) return m.quoted.sender
+  if (!jid) jid = m.quoted?.sender
   // 3. raw number in text
-  const digits = (text || '').replace(/\D/g, '')
-  if (digits.length >= 8) return `${digits}@s.whatsapp.net`
-  return null
+  if (!jid) {
+    const digits = (text || '').replace(/\D/g, '')
+    if (digits.length >= 8) jid = `${digits}@s.whatsapp.net`
+  }
+  if (!jid) return null
+  // updateBlockStatus لا يقبل @lid — حوّل إلى @s.whatsapp.net
+  if (jid.endsWith('@lid')) {
+    const mapped = global.lidPhoneMap?.[jid]
+    if (mapped) jid = mapped
+    else {
+      const num = jid.split('@')[0].replace(/\D/g, '')
+      if (num.length >= 8) jid = `${num}@s.whatsapp.net`
+    }
+  }
+  return jid
 }
 
 function safeNum(jid) {

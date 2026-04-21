@@ -13,8 +13,22 @@ function resolveJid(m, text) {
     const cleaned = text.replace(/[^0-9]/g, '')
     if (cleaned.length >= 7) jid = cleaned + '@s.whatsapp.net'
   }
-  if (jid?.endsWith('@lid') && global.lidPhoneMap?.[jid]) {
-    jid = global.lidPhoneMap[jid]
+  if (!jid) return null
+  // ابحث عن المفتاح الفعلي للمستخدم في القاعدة (سواء @lid أو @s.whatsapp.net)
+  const users = global.db?.data?.users || {}
+  if (users[jid]) return jid
+  // جرّب التبديل بين الصيغتين
+  if (jid.endsWith('@lid')) {
+    const phoneJid = global.lidPhoneMap?.[jid]
+    if (phoneJid && users[phoneJid]) return phoneJid
+    if (phoneJid) return phoneJid
+  }
+  if (jid.endsWith('@s.whatsapp.net') && global.lidPhoneMap) {
+    const num = jid.split('@')[0]
+    for (const [lid, phone] of Object.entries(global.lidPhoneMap)) {
+      if (phone === jid && users[lid]) return lid
+      if (phone?.split('@')[0] === num && users[lid]) return lid
+    }
   }
   return jid
 }

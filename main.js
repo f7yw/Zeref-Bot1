@@ -115,6 +115,17 @@ global.loadDatabase = async function () {
 };
 await loadDatabase();
 
+// ====== استعادة إعدادات البوت بعد إعادة التشغيل ======
+try {
+  const savedOpts = global.db?.data?.settings?.opts
+  if (savedOpts && typeof savedOpts === 'object') {
+    if (typeof savedOpts.self === 'boolean')     global.opts.self     = savedOpts.self
+    if (typeof savedOpts.autoread === 'boolean') global.opts.autoread = savedOpts.autoread
+    if (typeof savedOpts.restrict === 'boolean') global.opts.restrict = savedOpts.restrict
+    console.log(chalk.cyan('[OPTS] استُعيدت إعدادات البوت من القاعدة.'))
+  }
+} catch (_) {}
+
 global.saveDatabase = async function () {
   if (global.db?.data) await global.db.write().catch(console.error);
   if (global.chatgpt?.data) await global.chatgpt.write().catch(console.error);

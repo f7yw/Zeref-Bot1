@@ -1306,7 +1306,37 @@ if (m.chat in global.db.data.chats || m.sender in global.db.data.users) {
     let user = global.db.data.users[m.sender]
     let botSpam = global.db.data.settings[this.user.jid]
     
-    if (!['owner-unbanchat.js', 'gc-link.js', 'gc-hidetag.js', 'info-creator.js'].includes(name) && chat && chat.isBanned && !isROwner) return // Except this
+    if (!['owner-unbanchat.js', 'gc-link.js', 'gc-hidetag.js', 'info-creator.js'].includes(name) && chat && chat.isBanned && !isROwner) {
+      // أرسل تنبيهاً للمطور عند محاولة استخدام البوت في محادثة محظورة (مع كتم لمنع الإغراق)
+      try {
+        const now = Date.now()
+        global.__bannedNotice = global.__bannedNotice || {}
+        const lastNotice = global.__bannedNotice[m.chat] || 0
+        if (now - lastNotice > 10 * 60 * 1000) { // كل 10 دقائق كحد أقصى
+          global.__bannedNotice[m.chat] = now
+          const ownerNumbers = (global.owner || []).filter(([, , isDev]) => isDev).map(([n]) => n)
+          let chatName = m.chat
+          try {
+            if (m.isGroup) chatName = (await this.groupMetadata(m.chat))?.subject || m.chat
+            else chatName = (await this.getName(m.chat)) || m.chat
+          } catch (_) {}
+          const senderNum = (m.sender || '').split('@')[0]
+          const notice =
+`🚫 *محاولة استخدام البوت في محادثة محظورة*
+
+📛 *المحادثة:* ${chatName}
+🆔 *المعرّف:* ${m.chat}
+👤 *المرسل:* +${senderNum}
+💬 *الأمر:* ${(m.text || '').slice(0, 100)}
+🕐 *الوقت:* ${new Date(now).toLocaleString('ar-YE')}`
+          for (const num of ownerNumbers) {
+            const ownerJid = `${num}@s.whatsapp.net`
+            await this.sendMessage(ownerJid, { text: notice }).catch(() => {})
+          }
+        }
+      } catch (e) { console.error('[BANNED-NOTICE]', e?.message) }
+      return
+    }
     
     if (name != 'owner-unbanchat.js' && name != 'owner-exec.js' && name != 'owner-exec2.js' && name != 'tool-delete.js' && chat?.isBanned && !isROwner) return 
     
