@@ -1,11 +1,13 @@
 /**
- * لوحة التحكم الكاملة للمالك
- * أوامر الإضافة والتعديل والحذف من البوت مباشرة
- * للمطور: 967778088098 فقط
+ * لوحة التحكم الكاملة للمطور
+ * إدارة المستخدمين / الاقتصاد / قاعدة البيانات
  */
 import { logTransaction, initEconomy, isVip, MAX_ENERGY } from '../lib/economy.js'
 
-const resolveJid = (m, text) => {
+const DAY  = 24 * 60 * 60 * 1000
+const YEAR = 365 * DAY
+
+function resolveJid(m, text) {
   let jid = m.mentionedJid?.[0] || m.quoted?.sender
   if (!jid && text) {
     const cleaned = text.replace(/[^0-9]/g, '')
@@ -17,246 +19,292 @@ const resolveJid = (m, text) => {
   return jid
 }
 
-const getUser = (jid) => {
+function getUser(jid) {
   if (!jid) return null
   global.db.data.users[jid] ||= {}
   initEconomy(global.db.data.users[jid])
   return global.db.data.users[jid]
 }
 
-const numStr = (n) => Number(n || 0).toLocaleString('en')
+function numStr(n) { return Number(n || 0).toLocaleString('en') }
 
-let handler = async (m, { conn, command, args, text, isROwner }) => {
-  if (!isROwner) return m.reply('❌ هذا الأمر للمطور فقط.')
+function fmtDate(ts) {
+  if (!ts || ts <= 0) return '—'
+  if (ts - Date.now() >= YEAR * 5) return '♾️ دائم'
+  return new Date(ts).toISOString().slice(0, 10)
+}
 
-  const cmd = command.toLowerCase()
+function fmtRemaining(ts) {
+  if (!ts || ts <= 0) return '—'
+  const diff = ts - Date.now()
+  if (diff <= 0) return '⚠️ منتهي'
+  if (diff >= YEAR * 5) return '♾️'
+  const d = Math.ceil(diff / DAY)
+  if (d >= 365) return `${Math.floor(d/365)}س ${Math.floor((d%365)/30)}ش`
+  if (d >= 30)  return `${Math.floor(d/30)} شهر`
+  return `${d} يوم`
+}
 
-  // ─────────────────────────────────────────────
-  // .عرض_مستخدم @منشن | رقم
-  // ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+let handler = async (m, { conn, command, args, text }) => {
+  const cmd = command.toLowerCase().trim()
+
+  // ── عرض مستخدم ────────────────────────────────────────────────────────────
   if (/^(عرض_مستخدم|userinfo|يوزر)$/.test(cmd)) {
     const jid = resolveJid(m, text)
-    if (!jid) return m.reply('❌ حدد مستخدماً بالمنشن أو الرد أو رقم الهاتف.')
-    const u = getUser(jid)
+    if (!jid) return m.reply('❌ حدد مستخدماً: .عرض_مستخدم @منشن')
+    const u   = getUser(jid)
     const num = jid.split('@')[0]
     const vip = isVip(jid)
     return m.reply(
 `╭────『 👤 بيانات المستخدم 』────
 │ 📱 الرقم: +${num}
 │ 📛 الاسم: ${u.name || '—'}
-│ 💎 العضوية: ${vip ? '💎 مميز' : '❌ عادي'}
+│ 👑 العضوية: ${vip ? '💎 مميز' : '❌ عادي'}
 │ 🏆 المستوى: ${u.level || 0}
-│ ⭐ الخبرة: ${u.exp || 0}
+│ ⭐ الخبرة: ${numStr(u.exp)}
 │ 💰 المحفظة: ${numStr(u.money)} 🪙
 │ 🏦 البنك: ${numStr(u.bank)} 🪙
 │ 💎 الماس: ${u.diamond || 0}
 │ ⚡ الطاقة: ${u.energy ?? MAX_ENERGY}/${MAX_ENERGY}
 │ 📊 الرسائل: ${u.messageCount || 0}
 │ 🚫 محظور: ${u.banned ? 'نعم ⛔' : 'لا ✅'}
-│ 📅 مميز حتى: ${u.premiumTime > Date.now() ? new Date(u.premiumTime).toLocaleDateString('ar') : '—'}
+│ 📅 VIP حتى: ${fmtDate(u.premiumTime)}
+│ ⏳ المتبقي: ${fmtRemaining(u.premiumTime)}
 ╰──────────────────`.trim()
     )
   }
 
-  // ─────────────────────────────────────────────
-  // .تعديل_مال @منشن 5000
-  // ─────────────────────────────────────────────
-  if (/^(تعديل_مال|setmoney)$/.test(cmd)) {
-    const parts = text?.trim().split(/\s+/)
-    const jid = resolveJid(m, parts?.[0])
-    const amount = parseInt(parts?.find(p => /^-?\d+$/.test(p)))
-    if (!jid || isNaN(amount)) return m.reply('❌ الاستخدام: .تعديل_مال @منشن 5000')
-    const u = getUser(jid)
-    const old = u.money || 0
-    u.money = Math.max(0, amount)
-    logTransaction(u, amount >= old ? 'earn' : 'spend', Math.abs(amount - old), '⚙️ تعديل يدوي من المطور')
-    await global.db.write()
-    return m.reply(`✅ تم تعديل محفظة *+${jid.split('@')[0]}*\nمن ${numStr(old)} → ${numStr(u.money)} 🪙`)
+  // ── قائمة المستخدمين ──────────────────────────────────────────────────────
+  if (/^(قائمة_المستخدمين|allusers)$/.test(cmd)) {
+    const users = Object.entries(global.db.data.users || {})
+    if (!users.length) return m.reply('ℹ️ لا يوجد مستخدمون في قاعدة البيانات.')
+    const now = Date.now()
+    const lines = users.slice(0, 40).map(([jid, u]) => {
+      const num    = jid.split('@')[0]
+      const vip    = u.premium || (u.premiumTime > now) ? ' 💎' : ''
+      const banned = u.banned ? ' ⛔' : ''
+      return `• +${num}${vip}${banned} | لفل:${u.level || 0} 🪙${numStr(u.money)}`
+    })
+    return m.reply(
+      `╭────『 👥 المستخدمون (${users.length}) 』────\n│\n│ ${lines.join('\n│ ')}\n│\n╰──────────────────` +
+      (users.length > 40 ? `\n\n⚠️ يُعرض أول 40 من ${users.length}` : '')
+    )
   }
 
-  // ─────────────────────────────────────────────
-  // .اضافة_مال @منشن 1000
-  // ─────────────────────────────────────────────
+  // ── إضافة مال ─────────────────────────────────────────────────────────────
   if (/^(اضافة_مال|addmoney)$/.test(cmd)) {
-    const parts = text?.trim().split(/\s+/)
-    const jid = resolveJid(m, parts?.[0])
-    const amount = parseInt(parts?.find(p => /^-?\d+$/.test(p)))
-    if (!jid || isNaN(amount) || amount <= 0) return m.reply('❌ الاستخدام: .اضافة_مال @منشن 1000')
+    const parts = (text || '').trim().split(/\s+/)
+    const jid   = resolveJid(m, parts[0]) || resolveJid(m, text)
+    const amount = parseInt(parts.find(p => /^\d+$/.test(p)))
+    if (!jid || isNaN(amount) || amount <= 0) return m.reply('❌ الاستخدام:\n.اضافة_مال @منشن 1000')
     const u = getUser(jid)
     u.money = (u.money || 0) + amount
     logTransaction(u, 'earn', amount, '⚙️ منحة من المطور')
     await global.db.write()
-    return m.reply(`✅ تم إضافة *${numStr(amount)}* 🪙 لـ *+${jid.split('@')[0]}*\nالرصيد الجديد: ${numStr(u.money)} 🪙`)
+    return conn.sendMessage(m.chat,
+      { text: `✅ تمت إضافة *${numStr(amount)}* 🪙 لـ @${jid.split('@')[0]}\n💰 الرصيد: ${numStr(u.money)} 🪙`, mentions: [jid] },
+      { quoted: m })
   }
 
-  // ─────────────────────────────────────────────
-  // .اضافة_بنك @منشن 1000
-  // ─────────────────────────────────────────────
+  // ── تعديل مال (تعيين مباشر) ──────────────────────────────────────────────
+  if (/^(تعديل_مال|setmoney)$/.test(cmd)) {
+    const parts = (text || '').trim().split(/\s+/)
+    const jid   = resolveJid(m, parts[0]) || resolveJid(m, text)
+    const amount = parseInt(parts.find(p => /^-?\d+$/.test(p)))
+    if (!jid || isNaN(amount)) return m.reply('❌ الاستخدام:\n.تعديل_مال @منشن 5000')
+    const u   = getUser(jid)
+    const old = u.money || 0
+    u.money   = Math.max(0, amount)
+    logTransaction(u, amount >= old ? 'earn' : 'spend', Math.abs(amount - old), '⚙️ تعديل يدوي')
+    await global.db.write()
+    return conn.sendMessage(m.chat,
+      { text: `✅ تعديل محفظة @${jid.split('@')[0]}\n${numStr(old)} ← ${numStr(u.money)} 🪙`, mentions: [jid] },
+      { quoted: m })
+  }
+
+  // ── إضافة بنك ─────────────────────────────────────────────────────────────
   if (/^(اضافة_بنك|addbank)$/.test(cmd)) {
-    const parts = text?.trim().split(/\s+/)
-    const jid = resolveJid(m, parts?.[0])
-    const amount = parseInt(parts?.find(p => /^-?\d+$/.test(p)))
-    if (!jid || isNaN(amount) || amount <= 0) return m.reply('❌ الاستخدام: .اضافة_بنك @منشن 1000')
+    const parts = (text || '').trim().split(/\s+/)
+    const jid   = resolveJid(m, parts[0]) || resolveJid(m, text)
+    const amount = parseInt(parts.find(p => /^\d+$/.test(p)))
+    if (!jid || isNaN(amount) || amount <= 0) return m.reply('❌ الاستخدام:\n.اضافة_بنك @منشن 1000')
     const u = getUser(jid)
     u.bank = (u.bank || 0) + amount
-    logTransaction(u, 'earn', amount, '⚙️ إيداع بنكي من المطور')
+    logTransaction(u, 'earn', amount, '⚙️ إيداع بنكي')
     await global.db.write()
-    return m.reply(`✅ تم إضافة *${numStr(amount)}* 🪙 لبنك *+${jid.split('@')[0]}*\nرصيد البنك: ${numStr(u.bank)} 🪙`)
+    return conn.sendMessage(m.chat,
+      { text: `✅ إضافة *${numStr(amount)}* 🪙 لبنك @${jid.split('@')[0]}\n🏦 البنك: ${numStr(u.bank)} 🪙`, mentions: [jid] },
+      { quoted: m })
   }
 
-  // ─────────────────────────────────────────────
-  // .اضافة_ماس @منشن 10
-  // ─────────────────────────────────────────────
+  // ── إضافة ماس ─────────────────────────────────────────────────────────────
   if (/^(اضافة_ماس|adddiamond)$/.test(cmd)) {
-    const parts = text?.trim().split(/\s+/)
-    const jid = resolveJid(m, parts?.[0])
-    const amount = parseInt(parts?.find(p => /^-?\d+$/.test(p)))
-    if (!jid || isNaN(amount) || amount <= 0) return m.reply('❌ الاستخدام: .اضافة_ماس @منشن 10')
+    const parts = (text || '').trim().split(/\s+/)
+    const jid   = resolveJid(m, parts[0]) || resolveJid(m, text)
+    const amount = parseInt(parts.find(p => /^\d+$/.test(p)))
+    if (!jid || isNaN(amount) || amount <= 0) return m.reply('❌ الاستخدام:\n.اضافة_ماس @منشن 10')
     const u = getUser(jid)
     u.diamond = (u.diamond || 0) + amount
     await global.db.write()
-    return m.reply(`✅ تم إضافة *${amount}* 💎 لـ *+${jid.split('@')[0]}*\nإجمالي الماس: ${u.diamond} 💎`)
+    return conn.sendMessage(m.chat,
+      { text: `✅ إضافة *${amount}* 💎 لـ @${jid.split('@')[0]}\n💎 إجمالي: ${u.diamond}`, mentions: [jid] },
+      { quoted: m })
   }
 
-  // ─────────────────────────────────────────────
-  // .تعديل_مستوى @منشن 10
-  // ─────────────────────────────────────────────
+  // ── تعديل مستوى ──────────────────────────────────────────────────────────
   if (/^(تعديل_مستوى|setlevel)$/.test(cmd)) {
-    const parts = text?.trim().split(/\s+/)
-    const jid = resolveJid(m, parts?.[0])
-    const level = parseInt(parts?.find(p => /^\d+$/.test(p)))
-    if (!jid || isNaN(level)) return m.reply('❌ الاستخدام: .تعديل_مستوى @منشن 10')
+    const parts = (text || '').trim().split(/\s+/)
+    const jid   = resolveJid(m, parts[0]) || resolveJid(m, text)
+    const level = parseInt(parts.find(p => /^\d+$/.test(p)))
+    if (!jid || isNaN(level)) return m.reply('❌ الاستخدام:\n.تعديل_مستوى @منشن 10')
     const u = getUser(jid)
     u.level = Math.max(0, level)
     await global.db.write()
-    return m.reply(`✅ تم تعديل مستوى *+${jid.split('@')[0]}* إلى *${u.level}* 🏆`)
+    return conn.sendMessage(m.chat,
+      { text: `✅ مستوى @${jid.split('@')[0]} → *${u.level}* 🏆`, mentions: [jid] },
+      { quoted: m })
   }
 
-  // ─────────────────────────────────────────────
-  // .اعادة_ضبط @منشن
-  // ─────────────────────────────────────────────
+  // ── إعادة ضبط مستخدم ─────────────────────────────────────────────────────
   if (/^(اعادة_ضبط|resetuser)$/.test(cmd)) {
     const jid = resolveJid(m, text)
-    if (!jid) return m.reply('❌ حدد مستخدماً.')
-    const num = jid.split('@')[0]
-    const wasPrem = global.db.data.users[jid]?.premium
+    if (!jid) return m.reply('❌ حدد مستخدماً:\n.اعادة_ضبط @منشن')
+    const num      = jid.split('@')[0]
+    const wasPrem  = global.db.data.users[jid]?.premium
+    const wasLevel = global.db.data.users[jid]?.level || 0
     global.db.data.users[jid] = {}
     initEconomy(global.db.data.users[jid])
+    // أزل من قائمة prems
+    global.prems = (global.prems || []).filter(n => n.replace(/\D/g,'') !== num)
     await global.db.write()
-    return m.reply(`✅ تمت إعادة ضبط بيانات *+${num}* بالكامل.${wasPrem ? '\n⚠️ ملاحظة: كان مميزاً.' : ''}`)
-  }
-
-  // ─────────────────────────────────────────────
-  // .حذف_مستخدم @منشن
-  // ─────────────────────────────────────────────
-  if (/^(حذف_مستخدم|deleteuser)$/.test(cmd)) {
-    const jid = resolveJid(m, text)
-    if (!jid) return m.reply('❌ حدد مستخدماً.')
-    const existed = !!global.db.data.users[jid]
-    delete global.db.data.users[jid]
-    await global.db.write()
-    return m.reply(existed
-      ? `✅ تم حذف بيانات *+${jid.split('@')[0]}* من قاعدة البيانات.`
-      : `ℹ️ المستخدم *+${jid.split('@')[0]}* غير موجود في قاعدة البيانات.`
+    return m.reply(
+      `✅ تمت إعادة ضبط *+${num}*\n` +
+      `📊 المستوى كان: ${wasLevel}` +
+      (wasPrem ? '\n⚠️ تحذير: كان مميزاً — تم إزالة VIP أيضاً.' : '')
     )
   }
 
-  // ─────────────────────────────────────────────
-  // .حذف_بريم @منشن
-  // ─────────────────────────────────────────────
-  if (/^(حذف_بريم|removeprem)$/.test(cmd)) {
+  // ── حذف مستخدم نهائياً ───────────────────────────────────────────────────
+  if (/^(حذف_مستخدم|deleteuser)$/.test(cmd)) {
     const jid = resolveJid(m, text)
-    if (!jid) return m.reply('❌ حدد مستخدماً.')
-    const num = jid.split('@')[0]
-    global.prems = (global.prems || []).filter(n => String(n).replace(/\D/g, '') !== num)
-    const u = global.db.data.users[jid]
-    if (u) {
-      u.premium = false
-      u.premiumTime = 0
-      u.infiniteResources = false
-    }
+    if (!jid) return m.reply('❌ حدد مستخدماً:\n.حذف_مستخدم @منشن')
+    const existed = !!global.db.data.users[jid]
+    delete global.db.data.users[jid]
+    global.prems = (global.prems || []).filter(n => n.replace(/\D/g,'') !== jid.split('@')[0])
     await global.db.write()
-    return m.reply(`✅ تم إلغاء اشتراك *+${num}* من VIP.`)
+    return m.reply(existed
+      ? `✅ تم حذف *+${jid.split('@')[0]}* من قاعدة البيانات نهائياً.`
+      : `ℹ️ المستخدم *+${jid.split('@')[0]}* غير موجود أصلاً.`
+    )
   }
 
-  // ─────────────────────────────────────────────
-  // .قائمة_المستخدمين
-  // ─────────────────────────────────────────────
-  if (/^(قائمة_المستخدمين|allusers)$/.test(cmd)) {
-    const users = Object.entries(global.db.data.users || {})
-    if (!users.length) return m.reply('ℹ️ لا يوجد مستخدمون في قاعدة البيانات.')
-    const lines = users.slice(0, 30).map(([jid, u]) => {
-      const num = jid.split('@')[0]
-      const vip = u.premium || (u.premiumTime > Date.now()) ? '💎' : ''
-      const banned = u.banned ? '⛔' : ''
-      return `• +${num} ${vip}${banned} | لفل:${u.level || 0} | 🪙${numStr(u.money)}`
-    })
-    const total = users.length
-    return m.reply(`╭────『 👥 المستخدمون (${total}) 』────\n│\n│ ${lines.join('\n│ ')}\n│\n╰──────────────────${total > 30 ? `\n\n⚠️ يُعرض أول 30 مستخدم من ${total}` : ''}`)
+  // ── مسح كل المستخدمين ────────────────────────────────────────────────────
+  if (/^(مسح_المستخدمين|clearusers)$/.test(cmd)) {
+    const confirm = (text || '').trim()
+    if (confirm !== 'تأكيد') {
+      return m.reply(
+`⚠️ *تحذير: سيتم حذف بيانات جميع المستخدمين!*
+
+لتأكيد الحذف:
+.مسح_المستخدمين تأكيد`)
+    }
+    const count = Object.keys(global.db.data.users || {}).length
+    global.db.data.users = {}
+    global.prems = []
+    await global.db.write()
+    return m.reply(`✅ تم مسح *${count}* مستخدم من قاعدة البيانات.`)
   }
 
-  // ─────────────────────────────────────────────
-  // .حالة_السحاب
-  // ─────────────────────────────────────────────
+  // ── حالة السحاب ──────────────────────────────────────────────────────────
   if (/^(حالة_السحاب|cloudstatus|سحاب)$/.test(cmd)) {
-    const db = global.db
-    const hasClient = !!db?.client
-    const users = Object.keys(db?.data?.users || {}).length
-    const chats = Object.keys(db?.data?.chats || {}).length
-    const prems = Object.values(db?.data?.users || {}).filter(u => u?.premium || u?.premiumTime > Date.now()).length
-    const mem = process.memoryUsage()
-    const mbUsed = (mem.heapUsed / 1024 / 1024).toFixed(1)
-    const mbTotal = (mem.heapTotal / 1024 / 1024).toFixed(1)
+    const users  = Object.keys(global.db.data.users  || {}).length
+    const chats  = Object.keys(global.db.data.chats  || {}).length
+    const prems  = Object.values(global.db.data.users || {}).filter(u => u?.premiumTime > Date.now()).length
+    const banned = Object.values(global.db.data.users || {}).filter(u => u?.banned).length
+    const mem    = process.memoryUsage()
+    const mbUsed = (mem.heapUsed  / 1024 / 1024).toFixed(1)
+    const mbRss  = (mem.rss       / 1024 / 1024).toFixed(1)
     const uptime = Math.floor(process.uptime())
-    const h = Math.floor(uptime / 3600)
+    const h   = Math.floor(uptime / 3600)
     const min = Math.floor((uptime % 3600) / 60)
     const sec = uptime % 60
-    const supaUrl = process.env.SUPABASE_URL || ''
-    const connected = supaUrl ? `✅ متصل (${supaUrl.split('.')[0].replace('https://', '')}.supabase)` : '⚠️ غير مكوّن'
+    const supaUrl = (process.env.SUPABASE_URL || '').replace('https://', '').split('.')[0]
+    const supaConn = supaUrl ? `✅ ${supaUrl}.supabase` : '⚠️ غير مكوّن'
     return m.reply(
 `╭────『 ☁️ حالة السحاب 』────
 │
-│ 🗄️ Supabase: ${connected}
-│ 🔄 آخر مزامنة: الآن
+│ 🗄️ Supabase: ${supaConn}
+│ 🗺️ LID Map: ${Object.keys(global.lidPhoneMap || {}).length} رقم
 │
 │ ─── البيانات ───
 │ 👥 المستخدمون: ${users}
 │ 💬 المحادثات: ${chats}
 │ 👑 المميزون: ${prems}
+│ 🚫 المحظورون: ${banned}
 │
-│ ─── الأداء ───
-│ 🧠 الذاكرة: ${mbUsed}/${mbTotal} MB
-│ ⏱️ وقت التشغيل: ${h}س ${min}د ${sec}ث
-│ 📦 Node: ${process.version}
-│
-│ ─── LID Map ───
-│ 🗺️ مسجّل: ${Object.keys(global.lidPhoneMap || {}).length} رقم
+│ ─── الذاكرة ───
+│ 🧠 RSS: ${mbRss} MB
+│ 📦 Heap: ${mbUsed} MB
+│ ⏱️ التشغيل: ${h}س ${min}د ${sec}ث
+│ 📌 Node: ${process.version}
 ╰──────────────────`.trim()
     )
   }
 
-  // ─────────────────────────────────────────────
-  // .مزامنة_السحاب — إجبار الحفظ الفوري
-  // ─────────────────────────────────────────────
+  // ── مزامنة السحاب ─────────────────────────────────────────────────────────
   if (/^(مزامنة_السحاب|synccloud|sync)$/.test(cmd)) {
-    await m.reply('⏳ جاري المزامنة مع Supabase...')
+    await m.reply('⏳ جاري الحفظ إلى Supabase...')
     try {
       await global.db.write()
-      return m.reply('✅ تمت المزامنة بنجاح إلى Supabase!')
+      return m.reply('✅ تمت المزامنة بنجاح!')
     } catch (e) {
-      return m.reply(`❌ فشل المزامنة: ${e.message}`)
+      return m.reply(`❌ فشل: ${e.message}`)
     }
   }
 
-  // ─────────────────────────────────────────────
-  // .تعطيل_بوت / .تفعيل_بوت في المجموعة
-  // ─────────────────────────────────────────────
+  // ── قاعدة البيانات (إحصائيات) ────────────────────────────────────────────
+  if (/^(قاعدة_البيانات|dbstats|احصاء)$/.test(cmd)) {
+    const users  = Object.values(global.db.data.users  || {})
+    const chats  = Object.values(global.db.data.chats  || {})
+    const now    = Date.now()
+    const active = users.filter(u => u?.lastSeen > now - 7 * DAY).length
+    const totalMoney = users.reduce((a, u) => a + (u.money || 0), 0)
+    const totalBank  = users.reduce((a, u) => a + (u.bank  || 0), 0)
+    const groups = Object.keys(global.db.data.chats || {}).filter(j => j.endsWith('@g.us')).length
+    const botSettings = global.db.data.botSettings || {}
+    return m.reply(
+`╭────『 📊 قاعدة البيانات 』────
+│
+│ ─── المستخدمون ───
+│ 👥 الكلي: ${users.length}
+│ 🟢 نشطون (7 أيام): ${active}
+│ 👑 مميزون: ${users.filter(u => u?.premiumTime > now).length}
+│ 🚫 محظورون: ${users.filter(u => u?.banned).length}
+│
+│ ─── الاقتصاد ───
+│ 💰 إجمالي المحافظ: ${numStr(totalMoney)} 🪙
+│ 🏦 إجمالي البنوك: ${numStr(totalBank)} 🪙
+│
+│ ─── المحادثات ───
+│ 💬 الكلي: ${chats.length}
+│ 📱 القروبات: ${groups}
+│ ⛔ مُعطَّل فيها: ${chats.filter(c => c?.botOff).length}
+│
+│ ─── إعدادات البوت ───
+│ 📵 رفض المكالمات: ${botSettings.rejectCalls ? '✅' : '❌'}
+│ 🟢 حضور دائم: ${botSettings.alwaysOnline ? '✅' : '❌'}
+╰──────────────────`.trim()
+    )
+  }
+
+  // ── تعطيل/تفعيل البوت في المجموعة ───────────────────────────────────────
   if (/^(تعطيل_بوت|botoff)$/.test(cmd)) {
     if (!m.isGroup) return m.reply('❌ هذا الأمر للمجموعات فقط.')
     global.db.data.chats[m.chat] ||= {}
     global.db.data.chats[m.chat].botOff = true
     await global.db.write()
-    return m.reply('✅ تم تعطيل البوت في هذه المجموعة. فقط المطور يمكنه استخدام الأوامر.')
+    return m.reply('⛔ تم تعطيل البوت في هذه المجموعة.\nالمطور فقط يمكنه الأوامر.')
   }
 
   if (/^(تفعيل_بوت|boton)$/.test(cmd)) {
@@ -267,55 +315,62 @@ let handler = async (m, { conn, command, args, text, isROwner }) => {
     return m.reply('✅ تم تفعيل البوت في هذه المجموعة.')
   }
 
-  // ─────────────────────────────────────────────
-  // .لوحة_التحكم — عرض كل أوامر الإدارة
-  // ─────────────────────────────────────────────
+  // ── لوحة التحكم الرئيسية ─────────────────────────────────────────────────
   if (/^(لوحة_التحكم|panel|لوحة)$/.test(cmd)) {
     return m.reply(
-`╭────『 ⚙️ لوحة التحكم 』────
+`╭────『 ⚙️ لوحة تحكم المطور 』────
 │
-│ ─── 👤 بيانات المستخدمين ───
+│ ─── 👤 المستخدمون ───
 │ .عرض_مستخدم @منشن
-│   عرض كامل بيانات أي مستخدم
-│
+│   ← كامل بيانات المستخدم
 │ .قائمة_المستخدمين
-│   قائمة بجميع المستخدمين
+│   ← قائمة بكل المستخدمين
+│ .اعادة_ضبط @منشن
+│   ← تصفير بيانات مستخدم
+│ .حذف_مستخدم @منشن
+│   ← حذف نهائي من DB
+│ .مسح_المستخدمين تأكيد
+│   ← ⚠️ حذف الكل
 │
-│ ─── 💰 تعديل الاقتصاد ───
+│ ─── 💰 الاقتصاد ───
 │ .اضافة_مال @منشن 1000
+│ .تعديل_مال @منشن 5000
 │ .اضافة_بنك @منشن 1000
 │ .اضافة_ماس @منشن 10
-│ .تعديل_مال @منشن 5000  (تعيين مباشر)
 │ .تعديل_مستوى @منشن 5
 │
-│ ─── 👑 إدارة العضوية ───
-│ .addprem @منشن      (إضافة مميز)
-│ .حذف_بريم @منشن    (إلغاء VIP)
+│ ─── 👑 عضوية VIP ───
+│ .بريم @منشن [مدة]
+│   ← أمثلة: 30  |  1 شهر  |  دائم
+│ .تجديد_بريم @منشن [مدة]
+│   ← يضيف مدة للوقت الحالي
+│ .حذف_بريم @منشن
+│ .المميزين
 │
-│ ─── 🗑️ مسح البيانات ───
-│ .اعادة_ضبط @منشن   (صفر بيانات مستخدم)
-│ .حذف_مستخدم @منشن  (حذف كامل)
-│ .مسح_المستخدمين تأكيد
-│ .مسح_الكل تأكيد
-│
-│ ─── ☁️ إدارة السحاب ───
-│ .حالة_السحاب       (Supabase + ذاكرة)
-│ .مزامنة_السحاب     (حفظ فوري)
-│ .قاعدة_البيانات    (إحصاء البيانات)
+│ ─── ☁️ قاعدة البيانات ───
+│ .حالة_السحاب
+│ .مزامنة_السحاب
+│ .قاعدة_البيانات
 │
 │ ─── 🤖 تحكم البوت ───
-│ .تعطيل_بوت        (يوقف البوت في المجموعة)
-│ .تفعيل_بوت        (يشغل البوت في المجموعة)
-│ .إعادة            (إعادة تشغيل البوت)
+│ .تعطيل_بوت / .تفعيل_بوت
+│ .تحكم_البوت  ← لوحة bot-control
+│ .إعادة_تشغيل
 │
 ╰──────────────────`.trim()
     )
   }
 }
 
-handler.help = ['لوحة_التحكم', 'عرض_مستخدم', 'اضافة_مال', 'اضافة_بنك', 'اضافة_ماس', 'تعديل_مستوى', 'حذف_بريم', 'حذف_مستخدم', 'مزامنة_السحاب', 'حالة_السحاب', 'قائمة_المستخدمين']
-handler.tags = ['owner']
-handler.command = /^(لوحة_التحكم|panel|لوحة|عرض_مستخدم|userinfo|يوزر|تعديل_مال|setmoney|اضافة_مال|addmoney|اضافة_بنك|addbank|اضافة_ماس|adddiamond|تعديل_مستوى|setlevel|اعادة_ضبط|resetuser|حذف_مستخدم|deleteuser|حذف_بريم|removeprem|قائمة_المستخدمين|allusers|حالة_السحاب|cloudstatus|سحاب|مزامنة_السحاب|synccloud|sync|تعطيل_بوت|botoff|تفعيل_بوت|boton)$/i
+handler.help = [
+  'لوحة_التحكم', 'عرض_مستخدم', 'قائمة_المستخدمين',
+  'اضافة_مال', 'اضافة_بنك', 'اضافة_ماس', 'تعديل_مال', 'تعديل_مستوى',
+  'اعادة_ضبط', 'حذف_مستخدم', 'مسح_المستخدمين',
+  'حالة_السحاب', 'مزامنة_السحاب', 'قاعدة_البيانات',
+  'تعطيل_بوت', 'تفعيل_بوت'
+]
+handler.tags   = ['owner']
 handler.rowner = true
+handler.command = /^(لوحة_التحكم|panel|لوحة|عرض_مستخدم|userinfo|يوزر|تعديل_مال|setmoney|اضافة_مال|addmoney|اضافة_بنك|addbank|اضافة_ماس|adddiamond|تعديل_مستوى|setlevel|اعادة_ضبط|resetuser|حذف_مستخدم|deleteuser|مسح_المستخدمين|clearusers|قائمة_المستخدمين|allusers|حالة_السحاب|cloudstatus|سحاب|مزامنة_السحاب|synccloud|sync|قاعدة_البيانات|dbstats|احصاء|تعطيل_بوت|botoff|تفعيل_بوت|boton)$/i
 
 export default handler
