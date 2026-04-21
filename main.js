@@ -346,32 +346,75 @@ async function connectionUpdate(update) {
     console.log(chalk.green.bold('\n✅ Connected to WhatsApp successfully!'))
     console.log(chalk.green(`  ➤ Bot is active and listening for messages.`))
 
-    // ── تسجيل البوت كـ "تاجر NPC" تلقائياً ─────────────────────────────────
+    // ── تسجيل البوت كـ "تاجر NPC" + كل المالكين تلقائياً ─────────────────
     try {
-      const botJid = (conn.user?.id || '').replace(/:\d+@/, '@')
-      if (botJid && global.db?.data?.users) {
-        global.db.data.users[botJid] ??= {}
-        const bu = global.db.data.users[botJid]
-        const { initUser } = await import('./lib/userInit.js')
-        initUser(bu, conn.user?.name || 'زيريف التاجر', botJid)
-        bu.registered     = true
-        if (!bu.regTime || bu.regTime <= 0) bu.regTime = Date.now()
-        bu.name           = bu.name           || 'زيريف ⚜️ التاجر'
-        bu.age            = bu.age            || 999
-        bu.gender         = bu.gender         || 'بوت'
-        bu.bio            = bu.bio            || '🤖 التاجر الرسمي للبوت — موارد لا نهائية'
-        bu.premium        = true
-        bu.premiumTime    = Date.now() + (50 * 365 * 24 * 60 * 60 * 1000)
-        bu.infiniteResources = true
-        bu.money          = Math.max(bu.money || 0, 1_000_000_000)
-        bu.bank           = Math.max(bu.bank  || 0, 1_000_000_000)
-        bu.diamond        = Math.max(bu.diamond || 0, 1_000_000)
-        bu.energy         = 100
-        bu.level          = Math.max(bu.level || 0, 999)
-        bu.exp            = Math.max(bu.exp   || 0, 999_999)
-        bu.role           = '🤖 التاجر الرسمي'
+      const { initUser } = await import('./lib/userInit.js')
+      const users = global.db?.data?.users
+      if (users) {
+        const botJidRaw = (conn.user?.id || '').replace(/:\d+@/, '@')
+        // اكتب البوت تحت صيغتي @lid و @s.whatsapp.net معاً
+        const botKeys = new Set([botJidRaw])
+        if (botJidRaw.endsWith('@lid')) {
+          const num = botJidRaw.split('@')[0].replace(/\D/g, '')
+          if (num) botKeys.add(`${num}@s.whatsapp.net`)
+        } else if (botJidRaw.endsWith('@s.whatsapp.net')) {
+          for (const [lid, phone] of Object.entries(global.lidPhoneMap || {})) {
+            if (phone === botJidRaw) botKeys.add(lid)
+          }
+        }
+        for (const key of botKeys) {
+          if (!key) continue
+          users[key] ??= {}
+          const bu = users[key]
+          initUser(bu, conn.user?.name || 'زيريف التاجر', key)
+          bu.registered        = true
+          if (!bu.regTime || bu.regTime <= 0) bu.regTime = Date.now()
+          bu.name              = bu.name || 'زيريف ⚜️ التاجر'
+          bu.age               = bu.age || 999
+          bu.gender            = bu.gender || 'بوت'
+          bu.bio               = bu.bio || '🤖 التاجر الرسمي للبوت — موارد لا نهائية'
+          bu.premium           = true
+          bu.premiumTime       = Date.now() + (50 * 365 * 24 * 60 * 60 * 1000)
+          bu.infiniteResources = true
+          bu.money             = Math.max(bu.money || 0, 1_000_000_000)
+          bu.bank              = Math.max(bu.bank  || 0, 1_000_000_000)
+          bu.diamond           = Math.max(bu.diamond || 0, 1_000_000)
+          bu.energy            = 100
+          bu.level             = Math.max(bu.level || 0, 999)
+          bu.exp               = Math.max(bu.exp   || 0, 999_999)
+          bu.role              = '🤖 التاجر الرسمي'
+        }
+        console.log(chalk.cyan(`[BOT-REG] تم تسجيل البوت تحت ${botKeys.size} صيغة JID`))
+
+        // ── تسجيل كل المالكين كمستخدمين دائمين بحالة "مطور مسجّل" ──
+        let ownerCount = 0
+        for (const entry of (global.owner || [])) {
+          const ownerNum = String(Array.isArray(entry) ? entry[0] : entry).replace(/\D/g, '')
+          const ownerName = (Array.isArray(entry) && entry[1]) ? entry[1] : 'المطور'
+          if (!ownerNum) continue
+          const ownerKeys = new Set([`${ownerNum}@s.whatsapp.net`])
+          // أضف صيغة @lid إن كانت مُكتشفة
+          for (const [lid, phone] of Object.entries(global.lidPhoneMap || {})) {
+            if (phone === `${ownerNum}@s.whatsapp.net`) ownerKeys.add(lid)
+          }
+          for (const key of ownerKeys) {
+            users[key] ??= {}
+            const ou = users[key]
+            initUser(ou, ownerName, key)
+            ou.registered        = true
+            if (!ou.regTime || ou.regTime <= 0) ou.regTime = Date.now()
+            ou.name              = ou.name || ownerName
+            ou.bio               = ou.bio || '👑 المطور الرسمي للبوت'
+            ou.premium           = true
+            ou.premiumTime       = Date.now() + (50 * 365 * 24 * 60 * 60 * 1000)
+            ou.infiniteResources = true
+            ou.role              = '👑 مطور'
+          }
+          ownerCount++
+        }
+        if (ownerCount) console.log(chalk.cyan(`[OWNER-REG] تم تسجيل ${ownerCount} مالك تلقائياً`))
+
         await global.db.write().catch(() => {})
-        console.log(chalk.cyan(`[BOT-REG] تم تسجيل البوت كتاجر: ${botJid}`))
       }
     } catch (e) { console.error('[BOT-REG]', e?.message) }
 
