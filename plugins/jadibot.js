@@ -13,8 +13,9 @@
 import {
   createSubBot, destroySubBot, listSubBots, setSubBotFeatures, getSubBotFeatures
 } from '../lib/jadibot.js'
+import { progressTracker, notifySubBotEvent } from '../lib/notify.js'
 
-let handler = async (m, { args, command, usedPrefix }) => {
+let handler = async (m, { conn, args, command, usedPrefix }) => {
   const cmd = command.toLowerCase()
 
   // ── إنشاء بوت فرعي ──
@@ -22,45 +23,77 @@ let handler = async (m, { args, command, usedPrefix }) => {
     const num = (args[0] || '').replace(/\D/g, '')
     if (!num || num.length < 8) {
       return m.reply(
-`📌 *إنشاء بوت فرعي*
-
-الاستخدام:
-*${usedPrefix}بوت_فرعي 9677xxxxxxxx*
-
-سيُولَّد كود إقران تستخدمه في:
-WhatsApp ← الأجهزة المرتبطة ← ربط جهاز ← ربط برقم الهاتف`)
+`╭───『 📌 إنشاء بوت فرعي 』
+│
+│ *الاستخدام:*
+│ ${usedPrefix}بوت_فرعي 9677xxxxxxxx
+│
+│ *الخطوات بعد الأمر:*
+│ ① سيتمّ تجهيز الجلسة وحفظها في السحاب.
+│ ② سيُولَّد كود إقران من 8 رموز.
+│ ③ تدخل الكود في:
+│     WhatsApp ← الأجهزة المرتبطة
+│     ← ربط جهاز ← ربط برقم الهاتف
+│ ④ سيُعلَن الاتصال تلقائياً للمطور.
+│
+│ 💡 *المزايا الافتراضية:* islamic, main, profile
+│ يمكن تعديلها لاحقاً عبر:
+│ ${usedPrefix}مزايا_البوت <رقم> tag1,tag2,...
+╰────────`)
     }
 
-    await m.reply(`⏳ جارٍ إنشاء بوت فرعي للرقم: +${num}...`)
+    const tracker = await progressTracker(conn, m, [
+      'تحضير المجلد والجلسة',
+      'الاتصال بخوادم واتساب',
+      'توليد كود الإقران',
+      'بانتظار إدخال الكود'
+    ])
 
     try {
+      await tracker.start('تحضير المجلد والجلسة', `📞 الرقم: +${num}`)
+
+      // اعطِ المتعقِّب فرصة للظهور قبل بدء العملية الثقيلة
+      await new Promise(r => setTimeout(r, 200))
+      await tracker.start('الاتصال بخوادم واتساب', `📞 الرقم: +${num}`)
+
       const result = await createSubBot(num, m.sender)
-      if (!result.ok) return m.reply(`❌ فشل: ${result.error}`)
-      if (result.status === 'reconnected') {
-        return m.reply(
-`✅ *تم استعادة البوت الفرعي*
 
-📞 الرقم: +${num}
-🔌 الحالة: متصل (لا حاجة لكود)
-🧩 المزايا: ${getSubBotFeatures(num).join(', ')}`)
+      if (!result.ok) {
+        await tracker.error('توليد كود الإقران', `❌ ${result.error}`)
+        return
       }
-      return m.reply(
-`✅ *تم إنشاء البوت الفرعي*
 
-📞 الرقم: +${num}
-🔐 *كود الإقران: ${result.code}*
+      if (result.status === 'reconnected') {
+        await tracker.done(
+`✅ *تم استعادة البوت الفرعي مباشرة*
 
-📋 طريقة الربط:
-1. افتح WhatsApp على الرقم +${num}
-2. الإعدادات ← الأجهزة المرتبطة
-3. ربط جهاز ← ربط برقم الهاتف
-4. أدخل الكود أعلاه
+📞 *الرقم:* +${num}
+🔌 *الحالة:* متصل (لا حاجة لكود)
+🧩 *المزايا:* ${getSubBotFeatures(num).join(' • ') || '—'}`)
+        return
+      }
 
-🧩 المزايا الافتراضية: ${getSubBotFeatures(num).join(', ')}
-📌 لتعديل المزايا: *${usedPrefix}مزايا_البوت ${num} game,islamic,media*`)
+      await tracker.finish('توليد كود الإقران')
+      await tracker.start('بانتظار إدخال الكود',
+`🔐 *كود الإقران:* ${result.code}
+
+📋 *طريقة الربط:*
+1️⃣ افتح WhatsApp على الرقم +${num}
+2️⃣ الإعدادات ← الأجهزة المرتبطة
+3️⃣ ربط جهاز ← ربط برقم الهاتف
+4️⃣ أدخل الكود أعلاه
+
+🧩 *المزايا الافتراضية:* ${getSubBotFeatures(num).join(' • ')}
+✏️ *لتعديل المزايا:* ${usedPrefix}مزايا_البوت ${num} game,islamic,media
+
+⏰ *مدة صلاحية الكود:* ~60 ثانية. سيُعلَن لك تلقائياً عند نجاح الاتصال.`)
+
+      // أبلغ المالك (دون انتظار)
+      notifySubBotEvent(num, 'paired', { features: getSubBotFeatures(num) }).catch(() => {})
     } catch (e) {
-      return m.reply(`❌ خطأ: ${e?.message || e}`)
+      await tracker.error('توليد كود الإقران', `❌ خطأ: ${e?.message || e}`)
     }
+    return
   }
 
   // ── إزالة بوت فرعي ──

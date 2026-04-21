@@ -1723,6 +1723,22 @@ export async function participantsUpdate({ id, participants, action }) {
     let chat = global.db.data.chats[id] || {}
     let botTt = global.db.data.settings[conn.user.jid] || {}
     let text = ''
+
+    // 🛎️ إشعار المطور عند تغيّر حال البوت ذاته في المجموعة
+    try {
+        const myIds = new Set(
+            [this.user?.jid, this.user?.id, this.user?.lid]
+                .filter(Boolean)
+                .map(j => this.decodeJid(j))
+                .map(j => j.split('@')[0].split(':')[0])
+        )
+        const involvesMe = participants.some(p => myIds.has(p.split('@')[0].split(':')[0]))
+        if (involvesMe) {
+            const { notifyGroupEvent } = await import('./lib/notify.js')
+            const map = { add: 'joined', remove: 'left', promote: 'promoted', demote: 'demoted' }
+            if (map[action]) notifyGroupEvent(this, id, map[action]).catch(() => {})
+        }
+    } catch (_) {}
     switch (action) {
         case 'add':
         case 'remove':
