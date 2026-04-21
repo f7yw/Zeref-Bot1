@@ -210,8 +210,54 @@ for (const file of readdirSync(join(__dirname, 'plugins')).filter(f => f.endsWit
   })
 }
 
-// ====== AUTH ======
+// ====== SESSION INTEGRITY CHECK (يفحص سلامة الجلسة عند بدء التشغيل) ======
 global.authFile = `Zeref`;
+
+async function checkAndRepairSession(authDir) {
+  const { existsSync: _ex, rmSync: _rm, readdirSync: _rd, statSync: _st } = await import('fs')
+  if (!_ex(authDir)) return
+
+  try {
+    const files = _rd(authDir)
+
+    if (files.length === 0) {
+      console.log(chalk.yellow('[SESSION] مجلد الجلسة فارغ — سيتم حذفه لإعادة الربط.'))
+      _rm(authDir, { recursive: true, force: true })
+      return
+    }
+
+    const credsFile = `${authDir}/creds.json`
+    if (!_ex(credsFile)) {
+      console.log(chalk.yellow('[SESSION] ملف creds.json مفقود — جلسة ناقصة، سيتم حذفها.'))
+      _rm(authDir, { recursive: true, force: true })
+      return
+    }
+
+    const credsRaw = (await import('fs')).readFileSync(credsFile, 'utf8')
+    JSON.parse(credsRaw)
+
+    const stat = _st(credsFile)
+    if (stat.size < 10) {
+      console.log(chalk.yellow('[SESSION] ملف creds.json تالف (حجم صغير جداً) — سيتم حذفه.'))
+      _rm(authDir, { recursive: true, force: true })
+      return
+    }
+
+    console.log(chalk.green('[SESSION] ✅ الجلسة سليمة، جارٍ الاتصال...'))
+  } catch (err) {
+    console.log(chalk.red('[SESSION] ⚠️ الجلسة تالفة — سيتم حذفها تلقائياً وإعادة الربط.'))
+    console.log(chalk.gray(`  ➤ السبب: ${err.message}`))
+    try {
+      rmSync(authDir, { recursive: true, force: true })
+      console.log(chalk.yellow('[SESSION] تم حذف الجلسة التالفة بنجاح.'))
+    } catch (e2) {
+      console.log(chalk.red('[SESSION] فشل حذف الجلسة:'), e2.message)
+    }
+  }
+}
+
+await checkAndRepairSession(global.authFile)
+
 const { state, saveCreds } = await useMultiFileAuthState(global.authFile);
 
 // ====== CONNECTION OPTIONS ======
