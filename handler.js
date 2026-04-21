@@ -10,13 +10,27 @@ import { getRole, logTransaction, MAX_ENERGY } from './lib/economy.js'
 import { handleConfirmReply } from './lib/confirm.js'
 
 
-const botJidsOf = conn => [
-    conn?.user?.jid,
-    conn?.user?.id,
-    conn?.user?.lid,
-    conn?.decodeJid?.(conn?.user?.jid || ''),
-    conn?.decodeJid?.(conn?.user?.id || '')
-].filter(Boolean)
+const botJidsOf = conn => {
+    const ids = [
+        conn?.user?.jid,
+        conn?.user?.id,
+        conn?.user?.lid,
+        conn?.decodeJid?.(conn?.user?.jid || ''),
+        conn?.decodeJid?.(conn?.user?.id || ''),
+        conn?.decodeJid?.(conn?.user?.lid || '')
+    ].filter(Boolean)
+    // For sub-bots, the registered phone is the source of truth
+    if (conn?.__subBotPhone) {
+        ids.push(`${conn.__subBotPhone}@s.whatsapp.net`)
+    }
+    // Add bare-number JID derived from the bot's own user id, so groups in
+    // LID mode still recognise the bot when matched by phone number.
+    for (const id of [...ids]) {
+        const num = String(id).split('@')[0].split(':')[0].replace(/\D/g, '')
+        if (num) ids.push(`${num}@s.whatsapp.net`)
+    }
+    return Array.from(new Set(ids))
+}
 
 /**
  * مقارنة JID بشكل مرن — يتجاهل لاحقة الجهاز ونوع الشبكة
@@ -1116,9 +1130,28 @@ try {
             ? global.lidPhoneMap[m.sender]
             : m.sender
 
-        const user = (m.isGroup ? participants.find(u => sameJid(u, m.sender)) : {}) || {}
+        // ── ID extractor: participants are {id, admin, lid?, phoneNumber?} objects ──
+        const pid = u => (typeof u === 'string' ? u : (u?.id || u?.jid || u?.lid || ''))
+        const digits = s => String(s || '').replace(/[^0-9]/g, '')
+        const matchParticipant = (u, target) => {
+            if (!u || !target) return false
+            const ids = [u.id, u.jid, u.lid, u.phoneNumber].filter(Boolean)
+            // direct loose match on any participant identifier
+            if (ids.some(id => sameJid(id, target))) return true
+            // also resolve through global LID↔phone map (both directions)
+            const map = global.lidPhoneMap || {}
+            for (const id of ids) {
+                const mapped = map[id] || map[id + '@lid']
+                if (mapped && sameJid(mapped, target)) return true
+            }
+            // last resort: compare raw digits (handles LID vs phone mismatch)
+            const tDigits = digits(target)
+            if (tDigits && ids.some(id => digits(id) === tDigits)) return true
+            return false
+        }
+        const user = (m.isGroup ? participants.find(u => matchParticipant(u, m.sender) || matchParticipant(u, resolvedSender)) : {}) || {}
         const botJids = botJidsOf(this)
-        const bot = (m.isGroup ? participants.find(u => botJids.some(j => sameJid(u, j))) : {}) || {}
+        const bot = (m.isGroup ? participants.find(u => botJids.some(j => matchParticipant(u, j))) : {}) || {}
         const ownerJids = [
             ...(global.owner || []).map(([number]) => `${String(number).replace(/[^0-9]/g, '')}@s.whatsapp.net`),
             ...(global.suittag || []).map(number => `${String(number).replace(/[^0-9]/g, '')}@s.whatsapp.net`),
