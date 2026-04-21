@@ -139,6 +139,14 @@ function parseInteractiveResponse(m) {
         }
     }
 
+    // سجّل كل أنواع الرسائل الواردة للتشخيص (تُزال عند الإنتاج)
+    const allTypes = Object.keys(msg).filter(k => !['messageContextInfo','deviceListMetadataVersion'].includes(k))
+    if (allTypes.length && !selectedId) {
+        // رسالة غير تفاعلية — تجاهل بصمت
+    } else if (allTypes.length) {
+        console.log('[INTERACTIVE]', kind.toUpperCase(), '→ selectedId:', selectedId, '| types:', allTypes.join(','))
+    }
+
     if (!selectedId) return
 
     m.selectedId          = selectedId
@@ -151,6 +159,7 @@ function parseInteractiveResponse(m) {
     const commandText = looksLikeCommand
         ? selectedId
         : ('.' + String(selectedId).replace(/^[./\s]+/, ''))
+    console.log('[INTERACTIVE] → routing as command:', commandText)
     m.text = commandText
 }
 
