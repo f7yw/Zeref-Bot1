@@ -327,7 +327,7 @@
       "lastmonthly": 0,
       "lastnambang": 0,
       "makanannaga": 0,
-      "premiumTime": 3353643873852,
+      "premiumTime": 3353699939742,
       "seedbrokoli": 0,
       "seedkentang": 0,
       "totalEarned": 0,
@@ -408,7 +408,7 @@
       "kerjaempatbelas": 0,
       "kerjatujuhbelas": 0,
       "kucinglastclaim": 0,
-      "lastEnergyRegen": 1776843873852,
+      "lastEnergyRegen": 1776899939742,
       "lastmancingeasy": 0,
       "lastmancinghard": 0,
       "lastpotionclaim": 0,
@@ -803,7 +803,7 @@
       "lastnambang": 0,
       "makanannaga": 0,
       "premiumDate": -1,
-      "premiumTime": 3353643898357,
+      "premiumTime": 3353699969472,
       "seedbrokoli": 0,
       "seedkentang": 0,
       "totalEarned": 0,
@@ -1061,7 +1061,7 @@
       "kerjatujuhbelas": 0,
       "kucinglastclaim": 0,
       "lastCommandTime": 1776761763373,
-      "lastEnergyRegen": 1776843873852,
+      "lastEnergyRegen": 1776899939742,
       "lastmancingeasy": 0,
       "lastmancinghard": 0,
       "lastpotionclaim": 0,
@@ -1139,7 +1139,7 @@
       "premium": true,
       "regTime": 1776796237964,
       "registered": true,
-      "premiumTime": 3353643898357,
+      "premiumTime": 3353699969472,
       "infiniteResources": true
     },
     "158884446605486@s.whatsapp.net": {
@@ -1252,7 +1252,7 @@
       "premium": true,
       "regTime": 1776843898357,
       "registered": true,
-      "premiumTime": 3353643898357,
+      "premiumTime": 3353699969472,
       "infiniteResources": true
     }
   },
@@ -1266,6 +1266,7 @@
       "detect": true,
       "detect2": false,
       "expired": 0,
+      "goodbye": true,
       "sDemote": "",
       "welcome": true,
       "antiArab": false,
@@ -1281,11 +1282,14 @@
       "modoadmin": false,
       "modohorny": true,
       "autosticker": false,
+      "goodbyeText": "╭───『 👋 *وداعاً* 』\n│\n│ غادر/طُرد العضو {user}\n│ 🪪 {name}\n│ 👥 *العدد المتبقي:* {count}\n│\n╰────────",
+      "welcomeText": "╭───『 🎉 *أهلاً بك في {group}* 』\n│\n│ 👤 *العضو:* {user}\n│ 🪪 *الاسم:* {name}\n│ 📱 *الرقم:* +{number}\n│ #️⃣ *رقم العضوية:* {count}\n│\n│ 📜 {desc}\n│\n│ 🤖 لاستخدام البوت أرسل: *.اوامر*\n╰────────",
       "antiviewonce": false,
       "messageStats": {
-        "28648019066900@lid": 31,
+        "28648019066900@lid": 59,
         "137465276969165@lid": 3,
         "158884446605486@lid": 6,
+        "178903020732625@lid": 18,
         "967782114485@s.whatsapp.net": 11
       }
     },
@@ -1309,12 +1313,13 @@
       "antiToxic": false,
       "antiTraba": false,
       "antiporno": false,
+      "autoReply": false,
       "modoadmin": false,
       "modohorny": true,
       "autosticker": false,
       "antiviewonce": false,
       "messageStats": {
-        "28648019066900@lid": 5
+        "28648019066900@lid": 37
       }
     },
     "120363426033819775@g.us": {
@@ -1349,6 +1354,7 @@
       "sBye": "",
       "simi": false,
       "audios": true,
+      "botOff": false,
       "delete": true,
       "detect": true,
       "detect2": false,
@@ -1374,10 +1380,11 @@
       "welcomeText": "╭───『 🎉 *أهلاً بك في {group}* 』\n│\n│ 👤 *العضو:* {user}\n│ 🪪 *الاسم:* {name}\n│ 📱 *الرقم:* +{number}\n│ #️⃣ *رقم العضوية:* {count}\n│\n│ 📜 {desc}\n│\n│ 🤖 لاستخدام البوت أرسل: *.اوامر*\n╰────────",
       "antiviewonce": false,
       "messageStats": {
-        "28648019066900@lid": 516,
+        "2371459502159@lid": 54,
+        "28648019066900@lid": 721,
         "137465276969165@lid": 10,
         "158884446605486@lid": 3,
-        "204990769553546@lid": 165,
+        "204990769553546@lid": 294,
         "967782114485@s.whatsapp.net": 42
       }
     },
@@ -1440,28 +1447,28 @@
       "lastSuccess": 1776735352024
     },
     "ai.js": {
-      "last": 1776729724421,
-      "total": 2,
-      "success": 2,
-      "lastSuccess": 1776729724421
+      "last": 1776887297696,
+      "total": 5,
+      "success": 4,
+      "lastSuccess": 1776852863023
     },
     "hd.js": {
-      "last": 1776834705334,
-      "total": 13,
-      "success": 12,
-      "lastSuccess": 1776834705334
+      "last": 1776851295084,
+      "total": 14,
+      "success": 13,
+      "lastSuccess": 1776851295084
     },
     "tr.js": {
-      "last": 1776762355121,
-      "total": 2,
-      "success": 2,
-      "lastSuccess": 1776762355121
+      "last": 1776853126867,
+      "total": 6,
+      "success": 6,
+      "lastSuccess": 1776853126867
     },
     "afk.js": {
-      "last": 1776828853560,
-      "total": 3,
-      "success": 3,
-      "lastSuccess": 1776828853560
+      "last": 1776899410950,
+      "total": 5,
+      "success": 5,
+      "lastSuccess": 1776899410950
     },
     "mp3.js": {
       "last": 1776838645440,
@@ -1470,10 +1477,10 @@
       "lastSuccess": 1776838645440
     },
     "menu.js": {
-      "last": 1776841840541,
-      "total": 152,
-      "success": 152,
-      "lastSuccess": 1776841840541
+      "last": 1776899491797,
+      "total": 176,
+      "success": 176,
+      "lastSuccess": 1776899491797
     },
     "anime.js": {
       "last": 1776762332593,
@@ -1482,10 +1489,10 @@
       "lastSuccess": 1776762332593
     },
     "study.js": {
-      "last": 1776761622672,
-      "total": 36,
-      "success": 35,
-      "lastSuccess": 1776761622125
+      "last": 1776853598676,
+      "total": 38,
+      "success": 37,
+      "lastSuccess": 1776853598676
     },
     "اكس.js": {
       "last": 1776735452626,
@@ -1500,10 +1507,10 @@
       "lastSuccess": 1776828838268
     },
     "شغل.js": {
-      "last": 1776843998599,
-      "total": 6,
-      "success": 6,
-      "lastSuccess": 1776843998599
+      "last": 1776849572049,
+      "total": 7,
+      "success": 7,
+      "lastSuccess": 1776849572049
     },
     "علم.js": {
       "last": 1776734809302,
@@ -1554,10 +1561,10 @@
       "lastSuccess": 1776795549826
     },
     "حقوق.js": {
-      "last": 1776834637792,
-      "total": 2,
-      "success": 2,
-      "lastSuccess": 1776834637792
+      "last": 1776852506892,
+      "total": 3,
+      "success": 3,
+      "lastSuccess": 1776852506892
     },
     "سوال.js": {
       "last": 1776734964554,
@@ -1584,16 +1591,16 @@
       "lastSuccess": 1776835635135
     },
     "bot-status.js": {
-      "last": 1776735115889,
-      "total": 3,
-      "success": 3,
-      "lastSuccess": 1776735115889
+      "last": 1776884971556,
+      "total": 6,
+      "success": 6,
+      "lastSuccess": 1776884971556
     },
     "owner-join.js": {
-      "last": 1776836111000,
-      "total": 10,
-      "success": 2,
-      "lastSuccess": 1776836111000
+      "last": 1776849469254,
+      "total": 11,
+      "success": 3,
+      "lastSuccess": 1776849469254
     },
     "اغنيه.js": {
       "last": 1776802139365,
@@ -1606,6 +1613,12 @@
       "total": 2,
       "success": 2,
       "lastSuccess": 1776733877131
+    },
+    "انطقي.js": {
+      "last": 1776883842393,
+      "total": 6,
+      "success": 6,
+      "lastSuccess": 1776883842393
     },
     "تحذير.js": {
       "last": 1776796753555,
@@ -1625,6 +1638,18 @@
       "success": 10,
       "lastSuccess": 1776786093287
     },
+    "شطرنج.js": {
+      "last": 1776851307295,
+      "total": 2,
+      "success": 2,
+      "lastSuccess": 1776851307295
+    },
+    "صحولا.js": {
+      "last": 1776884982398,
+      "total": 2,
+      "success": 0,
+      "lastSuccess": 0
+    },
     "فزوره.js": {
       "last": 1776762542219,
       "total": 2,
@@ -1638,10 +1663,10 @@
       "lastSuccess": 1776828408915
     },
     "bot-control.js": {
-      "last": 1776836923126,
-      "total": 27,
-      "success": 21,
-      "lastSuccess": 1776836923126
+      "last": 1776899564565,
+      "total": 31,
+      "success": 25,
+      "lastSuccess": 1776899564565
     },
     "group-admin.js": {
       "last": 1776839916993,
@@ -1654,6 +1679,12 @@
       "total": 2,
       "success": 2,
       "lastSuccess": 1776795614505
+    },
+    "leave-group.js": {
+      "last": 1776849395022,
+      "total": 2,
+      "success": 2,
+      "lastSuccess": 1776849395022
     },
     "owner-panel.js": {
       "last": 1776839616949,
@@ -1674,16 +1705,16 @@
       "lastSuccess": 1776830161270
     },
     "owner-setlid.js": {
-      "last": 1776838734736,
-      "total": 11,
-      "success": 11,
-      "lastSuccess": 1776838734736
+      "last": 1776899320813,
+      "total": 12,
+      "success": 12,
+      "lastSuccess": 1776899320813
     },
     "بنترست.js": {
-      "last": 1776783347081,
-      "total": 4,
-      "success": 4,
-      "lastSuccess": 1776783347081
+      "last": 1776851974228,
+      "total": 5,
+      "success": 5,
+      "lastSuccess": 1776851974228
     },
     "group-request.js": {
       "last": 1776734777143,
@@ -1698,10 +1729,10 @@
       "lastSuccess": 1776827276152
     },
     "advanced-stats.js": {
-      "last": 1776828192141,
-      "total": 4,
-      "success": 2,
-      "lastSuccess": 1776828192141
+      "last": 1776899341241,
+      "total": 5,
+      "success": 3,
+      "lastSuccess": 1776899341241
     },
     "owner-listprem.js": {
       "last": 1776785824624,
@@ -1728,10 +1759,10 @@
       "lastSuccess": 1776835378685
     },
     "student-mediator.js": {
-      "last": 1776838874226,
-      "total": 4,
-      "success": 4,
-      "lastSuccess": 1776838874226
+      "last": 1776849529985,
+      "total": 5,
+      "success": 5,
+      "lastSuccess": 1776849529985
     },
     "test-interactive.js": {
       "last": 1776784447576,
@@ -1752,22 +1783,22 @@
       "lastSuccess": 1776839551521
     },
     "owner-reset-session.js": {
-      "last": 1776794390017,
-      "total": 3,
-      "success": 3,
-      "lastSuccess": 1776794390017
-    },
-    "العاب-سريعة.js": {
-      "last": 1776799700607,
+      "last": 1776899605988,
       "total": 5,
       "success": 5,
-      "lastSuccess": 1776799700607
+      "lastSuccess": 1776899605988
+    },
+    "العاب-سريعة.js": {
+      "last": 1776899448198,
+      "total": 7,
+      "success": 7,
+      "lastSuccess": 1776899448198
     },
     "ترحيب_القروب.js": {
-      "last": 1776829140069,
-      "total": 3,
-      "success": 3,
-      "lastSuccess": 1776829140069
+      "last": 1776881687032,
+      "total": 5,
+      "success": 5,
+      "lastSuccess": 1776881687032
     }
   },
   "msgs": {},
@@ -1828,14 +1859,104 @@
     "enabled": true
   },
   "gameState": {
-    "chess": {},
+    "chess": {
+      "chess-1776851306544": {
+        "id": "chess-1776851306544",
+        "chat": "120363427285079878@g.us",
+        "turn": "w",
+        "black": null,
+        "board": [
+          [
+            "r",
+            "n",
+            "b",
+            "q",
+            "k",
+            "b",
+            "n",
+            "r"
+          ],
+          [
+            "p",
+            "p",
+            "p",
+            "p",
+            "p",
+            "p",
+            "p",
+            "p"
+          ],
+          [
+            ".",
+            ".",
+            ".",
+            ".",
+            ".",
+            ".",
+            ".",
+            "."
+          ],
+          [
+            ".",
+            ".",
+            ".",
+            ".",
+            ".",
+            ".",
+            ".",
+            "."
+          ],
+          [
+            ".",
+            ".",
+            ".",
+            ".",
+            ".",
+            ".",
+            ".",
+            "."
+          ],
+          [
+            ".",
+            ".",
+            ".",
+            ".",
+            ".",
+            ".",
+            ".",
+            "."
+          ],
+          [
+            "P",
+            "P",
+            "P",
+            "P",
+            "P",
+            "P",
+            "P",
+            "P"
+          ],
+          [
+            "R",
+            "N",
+            "B",
+            "Q",
+            "K",
+            "B",
+            "N",
+            "R"
+          ]
+        ],
+        "white": "28648019066900@lid"
+      }
+    },
     "games3": {},
     "connect4": {},
     "tictactoe": {}
   },
   "botSettings": {
     "rejectCalls": true,
-    "alwaysOnline": false,
+    "alwaysOnline": true,
     "privateWelcome": {
       "text": "👋 *مرحباً {name}*\n\nأنا *{bot}* — بوتٌ آلي، لستُ إنساناً 🤖\nهذه قناة آلية مخصّصة للأوامر فقط. لن يردّ عليك شخص هنا.\n\n🧭 *للاستخدام:*\n• أرسل  *.اوامر*  أو  *.menu*  لعرض القائمة الكاملة.\n• الأوامر تبدأ بنقطة، مثل:  *.تسجيل*  ،  *.قران*  ،  *.شطرنج*\n\n⚠️ إن تواصلت معي بدون داعٍ قد تُحظر تلقائياً.\nشكراً لتفهّمك 🌿",
       "enabled": true,
