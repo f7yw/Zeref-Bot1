@@ -1795,9 +1795,9 @@
   },
   "gameState": {
     "chess": {},
-    "games3": {},
+    "tictactoe": {},
     "connect4": {},
-    "tictactoe": {}
+    "games3": {}
   },
   "botSettings": {
     "rejectCalls": true,
