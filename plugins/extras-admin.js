@@ -20,7 +20,9 @@ let handler = async (m, { conn, command, text, isAdmin, isOwner, isBotAdmin, par
     const isSilent = /صامت|الأقل|الاقل|silent|inactive/i.test(c)
     const limit = Math.min(50, Math.max(3, parseInt(String(text||'').replace(/[^\d]/g,'')) || 10))
     const users = global.db.data.users || {}
-    const memberJids = (participants || []).map(p => p.id || p.jid).filter(Boolean)
+    const memberJids = (participants || [])
+      .map(p => p?.id || p?.jid || p?.lid)
+      .filter(j => typeof j === 'string' && j.includes('@'))
     const stats = []
     for (const jid of memberJids) {
       const u = users[jid]
@@ -32,7 +34,7 @@ let handler = async (m, { conn, command, text, isAdmin, isOwner, isBotAdmin, par
     const title = isSilent ? '🔕 *الأعضاء الأقل نشاطاً*' : '🔥 *الأعضاء الأكثر نشاطاً*'
     let body = `${title}\n${'─'.repeat(28)}\n\n`
     top.forEach((u, i) => {
-      const num = u.jid.split('@')[0]
+      const num = String(u.jid || '').split('@')[0] || '—'
       body += `${String(i+1).padStart(2,' ')}. @${num}  —  *${u.msgs}* رسالة\n`
     })
     body += `\n📊 المعروض: *${top.length}* من *${stats.length}* عضو`
