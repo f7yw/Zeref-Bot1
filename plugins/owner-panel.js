@@ -81,7 +81,7 @@ let handler = async (m, { conn, command, args, text }) => {
 │ 🏦 البنك: ${numStr(u.bank)} 🪙
 │ 💎 الماس: ${u.diamond || 0}
 │ ⚡ الطاقة: ${u.energy ?? MAX_ENERGY}/${MAX_ENERGY}
-│ 📊 الرسائل: ${u.messageCount || 0}
+│ 📊 الرسائل: ${u.messages?.total || u.messageCount || 0}
 │ 🚫 محظور: ${u.banned ? 'نعم ⛔' : 'لا ✅'}
 │ 📅 VIP حتى: ${fmtDate(u.premiumTime)}
 │ ⏳ المتبقي: ${fmtRemaining(u.premiumTime)}

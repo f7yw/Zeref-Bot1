@@ -19,25 +19,47 @@ let handler = async (m, { conn, command, text, isAdmin, isOwner, isBotAdmin, par
       /^(قائمه_الصامتين|قائمة_الصامتين|صامتين|الأقل_نشاطاً|الاقل_نشاطا|silent|inactive)$/i.test(c)) {
     const isSilent = /صامت|الأقل|الاقل|silent|inactive/i.test(c)
     const limit = Math.min(50, Math.max(3, parseInt(String(text||'').replace(/[^\d]/g,'')) || 10))
-    const users = global.db.data.users || {}
+
+    // البيانات من السحاب (Supabase) — قراءة من نفس global.db المتزامن مع السحاب
+    const users        = global.db.data.users || {}
+    const messageStats = (global.db.data.chats?.[m.chat]?.messageStats) || {}
+
     const memberJids = (participants || [])
       .map(p => p?.id || p?.jid || p?.lid)
       .filter(j => typeof j === 'string' && j.includes('@'))
-    const stats = []
-    for (const jid of memberJids) {
-      const u = users[jid]
-      const msgCount = u?.messageCount ?? u?.messages ?? 0
-      stats.push({ jid, msgs: Number(msgCount) || 0 })
+
+    // دالة لاستخراج عدد الرسائل الصحيح من البنية الكائنية
+    const getMsgCount = (jid) => {
+      const u = users[jid] || {}
+      // الأولوية: عدّاد القروب نفسه (أدق) ثم عدّاد المستخدم في هذا القروب ثم الإجمالي
+      const perChatStat   = Number(messageStats[jid]) || 0
+      const perUserGroup  = Number(u.messages?.groups?.[m.chat]) || 0
+      const totalMessages = Number(u.messages?.total) || 0
+      const legacyCount   = Number(u.messageCount) || 0
+      return perChatStat || perUserGroup || totalMessages || legacyCount || 0
     }
-    stats.sort((a,b) => isSilent ? a.msgs - b.msgs : b.msgs - a.msgs)
+
+    const stats = memberJids.map(jid => ({
+      jid,
+      msgs: getMsgCount(jid),
+      last: Number(users[jid]?.messages?.last) || 0
+    }))
+
+    stats.sort((a, b) => isSilent ? (a.msgs - b.msgs) : (b.msgs - a.msgs))
     const top = stats.slice(0, limit)
+
     const title = isSilent ? '🔕 *الأعضاء الأقل نشاطاً*' : '🔥 *الأعضاء الأكثر نشاطاً*'
+    const totalMsgsAll = stats.reduce((a, s) => a + s.msgs, 0)
     let body = `${title}\n${'─'.repeat(28)}\n\n`
     top.forEach((u, i) => {
-      const num = String(u.jid || '').split('@')[0] || '—'
-      body += `${String(i+1).padStart(2,' ')}. @${num}  —  *${u.msgs}* رسالة\n`
+      const num   = String(u.jid || '').split('@')[0] || '—'
+      const when  = u.last ? new Date(u.last).toLocaleDateString('ar-EG') : '—'
+      body += `${String(i+1).padStart(2,' ')}. @${num}  —  *${u.msgs}* رسالة  ·  🕒 ${when}\n`
     })
     body += `\n📊 المعروض: *${top.length}* من *${stats.length}* عضو`
+    body += `\n💬 إجمالي رسائل القروب المسجّلة: *${totalMsgsAll}*`
+    body += `\n☁️ مصدر البيانات: قاعدة السحاب (Supabase)`
+
     return conn.sendMessage(m.chat, { text: body, mentions: top.map(u => u.jid) }, { quoted: m })
   }
 
