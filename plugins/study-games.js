@@ -33,8 +33,9 @@ let handler = async (m, { conn, command }) => {
   const vipStatus = global.tierBadge ? global.tierBadge(m.sender) : (isVip(m.sender) ? '💎 مميز' : '👤 عادي')
   conn.studyGames = conn.studyGames || {}
 
-  // ── كلمة / رتب ─────────────────────────────────────────────────────────────
-  if (/^(كلمة|رتب)$/i.test(command)) {
+  // ── كلمة (نسخة فردية للدراسة) ──────────────────────────────────────────────
+  // ملاحظة: الأمر "رتب" نُقل إلى plugins/word-race.js كلعبة جماعية تنافسية بمستويات
+  if (/^(كلمة)$/i.test(command)) {
     const answer = words[Math.floor(Math.random() * words.length)]
     const sent = await m.reply(`رتب الكلمة:\n*${shuffle(answer)}*\n\n💡 *ردّ على هذه الرسالة بالكلمة المرتبة*\n👤 العضوية: ${vipStatus}`)
     conn.studyGames[m.chat] = { type: 'word', answer, msg: sent }
@@ -111,5 +112,5 @@ handler.all = async function (m) {
 
 handler.help    = ['كلمة', 'سرعة', 'ذاكرة', 'حل']
 handler.tags    = ['game', 'study']
-handler.command = /^(كلمة|رتب|سرعة|حساب_سريع|ذاكرة|حل)$/i
+handler.command = /^(كلمة|سرعة|حساب_سريع|ذاكرة|حل)$/i
 export default handler

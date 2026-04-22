@@ -1,3 +1,4 @@
+import './lib/silence-spam.js';   // يجب أن يكون أول استيراد لكتم سبام libsignal
 import './config.js';
 import './api.js';
 import { createRequire } from 'module';
