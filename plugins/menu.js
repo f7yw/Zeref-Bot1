@@ -30,7 +30,7 @@ const sections = {
     title: '👤 التسجيل والبروفايل',
     emoji: '👤',
     featureTag: 'profile',
-    audience: 'all',
+    audience: 'all', menu: 'main',
     commands: [
       'تسجيل          ← إنشاء حساب في البوت',
       'بروفايل         ← ملفك الشخصي الكامل',
@@ -47,7 +47,7 @@ const sections = {
     title: '🕌 الديني والثقافي',
     emoji: '🕌',
     featureTag: 'islamic',
-    audience: 'all',
+    audience: 'all', menu: 'main',
     commands: [
       'قران            ← آية قرآنية عشوائية',
       'آية الكرسي      ← آية الكرسي',
@@ -68,7 +68,7 @@ const sections = {
     title: '🎮 الألعاب والترفيه',
     emoji: '🎮',
     featureTag: 'game',
-    audience: 'all',
+    audience: 'all', menu: 'main',
     commands: [
       '─── ألعاب استراتيجية ───',
       'شطرنج          ← لعبة شطرنج',
@@ -108,7 +108,7 @@ const sections = {
     title: '💰 الاقتصاد والمتجر',
     emoji: '💰',
     featureTag: 'economy',
-    audience: 'all',
+    audience: 'all', menu: 'main',
     commands: [
       '─── الرصيد ───',
       'البنك           ← رصيدك الكامل',
@@ -135,7 +135,7 @@ const sections = {
     title: '🤖 الذكاء الاصطناعي والتعلم',
     emoji: '🤖',
     featureTag: 'ai',
-    audience: 'all',
+    audience: 'all', menu: 'main',
     commands: [
       '─── الذكاء الاصطناعي ───',
       'ai [سؤال]       ← نموذج AI عام',
@@ -158,7 +158,7 @@ const sections = {
     title: '🎧 الوسائط والأدوات',
     emoji: '🎧',
     featureTag: 'media',
-    audience: 'all',
+    audience: 'all', menu: 'main',
     commands: [
       '─── الصوت والفيديو ───',
       'شغل [اسم]       ← تشغيل أغنية من يوتيوب',
@@ -194,7 +194,7 @@ const sections = {
     title: '📋 الإنتاجية والأدوات',
     emoji: '📋',
     featureTag: 'main',
-    audience: 'all',
+    audience: 'all', menu: 'main',
     commands: [
       '─── المهام ───',
       'مهمة [نص]       ← إضافة مهمة',
@@ -233,8 +233,24 @@ const sections = {
     title: '👥 إدارة المجموعات',
     emoji: '👥',
     featureTag: 'group',
-    audience: 'admin',
-    commands: [
+    audience: 'admin', menu: 'group',
+    // الأوامر تُقسَّم حسب الصلاحية:
+    //   memberCommands → يراها العضو العادي والمشرف والمطور
+    //   adminCommands  → يراها المشرف والمطور فقط
+    memberCommands: [
+      '─── معلومات المجموعة ───',
+      'أعضاء           ← قائمة الأعضاء كاملة',
+      'المشرفين        ← قائمة المشرفين',
+      'احصائيات        ← تفاصيل المجموعة',
+      'عدد_الاعضاء     ← إحصاء الأعضاء',
+      'ارقام_الاعضاء  ← استخراج أرقام الكل',
+      'رابط            ← رابط دعوة المجموعة (للعرض)',
+      '',
+      '─── تفاعل عام ───',
+      'منشن_مشرفين    ← تنبيه المشرفين',
+      'تحذيرات         ← عرض سجل التحذيرات',
+    ],
+    adminCommands: [
       '─── الأعضاء ───',
       'طرد @           ← طرد عضو',
       'طرد_متعدد @... ← طرد عدة دفعة',
@@ -245,15 +261,7 @@ const sections = {
       'ترقية_متعددة @... ← ترقية عدة',
       'خفض_متعدد @... ← خفض عدة مشرفين',
       '',
-      '─── المعلومات ───',
-      'أعضاء           ← قائمة الأعضاء كاملة',
-      'المشرفين        ← قائمة المشرفين',
-      'احصائيات        ← تفاصيل المجموعة',
-      'عدد_الاعضاء     ← إحصاء الأعضاء',
-      'ارقام_الاعضاء  ← استخراج أرقام الكل',
-      '',
       '─── الرابط ───',
-      'رابط            ← رابط دعوة المجموعة',
       'تجديد_الرابط   ← رابط جديد (يلغي القديم)',
       '',
       '─── الإعدادات ───',
@@ -268,7 +276,6 @@ const sections = {
       '─── الرسائل ───',
       'منشن_مخفي [نص] ← منشن مخفي للكل',
       'منشن_ظاهر [نص] ← منشن مع الأسماء',
-      'منشن_مشرفين    ← تنبيه المشرفين',
       'رسالة_خاصة @ نص ← رسالة خاصة لعضو',
       'رسالة_جماعية نص ← بث لكل الأعضاء',
       'تثبيت           ← تثبيت رسالة (رُدّ عليها)',
@@ -283,7 +290,6 @@ const sections = {
       '─── الحماية ───',
       'الحماية [تشغيل/ايقاف] ← حماية المجموعة',
       'تحذير @        ← تحذير عضو',
-      'تحذيرات        ← سجل التحذيرات',
       'تنظيف          ← حذف رسائل البوت',
       '',
       'مغادرة_البوت   ← يغادر البوت القروب',
@@ -294,7 +300,7 @@ const sections = {
     title: '👑 أوامر المالك',
     emoji: '👑',
     featureTag: 'owner',
-    audience: 'owner',
+    audience: 'owner', menu: 'dev',
     commands: [
       'لوحة_التحكم    ← لوحة كاملة للإدارة',
       '',
@@ -353,7 +359,7 @@ const sections = {
     title: '🔧 تحكم البوت والحساب',
     emoji: '🔧',
     featureTag: 'owner',
-    audience: 'owner',
+    audience: 'owner', menu: 'dev',
     commands: [
       'تحكم_البوت     ← لوحة شاملة للتحكم',
       '',
@@ -399,7 +405,7 @@ const sections = {
     title: '🎓 وسيط طلاب الجامعة',
     emoji: '🎓',
     featureTag: 'mediator',
-    audience: 'owner',
+    audience: 'owner', menu: 'dev',
     commands: [
       '─── إدارة الطلاب ───',
       'طلاب اضف <رقم> [اسم]   ← تسجيل طالب جديد',
@@ -470,30 +476,39 @@ function buildHeader(m, user, level, role, max, uptime, vipStatus) {
  *        - 'admin' → يظهر لمشرفي القروب أو المطور
  *        - 'all'   → يظهر للجميع
  */
-function getAllowedSections(conn, { isOwner = false, isAdmin = false } = {}) {
+/**
+ * يرجع الأقسام المسموح عرضها بناءً على:
+ *  - menuKind: 'main' | 'group' | 'dev' (أي قائمة طُلبت)
+ *  - isOwner / isAdmin (صلاحيات المستخدم)
+ *  - isSubBot (يفلتر بالـ featureTag)
+ */
+function getAllowedSections(conn, { isOwner = false, isAdmin = false, menuKind = 'main' } = {}) {
   const isSubBot = !!conn?.__subBotPhone
-  let pool = sections
+  let pool = Object.values(sections)
 
+  // فلترة بمزايا البوت الفرعي
   if (isSubBot) {
     let allowed = []
     try { allowed = getSubBotFeatures(conn.__subBotPhone) || [] } catch (_) {}
     const allowSet = new Set(allowed.map(s => String(s).toLowerCase()))
-    pool = {}
-    for (const s of Object.values(sections)) {
-      const tag = String(s.featureTag || '').toLowerCase()
-      if (tag && allowSet.has(tag)) pool[Object.keys(pool).length + 1] = s
-    }
+    pool = pool.filter(s => allowSet.has(String(s.featureTag || '').toLowerCase()))
   }
 
-  // فلترة حسب الجمهور (audience)
+  // فلترة بنوع القائمة
+  pool = pool.filter(s => String(s.menu || 'main') === menuKind)
+
+  // فلترة بالصلاحية (audience)
+  pool = pool.filter(s => {
+    const aud = String(s.audience || 'all').toLowerCase()
+    if (aud === 'owner') return isOwner
+    if (aud === 'admin') return isOwner || isAdmin
+    return true
+  })
+
+  // إعادة ترقيم
   const filtered = {}
   let i = 1
-  for (const s of Object.values(pool)) {
-    const aud = String(s.audience || 'all').toLowerCase()
-    if (aud === 'owner' && !isOwner) continue
-    if (aud === 'admin' && !isOwner && !isAdmin) continue
-    filtered[i++] = s
-  }
+  for (const s of pool) filtered[i++] = s
   return filtered
 }
 
@@ -511,17 +526,26 @@ function buildIndex(header, vipStatus, sectionsToShow, isSubBot, subPhone, allow
   return `${header}${subLine}\n\n*📋 اختر قسماً — ردّ (Reply) على هذه الرسالة برقم القسم:*\n\n${lines}\n\n_↩️ ردّ على الرسالة باختيارك_`.trim()
 }
 
-function buildSection(id, header, vipStatus, sectionsToShow = sections) {
+function buildSection(id, header, vipStatus, sectionsToShow = sections, ctx = {}) {
   const section = sectionsToShow[id]
   if (!section) return null
-  const cmds = section.commands.map(c =>
+  // اختيار الأوامر حسب الصلاحية إذا كان القسم مقسّم admin/member
+  let cmds = section.commands
+  if (Array.isArray(section.memberCommands) || Array.isArray(section.adminCommands)) {
+    if (ctx.isOwner || ctx.isAdmin) {
+      cmds = [...(section.memberCommands || []), '', ...(section.adminCommands || [])]
+    } else {
+      cmds = section.memberCommands || []
+    }
+  }
+  const text = (cmds || []).map(c =>
     c.startsWith('─') || c === '' ? (c === '' ? '│' : `│\n│ ${c}`) : `│ • ${c}`
   ).join('\n')
   return (
 `${header}
 
 ╭────『 ${section.title} 』────
-${cmds}
+${text}
 │
 ╰──────────────────
 
@@ -529,7 +553,28 @@ _👤 ${vipStatus}_`).trim()
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-let handler = async (m, { conn, usedPrefix, isOwner, isAdmin, isROwner }) => {
+// ─────────────────────────────────────────────────────────────────────────────
+// تحديد نوع القائمة من الأمر المستخدم
+function detectMenuKind(command = '') {
+  const c = String(command).toLowerCase().trim()
+  if (/(قائمة[_\s]?المطور|menu[_\s]?dev|dev[_\s]?menu|أوامر[_\s]?المطور|اوامر[_\s]?المطور)/.test(c)) return 'dev'
+  if (/(قائمة[_\s]?القروب|قائمة[_\s]?المجموعة|menu[_\s]?group|group[_\s]?menu|اوامر[_\s]?القروب|أوامر[_\s]?القروب)/.test(c)) return 'group'
+  return 'main'
+}
+
+let handler = async (m, { conn, command, usedPrefix, isOwner, isAdmin, isROwner }) => {
+  const ownerFlag = !!(isOwner || isROwner)
+  const adminFlag = !!isAdmin
+  const menuKind = detectMenuKind(command)
+
+  // حراسات الوصول
+  if (menuKind === 'dev' && !ownerFlag) {
+    return m.reply('🔒 *قائمة المطور* مخصصة للمطور فقط.')
+  }
+  if (menuKind === 'group' && !m.isGroup) {
+    return m.reply('👥 *قائمة القروب* تُستدعى من داخل المجموعة فقط.\n\nللاستخدام في الخاص جرّب: *قائمة* أو *قائمة_المطور*')
+  }
+
   const user = global.db.data.users[m.sender] || {}
   initEconomy(user, m.sender)
   syncEnergy(user, m.sender)
@@ -544,14 +589,35 @@ let handler = async (m, { conn, usedPrefix, isOwner, isAdmin, isROwner }) => {
   const isSubBot = !!conn?.__subBotPhone
   const subPhone = conn?.__subBotPhone || null
   const allowedFeatures = isSubBot ? (getSubBotFeatures(subPhone) || []) : null
-  const sectionsToShow = getAllowedSections(conn, { isOwner: !!(isOwner || isROwner), isAdmin: !!isAdmin })
-  const menu = buildIndex(header, vipStatus, sectionsToShow, isSubBot, subPhone, allowedFeatures)
+
+  const sectionsToShow = getAllowedSections(conn, {
+    isOwner: ownerFlag,
+    isAdmin: adminFlag,
+    menuKind
+  })
+
+  if (!Object.keys(sectionsToShow).length) {
+    const hint = menuKind === 'group'
+      ? '📭 لا توجد أقسام متاحة لك في هذه المجموعة.'
+      : menuKind === 'dev'
+        ? '📭 لا توجد أقسام مطور متاحة.'
+        : '📭 لا توجد أقسام متاحة في القائمة الرئيسية.'
+    return m.reply(hint)
+  }
+
+  const titleByKind = {
+    main:  '📋 *القائمة الرئيسية*',
+    group: '👥 *قائمة القروب*' + (adminFlag || ownerFlag ? ' — مشرف' : ' — عضو'),
+    dev:   '👑 *قائمة المطور*'
+  }
+  const indexBody = buildIndex(header, vipStatus, sectionsToShow, isSubBot, subPhone, allowedFeatures)
+  const finalMenu = `${titleByKind[menuKind]}\n\n${indexBody}`
 
   global.menuSessions ??= {}
 
   await typingDelay(conn, m.chat, 500)
   const pp = await conn.profilePictureUrl(m.sender, 'image').catch(() => './src/avatar_contact.png')
-  const sent = await conn.sendMessage(m.chat, { image: { url: pp }, caption: menu }, { quoted: m })
+  const sent = await conn.sendMessage(m.chat, { image: { url: pp }, caption: finalMenu }, { quoted: m })
 
   global.menuSessions[m.sender] = {
     ts: Date.now(),
@@ -559,8 +625,9 @@ let handler = async (m, { conn, usedPrefix, isOwner, isAdmin, isROwner }) => {
     chat: m.chat,
     isSubBot,
     subPhone,
-    isOwner: !!(isOwner || isROwner),
-    isAdmin: !!isAdmin,
+    isOwner: ownerFlag,
+    isAdmin: adminFlag,
+    menuKind,
   }
 }
 
@@ -575,10 +642,10 @@ handler.all = async function (m) {
   if (!raw || /^[./#!\u0600-\u06FF]/.test(raw)) return
 
   const choice = normalizeChoice(raw)
-  // نستخدم الصلاحيات المحفوظة في الجلسة (handler.before احتسبها بطريقة موثوقة تتعامل مع LID)
   const sectionsToShow = getAllowedSections(this, {
     isOwner: !!session.isOwner,
-    isAdmin: !!session.isAdmin
+    isAdmin: !!session.isAdmin,
+    menuKind: session.menuKind || 'main'
   })
   if (!sectionsToShow[choice]) return
 
@@ -603,14 +670,17 @@ handler.all = async function (m) {
   const uptime = clockString(process.uptime() * 1000)
   const header = buildHeader(m, user, level, role, max, uptime, vipStatus)
 
-  const text = buildSection(choice, header, vipStatus, sectionsToShow)
+  const text = buildSection(choice, header, vipStatus, sectionsToShow, {
+    isOwner: !!session.isOwner,
+    isAdmin: !!session.isAdmin,
+  })
   if (text) {
     await this.reply(m.chat, text, m)
     delete global.menuSessions[m.sender]
   }
 }
 
-handler.help = ['menu', 'الاوامر']
+handler.help = ['menu', 'الاوامر', 'قائمة_القروب', 'قائمة_المطور']
 handler.tags = ['main']
-handler.command = /^(menu|الاوامر|أوامر|اوامر|قائمة|قائمه|help)$/i
+handler.command = /^(menu|الاوامر|أوامر|اوامر|قائمة|قائمه|help|قائمة[_\s]?القروب|قائمة[_\s]?المجموعة|اوامر[_\s]?القروب|أوامر[_\s]?القروب|menu[_\s]?group|group[_\s]?menu|قائمة[_\s]?المطور|اوامر[_\s]?المطور|أوامر[_\s]?المطور|menu[_\s]?dev|dev[_\s]?menu)$/i
 export default handler

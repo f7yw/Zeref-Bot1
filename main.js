@@ -654,7 +654,7 @@ conn.ev.on('creds.update', saveCreds)
 // ====== GROUP EVENTS → OWNER NOTIFICATIONS ======
 ;(async () => {
   try {
-    const { notifyGroupEvent } = await import('./lib/notify.js')
+    const { notifyGroupEvent, notifyOwners, header } = await import('./lib/notify.js')
 
     const botJids = () => {
       const ids = new Set()
@@ -663,27 +663,75 @@ conn.ev.on('creds.update', saveCreds)
         if (u.id) ids.add(conn.decodeJid?.(u.id) || u.id)
         if (u.lid) ids.add(conn.decodeJid?.(u.lid) || u.lid)
       } catch (_) {}
-      try {
-        for (const o of (global.botJids || [])) ids.add(o)
-      } catch (_) {}
+      try { for (const o of (global.botJids || [])) ids.add(o) } catch (_) {}
       return ids
     }
 
-    // انضمام/مغادرة/طرد
+    const groupName = async (id) => {
+      try {
+        const meta = (conn.chats?.[id]?.metadata) || await conn.groupMetadata(id).catch(() => null)
+        return meta?.subject || id
+      } catch { return id }
+    }
+
+    // 1) أحداث المشاركين (انضمام/مغادرة/ترقية/خفض) — للجميع لا للبوت فقط
     conn.ev.on('group-participants.update', async (ev) => {
       try {
         const me = botJids()
-        const involves = (ev.participants || []).some(p => me.has(conn.decodeJid?.(p) || p))
-        if (!involves) return
+        const involvesBot = (ev.participants || []).some(p => me.has(conn.decodeJid?.(p) || p))
         const action = ev.action
-        const map = { add: 'joined', remove: 'left', promote: 'promoted', demote: 'demoted' }
-        const event = map[action]
-        if (!event) return
-        await notifyGroupEvent(conn, ev.id, event, { byJid: ev.author })
+        const labels = { add: 'انضم', remove: 'غادر/طُرد', promote: 'تمت ترقيته', demote: 'تم خفضه' }
+        const label = labels[action]
+        if (!label) return
+
+        // إن كان البوت طرفاً → استخدم الإشعار الخاص (بقالب الحالة)
+        if (involvesBot) {
+          const map = { add: 'joined', remove: 'left', promote: 'promoted', demote: 'demoted' }
+          await notifyGroupEvent(conn, ev.id, map[action], { byJid: ev.author })
+          return
+        }
+
+        // وإلا → إشعار عام عن نشاط القروب
+        const gname = await groupName(ev.id)
+        const who = (ev.participants || []).map(p => '@' + String(p).split('@')[0]).join(' ')
+        const by  = ev.author ? `\n👤 *بواسطة:* @${String(ev.author).split('@')[0]}` : ''
+        const text =
+`${header('👥', `نشاط في القروب — ${label}`, conn)}
+
+📛 *المجموعة:* ${gname}
+🆔 \`${ev.id}\`
+🧑‍🤝‍🧑 *المعنيون:* ${who}${by}`
+        await notifyOwners(text, { dedupeKey: `grp-act:${ev.id}:${action}:${(ev.participants || []).join(',')}` })
       } catch (e) { console.error('[GRP-EV]', e?.message) }
     })
 
-    // اكتشاف انضمام للمجموعة عبر تحديثات groups (حالة: تمت الإضافة بدون event صريح)
+    // 2) تحديثات بيانات القروب (الاسم/الوصف/الصورة/إعدادات الخصوصية...)
+    conn.ev.on('groups.update', async (updates) => {
+      try {
+        for (const u of (updates || [])) {
+          const id = u.id
+          if (!id) continue
+          const gname = await groupName(id)
+          const fields = []
+          if (u.subject)      fields.push(`📝 *الاسم الجديد:* ${u.subject}`)
+          if (u.desc)         fields.push(`📜 *الوصف:* ${String(u.desc).slice(0, 200)}`)
+          if (u.announce !== undefined) fields.push(`📢 *قفل الإرسال:* ${u.announce ? 'مفعّل (مشرفون فقط)' : 'متوقف'}`)
+          if (u.restrict !== undefined) fields.push(`🛡️ *قفل التعديل:* ${u.restrict ? 'مفعّل (مشرفون فقط)' : 'متوقف'}`)
+          if (u.revoke)       fields.push(`🔗 *تجديد الرابط*`)
+          if (!fields.length) continue
+          const text =
+`${header('🔧', 'تغيير في إعدادات القروب', conn)}
+
+📛 *المجموعة:* ${gname}
+🆔 \`${id}\`
+
+${fields.join('\n')}`
+          await notifyOwners(text, { dedupeKey: `grp-up:${id}:${Object.keys(u).join(',')}` })
+        }
+      } catch (e) { console.error('[GRP-UP]', e?.message) }
+    })
+
+    // 3) قروب جديد أُضيف إليه البوت
     conn.ev.on('groups.upsert', async (groups) => {
       try {
         for (const g of (groups || [])) {
