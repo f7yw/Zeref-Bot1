@@ -8,7 +8,7 @@ nixPkgs = ["nodejs_20","python3", "ffmpeg", "gcc", "pkg-config", "vips", "pnpm-9
 
 [phases.install]
 cmds = [
-  "pnpm install --frozen-lockfile --prod=false",
+  "pnpm install --prod=false",
   "pnpm add sharp",
   "pip install yt-dlp"
 ]
