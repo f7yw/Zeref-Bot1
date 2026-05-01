@@ -4,7 +4,7 @@ providers = ["node"]
 NIXPACKS_NODE_VERSION = "20"
 
 [phases.setup]
-nixPkgs = ["nodejs_20","python3", "ffmpeg", "gcc", "pkg-config", "libvips", "pnpm-9_x"]
+nixPkgs = ["nodejs_20","python3", "ffmpeg", "gcc", "pkg-config", "vips", "pnpm-9_x"]
 
 [phases.install]
 cmds = [
