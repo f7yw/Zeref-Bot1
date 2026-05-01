@@ -36,7 +36,7 @@ externalPort = 80
 [userenv]
 
 [userenv.shared]
-PHONE_NUMBER = "212660892510"
+PHONE_NUMBER = "967782114485"
 SUPABASE_URL = "https://hgicxzzqnharvtzgkuwr.supabase.co"
 SUPABASE_KEY = "sb_publishable_BLDFX8rh7GJ3pOVC3XJSiA_-RyF2hC-"
 
